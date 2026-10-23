@@ -89,7 +89,7 @@ export interface UnassignedPickupRecord {
 }
 
 // Initial Seed Dataset for Operations Calendar (October 2026)
-const INITIAL_HOLIDAYS: OperationsHoliday[] = [
+const UNUSED_LEGACY_HOLIDAYS: OperationsHoliday[] = [
   {
     id: 'hol_01',
     name: 'Gandhi Jayanti',
@@ -146,7 +146,7 @@ const INITIAL_HOLIDAYS: OperationsHoliday[] = [
 ];
 
 // Seed Matrix of Route Runs
-const INITIAL_MATRIX_CELLS: WeeklyMatrixCell[] = [
+const UNUSED_LEGACY_MATRIX_CELLS: WeeklyMatrixCell[] = [
   {
     vehicleReg: 'AP 16 TX 4021',
     vehicleName: 'Mahindra Treo Zor EV-01',
@@ -363,7 +363,7 @@ const INITIAL_MATRIX_CELLS: WeeklyMatrixCell[] = [
 ];
 
 // Seed Unassigned Exception Queue
-const INITIAL_UNASSIGNED: UnassignedPickupRecord[] = [
+const UNUSED_LEGACY_UNASSIGNED: UnassignedPickupRecord[] = [
   {
     id: 'unassign_01',
     pickupCode: 'AKP-20261012-088',
@@ -410,12 +410,14 @@ const INITIAL_UNASSIGNED: UnassignedPickupRecord[] = [
 
 export const HolidayAndRoutePlanningScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'CALENDAR' | 'MATRIX' | 'UNASSIGNED_QUEUE' | 'SETTINGS'>('CALENDAR');
-  const [holidays, setHolidays] = useState<OperationsHoliday[]>(INITIAL_HOLIDAYS);
-  const [matrixCells, setMatrixCells] = useState<WeeklyMatrixCell[]>(INITIAL_MATRIX_CELLS);
-  const [unassignedQueue, setUnassignedQueue] = useState<UnassignedPickupRecord[]>(INITIAL_UNASSIGNED);
+  const [holidays, setHolidays] = useState<OperationsHoliday[]>([]);
+  const [matrixCells, setMatrixCells] = useState<WeeklyMatrixCell[]>([]);
+  const [unassignedQueue, setUnassignedQueue] = useState<UnassignedPickupRecord[]>([]);
+  const [vehicles, setVehicles] = useState<any[]>([]);
 
   // Calendar State
-  const [currentMonth] = useState('October 2026');
+  const today = new Date();
+  const [currentMonth] = useState(today.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }));
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
 
   // Modals
@@ -426,8 +428,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
   const [inspectingRouteCell, setInspectingRouteCell] = useState<WeeklyMatrixCell | null>(null);
 
   // Form: Create / Simulate Holiday
-  const [formDate, setFormDate] = useState('2026-10-19');
-  const [formName, setFormName] = useState('Vijayadasami / Dussehra Holiday');
+  const [formDate, setFormDate] = useState(today.toISOString().split('T')[0]);
+  const [formName, setFormName] = useState('');
   const [formType, setFormType] = useState<OperationsHoliday['type']>('STATE_REGIONAL');
   const [formScope, setFormScope] = useState<HolidayScope>('ALL');
   const [formHandling, setFormHandling] = useState<HolidayHandling>('NEXT_WORKING_DAY');
@@ -441,7 +443,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
   } | null>(null);
 
   // Vehicle Assign Target
-  const [assignTargetVehicle, setAssignTargetVehicle] = useState('AP 16 TF 2234');
+  const [assignTargetVehicle, setAssignTargetVehicle] = useState('');
 
   // Route Settings
   const [bulkLimitKg, setBulkLimitKg] = useState(100);
@@ -457,7 +459,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
   // KPIs
   const metrics = useMemo(() => {
-    const upcomingHolidaysCount = holidays.filter((h) => h.date >= '2026-10-12').length;
+    const upcomingHolidaysCount = holidays.filter((h) => h.date >= today.toISOString().split('T')[0]).length;
     const totalWeeklyRuns = matrixCells.length;
     const activeRunningRuns = matrixCells.filter((c) => c.status === 'RUNNING').length;
     const unassignedCount = unassignedQueue.length;
@@ -480,12 +482,17 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
   React.useEffect(() => {
     const fetchHolidayData = async () => {
       try {
-        const [holRes, unassignedRes] = await Promise.all([
+        const date = today.toISOString().split('T')[0];
+        const [holRes, unassignedRes, schedulesRes, runsRes, vehiclesRes, rulesRes] = await Promise.all([
           adminApiClient.get('/admin/holidays'),
           adminApiClient.get('/admin/pickups/unassigned'),
+          adminApiClient.get('/admin/route-schedules'),
+          adminApiClient.get(`/admin/route-runs?date=${date}`),
+          adminApiClient.get('/admin/vehicles'),
+          adminApiClient.get('/admin/order-rules'),
         ]);
 
-        if (holRes.success && Array.isArray(holRes.data) && holRes.data.length > 0) {
+        if (holRes.success && Array.isArray(holRes.data)) {
           setHolidays(
             holRes.data.map((h: any) => ({
               id: h._id || h.id,
@@ -503,23 +510,57 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
           );
         }
 
-        if (unassignedRes.success && Array.isArray(unassignedRes.data) && unassignedRes.data.length > 0) {
+        if (unassignedRes.success && Array.isArray(unassignedRes.data)) {
           setUnassignedQueue(
             unassignedRes.data.map((u: any) => ({
               id: u._id || u.id,
-              pickupCode: u.pickupCode || 'AKP-UNASSIGNED',
-              customerName: u.customerName || 'Bulk Client',
-              phone: u.mobile || '9848011223',
-              divisionName: u.divisionName || 'Vijayawada Central',
-              address: u.addressText || 'Industrial Area',
-              estimatedWeightKg: u.totalWeightKg || u.estWeightKg || 120,
-              scrapCategories: ['Commercial Bulk Scrap'],
-              requestedDate: u.preferredDate || 'Today',
-              preferredSlot: u.preferredSlot || '09:00 - 12:00 PM',
-              reason: 'BULK_COMMERCIAL_OVER_100KG',
-              flaggedAt: 'Recently flagged',
+              pickupCode: u.pickupCode || u._id || '—',
+              customerName: u.addressSnapshot?.name || u.orderMeta?.customerName || 'Customer',
+              phone: u.mobile || u.orderMeta?.customerPhone || '—',
+              divisionName: u.division?.name || u.divisionName || '—',
+              address: [u.addressSnapshot?.line1, u.addressSnapshot?.area, u.addressSnapshot?.city].filter(Boolean).join(', ') || '—',
+              estimatedWeightKg: Number(u.estimatedWeightSnapshot?.kg ?? u.estimatedWeightSnapshot ?? u.totals?.netWeightKg ?? 0),
+              scrapCategories: (u.categories || u.items || []).map((item: any) => item.name || item.productName || item),
+              requestedDate: u.preferredDate || u.requestedDate || '—',
+              preferredSlot: u.timeSlotSnapshot?.displayLabel || u.preferredSlot || '—',
+              reason: u.unassignedReason || '—',
+              flaggedAt: u.updatedAt || u.createdAt || '—',
             })),
           );
+        }
+        const routeData = runsRes.success && Array.isArray(runsRes.data)
+          ? runsRes.data
+          : schedulesRes.success && Array.isArray(schedulesRes.data) ? schedulesRes.data : [];
+        setMatrixCells(routeData.map((route: any) => ({
+          dayOfWeek: (route.dayOfWeek || new Date(route.date || date)
+            .toLocaleDateString('en-IN', { weekday: 'short' }).toUpperCase()) as WeeklyMatrixCell['dayOfWeek'],
+          divisionName: route.division?.name || route.divisionName || '—',
+          vehicleName: route.vehicle?.name || route.vehicleName || '—',
+          vehicleReg: route.vehicle?.registrationNumber || route.vehicleReg || '—',
+          assignedDriver: route.employee?.name || route.driverName || '—',
+          collectorName: route.collector?.name || route.collectorName || '—',
+          maxCapacityKg: Number(route.maxCapacityKg || route.capacityKg || 0),
+          bookedKg: Number(route.bookedKg || route.totalBookedKg || 0),
+          totalStops: Number(route.totalStops || route.pickups?.length || 0),
+          status: route.status === 'PLANNED' ? 'SCHEDULED' : route.status || 'SCHEDULED',
+          stops: (route.stops || route.pickups || []).map((stop: any, index: number) => ({
+            stopNumber: stop.stopNumber || index + 1,
+            pickupCode: stop.pickupCode || stop.pickup?.pickupCode || '—',
+            customerName: stop.customerName || stop.pickup?.orderMeta?.customerName || 'Customer',
+            area: stop.area || stop.pickup?.addressSnapshot?.area || '—',
+            weightKg: Number(stop.weightKg || stop.pickup?.estimatedWeightSnapshot?.kg || 0),
+            timeSlot: stop.timeSlot || stop.pickup?.timeSlotSnapshot?.displayLabel || '—',
+          })),
+        })));
+        if (vehiclesRes.success && Array.isArray(vehiclesRes.data)) {
+          setVehicles(vehiclesRes.data);
+          setAssignTargetVehicle(vehiclesRes.data[0]?.registrationNumber || '');
+        }
+        if (rulesRes.success && rulesRes.data) {
+          const rules = rulesRes.data.rules || rulesRes.data;
+          setBulkLimitKg(Number(rules.bulkLimitKg || 0));
+          setRouteFinalizeHours(Number(rules.routeFinalizeHoursBefore || 0));
+          setAutoRetryMinutes(Number(rules.autoAssignRetryMinutes || 0));
         }
       } catch (err) {
         console.error('Failed to fetch holiday data:', err);
@@ -531,28 +572,13 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
   // Trigger Simulation
   const handleSimulateImpact = async () => {
-    // Determine target shifted date
-    const d = new Date(formDate);
-    if (formHandling === 'NEXT_WEEK_SAME_DAY') {
-      d.setDate(d.getDate() + 7);
-    } else {
-      d.setDate(d.getDate() + 1); // NEXT_WORKING_DAY
-    }
-    const shiftsToDate = d.toISOString().split('T')[0];
-
-    // Compute live/preview affected counts based on scope
-    const runsCount = formScope === 'ALL' ? 10 : formScope === 'DIVISIONS' ? 4 : 2;
-    const pickupsCount = runsCount * 7;
-
-    const sampleText = `Dear Customer, ASLI KAATA operations will be closed on ${formDate} for ${formName}. Your scheduled doorstep pickup has been automatically rescheduled to ${shiftsToDate}. Track live status at https://aslikaata.in/p/track. Helpline: +91 91212 88492.`;
-
-    setSimulationData({
-      affectedRunsCount: runsCount,
-      affectedPickupsCount: pickupsCount,
-      shiftsToDate,
-      sampleNotificationText: sampleText,
+    const res = await adminApiClient.post('/admin/holidays/preview', {
+      name: formName, date: formDate, type: formType, scope: formScope, handling: formHandling,
     });
-    setIsSimulationModalOpen(true);
+    if (res.success && res.data) {
+      setSimulationData(res.data);
+      setIsSimulationModalOpen(true);
+    } else showToast(res.error || 'Unable to preview holiday impact.');
   };
 
   // Confirm Holiday and Propagate Reschedule to MongoDB
@@ -583,37 +609,59 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
       });
 
       if (res.success && res.data) {
-        newHoliday.id = res.data._id || newHoliday.id;
+        const saved = { ...newHoliday, ...res.data, id: res.data._id || res.data.id };
+        setHolidays((prev) => [...prev, saved].sort((a, b) => a.date.localeCompare(b.date)));
+        setIsSimulationModalOpen(false);
+        setIsHolidayModalOpen(false);
+        showToast(`Holiday "${formName}" saved.`);
+      } else {
+        showToast(res.error || 'Failed to save holiday.');
       }
-    } catch (err) {
-      console.error('Failed to save holiday to backend:', err);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save holiday.');
     }
-
-    setHolidays((prev) => [...prev, newHoliday].sort((a, b) => a.date.localeCompare(b.date)));
-    setIsSimulationModalOpen(false);
-    setIsHolidayModalOpen(false);
-    showToast(
-      `Holiday "${formName}" saved to MongoDB! ${simulationData.affectedPickupsCount} pickups automatically shifted to ${simulationData.shiftsToDate}.`,
-    );
   };
 
   // One-click Assign Unassigned Bulk Pickup
-  const handleAssignBulkPickup = () => {
+  const handleAssignBulkPickup = async () => {
     if (!selectedUnassignedItem) return;
-    setUnassignedQueue((prev) => prev.filter((item) => item.id !== selectedUnassignedItem.id));
-    setIsAssignModalOpen(false);
-    showToast(
-      `Assigned ${selectedUnassignedItem.pickupCode} (${selectedUnassignedItem.estimatedWeightKg} kg) to vehicle ${assignTargetVehicle}!`,
-    );
-    setSelectedUnassignedItem(null);
+    const vehicle = vehicles.find((item) => item.registrationNumber === assignTargetVehicle);
+    const res = await adminApiClient.post(`/admin/pickups/${selectedUnassignedItem.id}/assign`, {
+      employeeProfileId: vehicle?.defaultEmployeeId?._id || vehicle?.defaultEmployeeId ||
+        vehicle?.defaultDriver?._id || vehicle?.defaultDriver?.id,
+      vehicleType: vehicle?.vehicleType,
+      vehicleNumber: vehicle?.registrationNumber,
+    });
+    if (res.success) {
+      setUnassignedQueue((prev) => prev.filter((item) => item.id !== selectedUnassignedItem.id));
+      setIsAssignModalOpen(false);
+      showToast(`Assigned ${selectedUnassignedItem.pickupCode} to ${assignTargetVehicle}.`);
+      setSelectedUnassignedItem(null);
+    } else showToast(res.error || 'Failed to assign pickup.');
   };
 
-  // Days in October 2026 (Oct 1 is Thursday)
-  const daysInOctober = Array.from({ length: 31 }, (_, i) => {
+  const handleDeleteHoliday = async (id: string) => {
+    const res = await adminApiClient.delete(`/admin/holidays/${id}`);
+    if (res.success) setHolidays((current) => current.filter((holiday) => holiday.id !== id));
+    else showToast(res.error || 'Failed to delete holiday.');
+  };
+
+  const handleSaveOrderRules = async () => {
+    const res = await adminApiClient.put('/admin/order-rules', {
+      bulkLimitKg,
+      routeFinalizeHoursBefore: routeFinalizeHours,
+      autoAssignRetryMinutes: autoRetryMinutes,
+    });
+    showToast(res.success ? 'Routing parameters saved successfully.' : res.error || 'Failed to save routing parameters.');
+  };
+
+  const calendarYear = today.getFullYear();
+  const calendarMonth = today.getMonth();
+  const daysInOctober = Array.from({ length: new Date(calendarYear, calendarMonth + 1, 0).getDate() }, (_, i) => {
     const dayNum = i + 1;
-    const dateStr = `2026-10-${dayNum < 10 ? '0' + dayNum : dayNum}`;
+    const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
     const holidayMatch = holidays.find((h) => h.date === dateStr);
-    const isToday = dateStr === '2026-10-12';
+    const isToday = dateStr === today.toISOString().split('T')[0];
     return {
       dayNum,
       dateStr,
@@ -659,8 +707,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => {
-              setFormDate('2026-10-19');
-              setFormName('Vijayadasami / Dussehra Holiday');
+              setFormDate(today.toISOString().split('T')[0]);
+              setFormName('');
               setIsHolidayModalOpen(true);
             }}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0A3D2B] text-white text-xs font-bold hover:bg-[#0E4D36] transition-all shadow-md cursor-pointer"
@@ -798,8 +846,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
               </span>
               <button
                 onClick={() => {
-                  setFormDate('2026-10-19');
-                  setFormName('Vijayadasami / Dussehra Holiday');
+                  setFormDate(today.toISOString().split('T')[0]);
+                  setFormName('');
                   setIsHolidayModalOpen(true);
                 }}
                 className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all cursor-pointer flex items-center gap-1.5"
@@ -823,11 +871,9 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-7 gap-2 mt-3">
-              {/* Empty leading days for October 2026 (Oct 1 is Thursday -> 4 empty cells: Sun, Mon, Tue, Wed) */}
-              <div className="h-28 rounded-xl bg-slate-50/40 border border-slate-100/60 p-2"></div>
-              <div className="h-28 rounded-xl bg-slate-50/40 border border-slate-100/60 p-2"></div>
-              <div className="h-28 rounded-xl bg-slate-50/40 border border-slate-100/60 p-2"></div>
-              <div className="h-28 rounded-xl bg-slate-50/40 border border-slate-100/60 p-2"></div>
+              {Array.from({ length: new Date(calendarYear, calendarMonth, 1).getDay() }).map((_, index) => (
+                <div key={`empty-${index}`} className="h-28 rounded-xl bg-slate-50/40 border border-slate-100/60 p-2" />
+              ))}
 
               {daysInOctober.map((day) => {
                 const hasHoliday = !!day.holidayMatch;
@@ -982,6 +1028,12 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                         >
                           <Eye className="w-3 h-3" />
                           Simulate
+                        </button>
+                        <button
+                          onClick={() => handleDeleteHoliday(h.id)}
+                          className="ml-1 px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-700 hover:text-white font-bold text-[11px]"
+                        >
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -1276,7 +1328,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
             <div className="pt-3 border-t border-slate-100 flex justify-end">
               <button
-                onClick={() => showToast('Routing parameters saved successfully.')}
+                onClick={handleSaveOrderRules}
                 className="px-5 py-2.5 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md"
               >
                 Save Routing Parameters
@@ -1534,10 +1586,12 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                   Select Heavy Commercial Vehicle
                 </label>
                 <div className="space-y-2">
-                  {[
-                    { reg: 'AP 16 TF 2234', name: 'Tata 407 Heavy-01 (2.5T)', driver: 'K. Venkatesh', avail: '1,450 kg Available' },
-                    { reg: 'AP 07 TJ 1120', name: 'Ashok Leyland Dost (1.2T)', driver: 'Md. Ismail', avail: '850 kg Available' },
-                  ].map((v) => (
+                  {vehicles.map((vehicle) => ({
+                    reg: vehicle.registrationNumber,
+                    name: vehicle.name || vehicle.vehicleType || '—',
+                    driver: vehicle.defaultDriver?.name || '—',
+                    avail: `${Number(vehicle.capacityKg || 0).toLocaleString('en-IN')} kg capacity`,
+                  })).map((v) => (
                     <button
                       key={v.reg}
                       type="button"

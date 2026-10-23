@@ -53,7 +53,7 @@ export interface ScrapProductRateRow {
 }
 
 // Initial Seed Dataset representing Real Andhra Pradesh Scrap Mandi Rates
-const INITIAL_PRODUCTS_RATES: ScrapProductRateRow[] = [
+const UNUSED_LEGACY_PRODUCTS_RATES: ScrapProductRateRow[] = [
   // --- METAL ---
   {
     productId: 'prod_copper_01',
@@ -264,7 +264,7 @@ const INITIAL_PRODUCTS_RATES: ScrapProductRateRow[] = [
 ];
 
 export const RatesAndMarginScreen: React.FC = () => {
-  const [ratesList, setRatesList] = useState<ScrapProductRateRow[]>(INITIAL_PRODUCTS_RATES);
+  const [ratesList, setRatesList] = useState<ScrapProductRateRow[]>([]);
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('ALL');
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [activeHistoryItem, setActiveHistoryItem] = useState<ScrapProductRateRow | null>(null);
@@ -273,19 +273,24 @@ export const RatesAndMarginScreen: React.FC = () => {
   const [bulkDeltaRupees, setBulkDeltaRupees] = useState<number>(-2.0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const [rateHistory, setRateHistory] = useState<any[]>([]);
+  const [loadError, setLoadError] = useState('');
 
   // Dynamic live rate fetching from NestJS backend
   useEffect(() => {
     const fetchLiveRates = async () => {
       try {
         const res = await adminApiClient.get('/catalog');
-        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        if (res.success && Array.isArray(res.data)) {
           const mapped: ScrapProductRateRow[] = res.data
             .map((cat: any) =>
               (cat.products || []).map((prod: any) => {
-                const customerRate = (prod.ratePerKg || 1500) / 100;
-                const benchmark = Math.round(customerRate * 1.25 * 100) / 100;
-                const margin = Math.round((benchmark - customerRate) * 100) / 100;
+                const rate = prod.activeRate || {};
+                const customerRate = Number(rate.ratePerKgRupees ?? prod.ratePerKgRupees ??
+                  (rate.ratePerKg != null ? rate.ratePerKg / 100 : 0));
+                const benchmark = Number(rate.marketBenchmarkRateRupees ??
+                  (rate.marketBenchmarkRate != null ? rate.marketBenchmarkRate / 100 : customerRate));
+                const margin = Number(rate.marginValue ?? Math.max(0, benchmark - customerRate));
 
                 return {
                   productId: prod._id || prod.id,
@@ -295,28 +300,30 @@ export const RatesAndMarginScreen: React.FC = () => {
                   code: prod.code || prod.name.toLowerCase().replace(/\s+/g, '_'),
                   emoji: prod.emoji || '📦',
                   marketBenchmarkRateRupees: benchmark,
-                  marketName: 'Hyderabad Smelter Spot',
-                  lastMarketSync: 'Live API',
-                  marginMode: 'FLAT' as const,
-                  marginDirection: 'SUBTRACT' as const,
+                  marketName: rate.marketName || '—',
+                  lastMarketSync: rate.updatedAt || prod.updatedAt || '—',
+                  marginMode: rate.marginMode || 'FLAT',
+                  marginDirection: rate.marginDirection || 'SUBTRACT',
                   marginValue: margin,
                   calculatedCustomerRateRupees: customerRate,
-                  bulkTier1PremiumRupees: 1.5,
-                  bulkTier2PremiumRupees: 3.0,
+                  bulkTier1PremiumRupees: Number(rate.bulkTier1PremiumRupees || 0),
+                  bulkTier2PremiumRupees: Number(rate.bulkTier2PremiumRupees || 0),
                   isActive: prod.isActive ?? true,
-                  historyCount: 4,
-                  updatedAt: new Date().toLocaleTimeString(),
+                  historyCount: Number(rate.historyCount || 0),
+                  updatedAt: rate.updatedAt || prod.updatedAt || '—',
                 };
               }),
             )
             .flat();
 
-          if (mapped.length > 0) {
-            setRatesList(mapped);
-          }
+          setRatesList(mapped);
+        } else {
+          setRatesList([]);
+          setLoadError(res.error || 'Unable to load catalog rates.');
         }
-      } catch {
-        // Fallback to mandi rates
+      } catch (err: any) {
+        setRatesList([]);
+        setLoadError(err.message || 'Unable to load catalog rates.');
       }
     };
 
@@ -326,6 +333,13 @@ export const RatesAndMarginScreen: React.FC = () => {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const openRateHistory = async (row: ScrapProductRateRow) => {
+    setActiveHistoryItem(row);
+    setRateHistory([]);
+    const res = await adminApiClient.get(`/admin/catalog/rates/history/${row.productId}`);
+    if (res.success && Array.isArray(res.data)) setRateHistory(res.data);
   };
 
   // Recalculate customer rate when benchmark or margin changes
@@ -372,18 +386,15 @@ export const RatesAndMarginScreen: React.FC = () => {
       const res = await adminApiClient.post('/admin/catalog/rates', {
         productId: row.productId,
         ratePerKg: ratePaise,
-        marketBenchmarkRate: Math.round(row.marketBenchmarkRateRupees * 100),
-        marginDelta: Math.round(row.marginValue * 100),
-        marginType: row.marginMode,
       });
 
       if (res.success) {
         showToast(`Saved ${row.name}: ₹${row.calculatedCustomerRateRupees.toFixed(2)}/kg`);
       } else {
-        showToast(`Locally updated ${row.name} (₹${row.calculatedCustomerRateRupees.toFixed(2)}/kg)`);
+        showToast(`Failed to save ${row.name}: ${res.error || 'Backend rejected update'}`);
       }
-    } catch {
-      showToast(`Locally updated ${row.name}`);
+    } catch (err: any) {
+      showToast(`Failed to save ${row.name}: ${err.message || 'Network error'}`);
     }
   };
 
@@ -392,12 +403,14 @@ export const RatesAndMarginScreen: React.FC = () => {
     setIsBroadcasting(true);
     try {
       // Trigger API sync
-      await adminApiClient.post('/catalog/broadcast-refresh', {
+      const res = await adminApiClient.post('/catalog/broadcast-refresh', {
         reason: 'Admin revised scrap rates & margin spread',
       });
-      showToast('⚡ Rate Card Broadcasted to Customer & Employee Apps via WebSockets!');
+      showToast(res.success
+        ? '⚡ Rate Card Broadcasted to Customer & Employee Apps via WebSockets!'
+        : `Broadcast failed: ${res.error || 'Backend rejected request'}`);
     } catch {
-      showToast('⚡ Rates updated locally for connected clients.');
+      showToast('Broadcast failed: unable to reach backend.');
     } finally {
       setIsBroadcasting(false);
     }
@@ -784,7 +797,7 @@ export const RatesAndMarginScreen: React.FC = () => {
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
-                          onClick={() => setActiveHistoryItem(row)}
+                          onClick={() => openRateHistory(row)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                           title="View Rate Audit History"
                         >
@@ -802,6 +815,11 @@ export const RatesAndMarginScreen: React.FC = () => {
                   </tr>
                 );
               })}
+              {filteredProducts.length === 0 && (
+                <tr><td colSpan={8} className="py-10 text-center text-slate-400">
+                  {loadError || 'No catalog rates available.'}
+                </td></tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -912,19 +930,17 @@ export const RatesAndMarginScreen: React.FC = () => {
             </div>
 
             <div className="my-4 space-y-3 overflow-y-auto flex-1 pr-1">
-              {[
-                { date: '2026-10-12 09:15', rate: activeHistoryItem.calculatedCustomerRateRupees, market: activeHistoryItem.marketBenchmarkRateRupees, user: 'Ramesh Varma (Admin)', reason: 'Weekly Mandi benchmark adjustment' },
-                { date: '2026-10-05 11:30', rate: activeHistoryItem.calculatedCustomerRateRupees - 2.5, market: activeHistoryItem.marketBenchmarkRateRupees - 3.0, user: 'Ramesh Varma (Admin)', reason: 'Supply hike in smelters' },
-                { date: '2026-09-28 16:00', rate: activeHistoryItem.calculatedCustomerRateRupees - 4.0, market: activeHistoryItem.marketBenchmarkRateRupees - 5.0, user: 'K. Venkat Rao (Yard Mgr)', reason: 'Pre-festival scrap rate calibration' },
-              ].map((h, i) => (
+              {rateHistory.map((h, i) => (
                 <div key={i} className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-black text-slate-900">₹{h.rate.toFixed(2)}/kg</span>
-                      <span className="text-[10px] text-slate-400">(Smelter: ₹{h.market.toFixed(2)})</span>
+                      <span className="font-black text-slate-900">₹{Number(
+                        h.ratePerKgRupees ?? (h.ratePerKg != null ? h.ratePerKg / 100 : 0),
+                      ).toFixed(2)}/kg</span>
+                      <span className="text-[10px] text-slate-400">{h.marketBenchmarkRateRupees != null ? `(Smelter: ₹${Number(h.marketBenchmarkRateRupees).toFixed(2)})` : ''}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 block mt-0.5">{h.reason}</span>
-                    <span className="text-[9px] text-slate-400 mt-0.5 block">{h.user} • {h.date}</span>
+                    <span className="text-[10px] text-slate-500 block mt-0.5">{h.reason || '—'}</span>
+                    <span className="text-[9px] text-slate-400 mt-0.5 block">{h.updatedBy?.name || h.userName || '—'} • {h.createdAt || '—'}</span>
                   </div>
 
                   <span className="text-[9px] font-black uppercase text-emerald-800 bg-emerald-100/60 px-2 py-0.5 rounded-full">
@@ -932,6 +948,9 @@ export const RatesAndMarginScreen: React.FC = () => {
                   </span>
                 </div>
               ))}
+              {rateHistory.length === 0 && (
+                <div className="py-8 text-center text-xs text-slate-400">No rate history available.</div>
+              )}
             </div>
 
             <button

@@ -34,7 +34,7 @@ export interface CategoryPnLRow {
   marginPercent: number;
 }
 
-const CATEGORY_PNL_DATA: CategoryPnLRow[] = [
+const UNUSED_LEGACY_PNL_ROWS: CategoryPnLRow[] = [
   {
     categoryName: 'Copper & High-Value Metals',
     inwardKg: 1850,
@@ -99,18 +99,18 @@ const CATEGORY_PNL_DATA: CategoryPnLRow[] = [
 
 export const UnitEconomicsAndPnLScreen: React.FC = () => {
   const [timeWindow, setTimeWindow] = useState<'TODAY' | 'THIS_WEEK' | 'THIS_MONTH'>('THIS_MONTH');
-  const [categoryData, setCategoryData] = useState<CategoryPnLRow[]>(CATEGORY_PNL_DATA);
+  const [categoryData, setCategoryData] = useState<CategoryPnLRow[]>([]);
   const [financials, setFinancials] = useState({
-    totalOutwardRevenue: '₹47,16,800',
-    totalMaterialBuyingCost: '₹34,32,550',
-    totalGrossTradingSpread: '₹12,84,250',
-    totalOperatingExpenses: '₹2,25,250',
-    netOperatingProfit: '₹10,59,000',
-    netEbitdaMarginPct: '22.5%',
-    vehicleFleetRents: '₹62,000',
-    fuelAndPowerCharging: '₹34,850',
-    crewLaborAndIncentives: '₹1,12,000',
-    routeIncidentalsAndMaintenance: '₹16,400',
+    totalOutwardRevenue: '₹0',
+    totalMaterialBuyingCost: '₹0',
+    totalGrossTradingSpread: '₹0',
+    totalOperatingExpenses: '₹0',
+    netOperatingProfit: '₹0',
+    netEbitdaMarginPct: '0%',
+    vehicleFleetRents: '₹0',
+    fuelAndPowerCharging: '₹0',
+    crewLaborAndIncentives: '₹0',
+    routeIncidentalsAndMaintenance: '₹0',
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -123,9 +123,11 @@ export const UnitEconomicsAndPnLScreen: React.FC = () => {
           if (res.data.financials) {
             setFinancials(res.data.financials);
           }
-          if (Array.isArray(res.data.categoryBreakdown) && res.data.categoryBreakdown.length > 0) {
+          if (Array.isArray(res.data.categoryBreakdown)) {
             setCategoryData(res.data.categoryBreakdown);
           }
+        } else {
+          setCategoryData([]);
         }
       } catch (err) {
         console.warn('Failed to fetch live PnL:', err);
@@ -172,7 +174,11 @@ export const UnitEconomicsAndPnLScreen: React.FC = () => {
                 timeWindow === win ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
-              {win === 'TODAY' ? 'Today (12 Oct)' : win === 'THIS_WEEK' ? 'This Week' : 'October 2026 (MTD)'}
+              {win === 'TODAY'
+                ? `Today (${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })})`
+                : win === 'THIS_WEEK'
+                ? 'This Week'
+                : `${new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })} (MTD)`}
             </button>
           ))}
         </div>
@@ -319,6 +325,11 @@ export const UnitEconomicsAndPnLScreen: React.FC = () => {
                   </td>
                 </tr>
               ))}
+              {!isLoading && categoryData.length === 0 && (
+                <tr><td colSpan={8} className="py-10 text-center text-slate-400">
+                  No unit economics data is available for this period.
+                </td></tr>
+              )}
             </tbody>
           </table>
         </div>

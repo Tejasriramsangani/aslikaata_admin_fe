@@ -13,7 +13,7 @@ export interface ApiResponse<T = any> {
 }
 
 class AdminApiClient {
-  private loginPromise: Promise<string | null> | null = null;
+  private refreshPromise: Promise<string | null> | null = null;
 
   private isTokenExpired(token: string): boolean {
     try {
@@ -39,42 +39,52 @@ class AdminApiClient {
     return localStorage.getItem('aslikaata_admin_access_token');
   }
 
-  public setTokens(token: string) {
+  public setTokens(token: string, refreshToken?: string) {
     if (typeof window === 'undefined') return;
     localStorage.setItem('aslikaata_admin_access_token', token);
+    if (refreshToken) localStorage.setItem('aslikaata_admin_refresh_token', refreshToken);
   }
 
   public clearTokens() {
     if (typeof window === 'undefined') return;
     localStorage.removeItem('aslikaata_admin_access_token');
+    localStorage.removeItem('aslikaata_admin_refresh_token');
     localStorage.removeItem('aslikaata_admin_profile');
   }
 
   public async acquireFreshToken(): Promise<string | null> {
-    if (this.loginPromise) return this.loginPromise;
-
-    this.loginPromise = (async () => {
+    if (this.refreshPromise) return this.refreshPromise;
+    this.refreshPromise = (async () => {
       try {
-        const loginRes = await fetch(`${BASE_URL}/auth/admin/login`, {
+        const refreshToken =
+          typeof window !== 'undefined'
+            ? localStorage.getItem('aslikaata_admin_refresh_token')
+            : null;
+        if (!refreshToken) {
+          this.clearTokens();
+          return null;
+        }
+        const refreshRes = await fetch(`${BASE_URL}/auth/refresh`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: 'admin@aslikaata.com', password: 'Admin@123456' }),
+          body: JSON.stringify({ refreshToken }),
         });
-        const loginData = await loginRes.json().catch(() => ({}));
-        const freshToken = loginData?.data?.accessToken;
-        if (loginRes.ok && freshToken) {
-          this.setTokens(freshToken);
-          return freshToken;
+        const refreshData = await refreshRes.json().catch(() => ({}));
+        const tokens = refreshData?.data || refreshData;
+        if (refreshRes.ok && tokens?.accessToken) {
+          this.setTokens(tokens.accessToken, tokens.refreshToken || refreshToken);
+          return tokens.accessToken;
         }
-      } catch (e) {
-        console.warn('[adminApiClient] Auto-login error:', e);
+        this.clearTokens();
+      } catch {
+        this.clearTokens();
       } finally {
-        this.loginPromise = null;
+        this.refreshPromise = null;
       }
       return null;
     })();
 
-    return this.loginPromise;
+    return this.refreshPromise;
   }
 
   private async request<T = any>(
@@ -85,12 +95,9 @@ class AdminApiClient {
     const isLoginEndpoint = endpoint.includes('/auth/admin/login');
     let token = this.getAccessToken();
 
-    // Proactively refresh if token is missing, demo token, or expired
-    if (!isLoginEndpoint && (!token || token.startsWith('demo_jwt_') || this.isTokenExpired(token))) {
+    if (!isLoginEndpoint && token && this.isTokenExpired(token)) {
       const freshToken = await this.acquireFreshToken();
-      if (freshToken) {
-        token = freshToken;
-      }
+      token = freshToken;
     }
 
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
@@ -115,7 +122,6 @@ class AdminApiClient {
       const json = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        // Transparent auto-recovery if 401 Unauthorized
         if (response.status === 401 && typeof window !== 'undefined' && !isLoginEndpoint) {
           const freshToken = await this.acquireFreshToken();
           if (freshToken) {

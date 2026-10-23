@@ -12,7 +12,7 @@ import {
   Command,
   RefreshCw,
 } from 'lucide-react';
-import { useAdminNav, AVAILABLE_DIVISIONS } from '../../context/AdminNavContext';
+import { useAdminNav } from '../../context/AdminNavContext';
 import { useAdminAuth, AdminRole } from '../../context/AdminAuthContext';
 
 export const AdminTopHeader: React.FC = () => {
@@ -25,6 +25,7 @@ export const AdminTopHeader: React.FC = () => {
     unassignedBulkCount,
     searchQuery,
     setSearchQuery,
+    divisions,
   } = useAdminNav();
   const { admin, loginWithDemo } = useAdminAuth();
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
@@ -82,7 +83,7 @@ export const AdminTopHeader: React.FC = () => {
               onChange={(e) => setSelectedDivisionId(e.target.value)}
               className="bg-transparent text-xs font-bold text-slate-800 outline-none cursor-pointer pr-1"
             >
-              {AVAILABLE_DIVISIONS.map((div) => (
+              {divisions.map((div) => (
                 <option key={div.id} value={div.id}>
                   {div.code === 'ALL' ? '🌐 All Divisions' : `📍 ${div.name}`}
                 </option>

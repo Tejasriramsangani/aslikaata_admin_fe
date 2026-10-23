@@ -158,7 +158,7 @@ export const FleetManagementScreen: React.FC = () => {
           adminApiClient.get('/admin/operations/incidental-logs'),
         ]);
 
-        if (vehRes.success && Array.isArray(vehRes.data) && vehRes.data.length > 0) {
+        if (vehRes.success && Array.isArray(vehRes.data)) {
           const mapped: VehicleAsset[] = vehRes.data.map((v: any) => ({
             id: v._id || v.id,
             registrationNumber: v.registrationNumber,
@@ -166,29 +166,29 @@ export const FleetManagementScreen: React.FC = () => {
             vehicleType: v.vehicleType || 'EV_AUTO',
             ownership: v.ownership || 'OWNED',
             ownershipDetails: {
-              vendorName: v.ownershipDetails?.vendorName || 'Fleet Operations',
-              rentBillingModel: v.ownershipDetails?.rentBillingModel || 'DAILY_FLAT',
+              vendorName: v.ownershipDetails?.vendorName || '—',
+              rentBillingModel: v.ownershipDetails?.rentBillingModel,
               rentalChargeRupees: v.ownershipDetails?.rentalChargeRupees || 0,
-              contractValidUntil: v.ownershipDetails?.contractValidUntil || '2027-03-31',
-              assetValueRupees: v.ownershipDetails?.assetValueRupees || 350000,
+              contractValidUntil: v.ownershipDetails?.contractValidUntil || '—',
+              assetValueRupees: v.ownershipDetails?.assetValueRupees || 0,
             },
-            capacityKg: v.capacityKg || 500,
-            maxStops: v.maxStops || 20,
+            capacityKg: v.capacityKg || 0,
+            maxStops: v.maxStops || 0,
             compliance: {
-              fitnessValidUntil: v.compliance?.fitnessValidUntil || '2027-10-01',
-              insuranceValidUntil: v.compliance?.insuranceValidUntil || '2027-10-01',
-              pucValidUntil: v.compliance?.pucValidUntil || '2027-04-01',
-              lastServiceOdometer: v.compliance?.lastServiceOdometer || 1000,
+              fitnessValidUntil: v.compliance?.fitnessValidUntil || '—',
+              insuranceValidUntil: v.compliance?.insuranceValidUntil || '—',
+              pucValidUntil: v.compliance?.pucValidUntil || '—',
+              lastServiceOdometer: v.compliance?.lastServiceOdometer || 0,
             },
-            currentOdometer: v.currentOdometer || 2400,
-            assignedDivision: v.assignedDivision || 'Vijayawada Central',
+            currentOdometer: v.currentOdometer || 0,
+            assignedDivision: v.assignedDivision?.name || v.assignedDivision || '—',
             defaultDriver: {
-              name: v.defaultDriver?.name || 'Assigned Driver',
-              phone: v.defaultDriver?.phone || '9848011223',
+              name: v.defaultDriver?.name || '—',
+              phone: v.defaultDriver?.phone || '—',
             },
             status: v.status || 'ACTIVE',
-            todayTrips: 3,
-            todayCollectedKg: 284,
+            todayTrips: Number(v.todayTrips || 0),
+            todayCollectedKg: Number(v.todayCollectedKg || 0),
           }));
           setVehicles(mapped);
           if (mapped[0]?.registrationNumber) {
@@ -196,7 +196,7 @@ export const FleetManagementScreen: React.FC = () => {
           }
         }
 
-        if (fuelRes.success && Array.isArray(fuelRes.data) && fuelRes.data.length > 0) {
+        if (fuelRes.success && Array.isArray(fuelRes.data)) {
           setFuelLogs(
             fuelRes.data.map((f: any) => ({
               id: f._id || f.id,
@@ -207,15 +207,15 @@ export const FleetManagementScreen: React.FC = () => {
               ratePerUnit: f.ratePerUnit,
               totalCostRupees: f.totalCostRupees,
               odometerReading: f.odometerReading,
-              kmSinceLastRefuel: f.kmSinceLastRefuel || 150,
-              calculatedMileage: f.calculatedMileage || '12.0 km/L',
-              incurredAt: f.incurredAt || 'Today',
-              stationName: f.stationName || 'Fuel Station',
+              kmSinceLastRefuel: f.kmSinceLastRefuel || 0,
+              calculatedMileage: f.calculatedMileage || '—',
+              incurredAt: f.incurredAt || f.createdAt || '—',
+              stationName: f.stationName || '—',
             })),
           );
         }
 
-        if (maintRes.success && Array.isArray(maintRes.data) && maintRes.data.length > 0) {
+        if (maintRes.success && Array.isArray(maintRes.data)) {
           setMaintenanceLogs(
             maintRes.data.map((m: any) => ({
               id: m._id || m.id,
@@ -225,14 +225,14 @@ export const FleetManagementScreen: React.FC = () => {
               odometer: m.odometer,
               costRupees: m.costRupees,
               description: m.description,
-              downtimeHours: m.downtimeHours || 4,
-              serviceDate: m.serviceDate || '2026-10-12',
-              invoiceNumber: m.invoiceNumber || 'INV-001',
+              downtimeHours: m.downtimeHours || 0,
+              serviceDate: m.serviceDate || '—',
+              invoiceNumber: m.invoiceNumber || '—',
             })),
           );
         }
 
-        if (incRes.success && Array.isArray(incRes.data) && incRes.data.length > 0) {
+        if (incRes.success && Array.isArray(incRes.data)) {
           setIncidentals(
             incRes.data.map((i: any) => ({
               id: i._id || i.id,
@@ -241,7 +241,7 @@ export const FleetManagementScreen: React.FC = () => {
               expenseType: i.expenseType,
               amountRupees: i.amountRupees,
               notes: i.notes,
-              incurredAt: i.incurredAt || 'Today',
+              incurredAt: i.incurredAt || i.createdAt || '—',
             })),
           );
         }
@@ -314,18 +314,8 @@ export const FleetManagementScreen: React.FC = () => {
         registrationNumber: regUpper,
         name: finalName,
         vehicleType: newType,
-        ownership: newOwnership,
-        ownershipDetails: {
-          vendorName: newOwnership === 'RENTED' ? newVendorName || 'Independent Fleet Vendor' : undefined,
-          rentBillingModel: 'DAILY_FLAT',
-          rentalChargeRupees: newOwnership === 'RENTED' ? newRentRupees : 0,
-          contractValidUntil: '2027-03-31',
-          assetValueRupees: newOwnership === 'OWNED' ? 350000 : 0,
-        },
         capacityKg: newCapacity,
         maxStops: 20,
-        status: 'ACTIVE',
-        assignedDivision: 'Vijayawada Central',
       });
 
       if (res.success && res.data) {
@@ -797,6 +787,11 @@ export const FleetManagementScreen: React.FC = () => {
                       </tr>
                     );
                   })}
+                  {!isLoading && filteredVehicles.length === 0 && (
+                    <tr><td colSpan={8} className="py-10 text-center text-slate-400">
+                      No vehicles available.
+                    </td></tr>
+                  )}
                 </tbody>
               </table>
             </div>

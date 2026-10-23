@@ -128,6 +128,7 @@ export const UserManagementScreen: React.FC = () => {
   const { admin } = useAdminAuth();
 
   const [users, setUsers] = useState<SystemUserRecord[]>([]);
+  const [divisionOptions, setDivisionOptions] = useState<string[]>(DIVISIONS_LIST);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<'ALL' | AdminRole>('ALL');
@@ -150,66 +151,36 @@ export const UserManagementScreen: React.FC = () => {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const res = await adminApiClient.get('/admin/users');
-      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-        setUsers(res.data);
+      const [res, divisionRes] = await Promise.all([
+        adminApiClient.get('/admin/users'),
+        adminApiClient.get('/admin/divisions'),
+      ]);
+      if (res.success && Array.isArray(res.data)) {
+        setUsers(res.data.map((user: any) => ({
+          id: user._id || user.id,
+          userId: user.userId,
+          name: user.name || '—',
+          email: user.email || '—',
+          mobile: user.mobile || '—',
+          role: user.role,
+          assignedDivision: user.assignedDivision?.name || user.assignedDivision || '—',
+          status: user.status || 'ACTIVE',
+          createdAt: user.createdAt,
+        })));
       } else {
-        // Fallback default users if empty
-        setUsers([
-          {
-            id: '1',
-            name: 'Ramesh Varma',
-            email: 'admin@aslikaata.com',
-            mobile: '9848022334',
-            role: 'SUPER_ADMIN',
-            assignedDivision: 'All Andhra Divisions',
-            status: 'ACTIVE',
-            createdAt: new Date().toISOString(),
-          },
-          {
-            id: '2',
-            name: 'K. Venkat Rao',
-            email: 'yard.manager@aslikaata.com',
-            mobile: '9848022335',
-            role: 'YARD_MANAGER',
-            assignedDivision: 'Vijayawada Central Yard',
-            status: 'ACTIVE',
-            createdAt: new Date().toISOString(),
-          },
-          {
-            id: '3',
-            name: 'Suresh Reddy',
-            email: 'dispatcher@aslikaata.com',
-            mobile: '9848022336',
-            role: 'DISPATCHER',
-            assignedDivision: 'Guntur Autonagar Fleet Hub',
-            status: 'ACTIVE',
-            createdAt: new Date().toISOString(),
-          },
-          {
-            id: '4',
-            name: 'P. Anitha',
-            email: 'accounts@aslikaata.com',
-            mobile: '9848022337',
-            role: 'ACCOUNTANT',
-            assignedDivision: 'All Andhra Divisions',
-            status: 'ACTIVE',
-            createdAt: new Date().toISOString(),
-          },
-          {
-            id: '5',
-            name: 'Ravi Kumar',
-            email: 'ravi.collector@aslikaata.com',
-            mobile: '9848022340',
-            role: 'COLLECTOR',
-            assignedDivision: 'Vijayawada Central Yard',
-            status: 'ACTIVE',
-            createdAt: new Date().toISOString(),
-          },
-        ]);
+        setUsers([]);
+        setActionNotice({ type: 'error', message: res.error || 'Failed to load users.' });
       }
-    } catch {
-      // Ignored
+      if (divisionRes.success && Array.isArray(divisionRes.data)) {
+        const names = divisionRes.data.map((d: any) => d.name).filter(Boolean);
+        setDivisionOptions(names);
+        if (names[0]) setFormData((current) => ({ ...current, assignedDivision: names[0] }));
+      } else {
+        setDivisionOptions(DIVISIONS_LIST);
+      }
+    } catch (err: any) {
+      setUsers([]);
+      setActionNotice({ type: 'error', message: err.message || 'Failed to load users.' });
     } finally {
       setLoading(false);
     }
@@ -645,7 +616,7 @@ export const UserManagementScreen: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, assignedDivision: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                   >
-                    {DIVISIONS_LIST.map((d) => (
+                    {divisionOptions.map((d) => (
                       <option key={d} value={d}>
                         {d}
                       </option>

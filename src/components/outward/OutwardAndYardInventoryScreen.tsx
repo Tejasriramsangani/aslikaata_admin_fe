@@ -67,7 +67,7 @@ export interface OutwardDispatchRecord {
 }
 
 // Seed Yard Stock Data
-const INITIAL_YARD_STOCK: YardStockItem[] = [
+const UNUSED_LEGACY_YARD_STOCK: YardStockItem[] = [
   {
     id: 'stk_01',
     categoryName: 'Metal',
@@ -143,7 +143,7 @@ const INITIAL_YARD_STOCK: YardStockItem[] = [
 ];
 
 // Seed Outward Dispatches to End Mills & Smelters
-const INITIAL_OUTWARD_DISPATCHES: OutwardDispatchRecord[] = [
+const UNUSED_LEGACY_OUTWARD_DISPATCHES: OutwardDispatchRecord[] = [
   {
     id: 'disp_01',
     gatePassNumber: 'GP-20261012-014',
@@ -208,8 +208,8 @@ const INITIAL_OUTWARD_DISPATCHES: OutwardDispatchRecord[] = [
 
 export const OutwardAndYardInventoryScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'YARD_INVENTORY' | 'OUTWARD_DISPATCHES'>('YARD_INVENTORY');
-  const [stockItems, setStockItems] = useState<YardStockItem[]>(INITIAL_YARD_STOCK);
-  const [dispatches, setDispatches] = useState<OutwardDispatchRecord[]>(INITIAL_OUTWARD_DISPATCHES);
+  const [stockItems, setStockItems] = useState<YardStockItem[]>([]);
+  const [dispatches, setDispatches] = useState<OutwardDispatchRecord[]>([]);
 
   // Dynamic live stock items and outward dispatches from NestJS backend
   useEffect(() => {
@@ -220,31 +220,31 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
           adminApiClient.get('/admin/operations/outward-dispatches'),
         ]);
 
-        if (stockRes.success && Array.isArray(stockRes.data) && stockRes.data.length > 0) {
+        if (stockRes.success && Array.isArray(stockRes.data)) {
           setStockItems(
             stockRes.data.map((s: any) => ({
               id: s._id || s.id,
               categoryName: s.categoryName,
               productName: s.productName,
               stage: s.stage,
-              yardLocation: s.yardLocation || 'Vijayawada Central',
+              yardLocation: s.yardLocation || '—',
               currentTonnageKg: s.currentTonnageKg,
               averageInwardCostPerKgRupees: s.averageInwardCostPerKgRupees,
               marketWholesaleRatePerKgRupees: s.marketWholesaleRatePerKgRupees,
               unrealizedGrossMarginRupees: s.unrealizedGrossMarginRupees,
-              lastUpdated: s.lastUpdated || 'Today',
+              lastUpdated: s.lastUpdated || s.updatedAt || '—',
             })),
           );
         }
 
-        if (dispRes.success && Array.isArray(dispRes.data) && dispRes.data.length > 0) {
+        if (dispRes.success && Array.isArray(dispRes.data)) {
           setDispatches(
             dispRes.data.map((d: any) => ({
               id: d._id || d.id,
               gatePassNumber: d.gatePassNumber,
               destinationMillName: d.destinationMillName,
               destinationCity: d.destinationCity,
-              categoryName: d.categoryName || 'Scrap Commodities',
+              categoryName: d.categoryName || '—',
               productName: d.productName,
               dispatchedWeightKg: d.dispatchedWeightKg,
               agreedMillRatePerKgRupees: d.agreedMillRatePerKgRupees,
@@ -252,12 +252,12 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
               grossRealizedMarginRupees: d.grossRealizedMarginRupees,
               totalInvoiceValueRupees: d.totalInvoiceValueRupees,
               vehicleReg: d.vehicleReg,
-              driverName: d.driverName || 'Authorized Driver',
-              driverPhone: d.driverPhone || '9848011223',
-              eWayBillNumber: d.eWayBillNumber || '2419-0000',
-              paymentStatus: d.paymentStatus || 'PAID_FULL',
-              dispatchTimestamp: d.dispatchTimestamp || 'Today',
-              authorizedBy: d.authorizedBy || 'Yard In-charge',
+              driverName: d.driverName || '—',
+              driverPhone: d.driverPhone || '—',
+              eWayBillNumber: d.eWayBillNumber || '—',
+              paymentStatus: d.paymentStatus || 'PENDING_REMITTANCE',
+              dispatchTimestamp: d.dispatchTimestamp || d.createdAt || '—',
+              authorizedBy: d.authorizedBy || '—',
             })),
           );
         }
@@ -280,16 +280,16 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
   const [printableGatePass, setPrintableGatePass] = useState<OutwardDispatchRecord | null>(null);
 
   // Form State: New Outward Dispatch
-  const [formMillName, setFormMillName] = useState('Jindal Steel & Power Ltd (Mandi Branch)');
-  const [formDestination, setFormDestination] = useState('Visakhapatnam, AP');
-  const [formProduct, setFormProduct] = useState('Heavy Scrap Iron / Loha');
-  const [formWeightKg, setFormWeightKg] = useState<number>(10000);
-  const [formAgreedRate, setFormAgreedRate] = useState<number>(32.5);
-  const [formInwardCost, setFormInwardCost] = useState<number>(28.0);
-  const [formVehicleReg, setFormVehicleReg] = useState('AP 39 UB 9921');
-  const [formDriverName, setFormDriverName] = useState('S. Nagesh');
-  const [formDriverPhone, setFormDriverPhone] = useState('9848556677');
-  const [formEWayBill, setFormEWayBill] = useState('2419-1122-3344');
+  const [formMillName, setFormMillName] = useState('');
+  const [formDestination, setFormDestination] = useState('');
+  const [formProduct, setFormProduct] = useState('');
+  const [formWeightKg, setFormWeightKg] = useState<number>(0);
+  const [formAgreedRate, setFormAgreedRate] = useState<number>(0);
+  const [formInwardCost, setFormInwardCost] = useState<number>(0);
+  const [formVehicleReg, setFormVehicleReg] = useState('');
+  const [formDriverName, setFormDriverName] = useState('');
+  const [formDriverPhone, setFormDriverPhone] = useState('');
+  const [formEWayBill, setFormEWayBill] = useState('');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -326,11 +326,9 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
     const marginPerKg = formAgreedRate - formInwardCost;
     const totalMargin = marginPerKg * formWeightKg;
     const totalInvoice = formAgreedRate * formWeightKg;
-    const randomSuffix = Math.floor(100 + Math.random() * 900);
-
     const newRecord: OutwardDispatchRecord = {
-      id: `disp_${Date.now()}`,
-      gatePassNumber: `GP-20261012-${randomSuffix}`,
+      id: '',
+      gatePassNumber: '',
       destinationMillName: formMillName,
       destinationCity: formDestination,
       categoryName: 'Scrap Commodities',
@@ -345,23 +343,24 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
       driverPhone: formDriverPhone,
       eWayBillNumber: formEWayBill,
       paymentStatus: 'PENDING_REMITTANCE',
-      dispatchTimestamp: 'Just now',
-      authorizedBy: 'Yard In-charge',
+      dispatchTimestamp: new Date().toISOString(),
+      authorizedBy: '—',
     };
 
     try {
       const res = await adminApiClient.post('/admin/operations/outward-dispatches', newRecord);
       if (res.success && res.data) {
-        newRecord.id = res.data._id || newRecord.id;
+        const saved = { ...newRecord, ...res.data, id: res.data._id || res.data.id };
+        setDispatches((prev) => [saved, ...prev]);
+        setIsNewDispatchOpen(false);
+        setPrintableGatePass(saved);
+        showToast(`Gate Pass #${saved.gatePassNumber || saved.id} created. Realized Margin: ₹${Math.round(totalMargin).toLocaleString('en-IN')}`);
+      } else {
+        showToast(`Dispatch failed: ${res.error || 'Backend rejected request'}`);
       }
-    } catch (err) {
-      console.error('Failed to save outward dispatch to backend:', err);
+    } catch (err: any) {
+      showToast(`Dispatch failed: ${err.message || 'Network error'}`);
     }
-
-    setDispatches((prev) => [newRecord, ...prev]);
-    setIsNewDispatchOpen(false);
-    setPrintableGatePass(newRecord);
-    showToast(`Gate Pass #${newRecord.gatePassNumber} created & saved to MongoDB! Realized Margin: ₹${Math.round(totalMargin).toLocaleString('en-IN')}`);
   };
 
   return (
@@ -566,6 +565,11 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                       </tr>
                     );
                   })}
+                  {stockItems.length === 0 && (
+                    <tr><td colSpan={8} className="py-10 text-center text-slate-400">
+                      No yard stock records available.
+                    </td></tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -649,6 +653,11 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                       </td>
                     </tr>
                   ))}
+                  {dispatches.length === 0 && (
+                    <tr><td colSpan={9} className="py-10 text-center text-slate-400">
+                      No outward dispatches available.
+                    </td></tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -703,11 +712,10 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                     onChange={(e) => setFormProduct(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-semibold text-slate-800"
                   >
-                    <option value="Heavy Scrap Iron / Loha">Heavy Scrap Iron / Loha</option>
-                    <option value="Corrugated Cardboard (Baled)">Corrugated Cardboard (Baled)</option>
-                    <option value="Copper / Tamba Cut-Pieces">Copper / Tamba Cut-Pieces</option>
-                    <option value="Rigid HDPE Drums & Flakes">Rigid HDPE Drums & Flakes</option>
-                    <option value="Lead Acid Batteries (Neutralized)">Lead Acid Batteries</option>
+                    <option value="">Select yard stock</option>
+                    {stockItems.map((stock) => (
+                      <option key={stock.id} value={stock.productName}>{stock.productName}</option>
+                    ))}
                   </select>
                 </div>
                 <div>

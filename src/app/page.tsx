@@ -31,57 +31,74 @@ import { adminApiClient } from '../lib/api-client';
 
 export default function OperationsDashboardPage() {
   const { admin } = useAdminAuth();
-  const { isBackendConnected, unassignedBulkCount } = useAdminNav();
+  const { isBackendConnected, unassignedBulkCount, setUnassignedBulkCount } = useAdminNav();
 
   const [loading, setLoading] = useState(false);
   const [pickups, setPickups] = useState<any[]>([]);
+  const [error, setError] = useState('');
+  const [kpis, setKpis] = useState({
+    volumeKg: 0,
+    totalAmount: 0,
+    activeVehicles: 0,
+    totalVehicles: 0,
+    cashFloatStatus: 'NO DATA',
+    cashFloatAmount: 0,
+  });
 
   const loadDashboardData = async () => {
     setLoading(true);
+    setError('');
     try {
-      const res = await adminApiClient.get('/admin/pickups');
-      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-        setPickups(res.data);
+      const [analyticsRes, pickupsRes, vehiclesRes, floatsRes] = await Promise.all([
+        adminApiClient.get('/admin/analytics/today'),
+        adminApiClient.get('/admin/pickups'),
+        adminApiClient.get('/admin/vehicles'),
+        adminApiClient.get('/admin/operations/cash-floats'),
+      ]);
+      const analytics: any = analyticsRes.success ? analyticsRes.data || {} : {};
+      const vehicles: any[] = vehiclesRes.success && Array.isArray(vehiclesRes.data) ? vehiclesRes.data : [];
+      const floats: any[] = floatsRes.success && Array.isArray(floatsRes.data) ? floatsRes.data : [];
+      const unassigned = Number(analytics.unassignedRequests || 0);
+      setUnassignedBulkCount(unassigned);
+      const outstandingFloats = floats.filter((item) => !['SETTLED', 'CLOSED'].includes(item.status));
+      setKpis({
+        volumeKg: Number(analytics.weightCollected?.netWeightGrams || 0) / 1000,
+        totalAmount: Number(analytics.financials?.totalAmount || 0),
+        activeVehicles: vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length,
+        totalVehicles: vehicles.length,
+        cashFloatStatus: floats.length === 0 ? 'NO DATA' : outstandingFloats.length === 0 ? 'BALANCED' : 'PENDING',
+        cashFloatAmount: outstandingFloats.reduce(
+          (sum, item) => sum + Number(item.balanceRupees ?? item.balance ?? item.amountRupees ?? 0),
+          0,
+        ),
+      });
+      if (pickupsRes.success && Array.isArray(pickupsRes.data)) {
+        setPickups(pickupsRes.data.map((pickup: any) => {
+          const total = Number(pickup.totals?.totalAmount || 0);
+          const address = pickup.addressSnapshot || {};
+          const assignment = pickup.assignment || {};
+          return {
+            id: pickup.pickupCode || pickup._id || pickup.id,
+            customerName: address.name || pickup.orderMeta?.customerName || 'Customer',
+            address: [address.line1, address.area, address.city].filter(Boolean).join(', ') || '—',
+            category: pickup.categories?.[0]?.name || pickup.categories?.[0] ||
+              pickup.items?.[0]?.productName || '—',
+            estWeightKg: Number(pickup.estimatedWeightSnapshot?.kg ??
+              pickup.estimatedWeightSnapshot ?? pickup.totals?.netWeightKg ?? 0),
+            slotTime: pickup.timeSlotSnapshot?.displayLabel || '—',
+            driverName: assignment.employee?.name || assignment.driverName ||
+              assignment.vehicle?.registrationNumber || 'Unassigned',
+            status: pickup.status || '—',
+            totalRupees: total > 100000 ? total / 100 : total,
+          };
+        }));
       } else {
-        // High fidelity fallback matching active runs
-        setPickups([
-          {
-            id: 'AKP-10245',
-            customerName: 'Vinay Palakonda',
-            address: 'Benz Circle, Vijayawada',
-            category: 'Cardboard & Paper',
-            estWeightKg: 28,
-            slotTime: '11:00 AM - 01:00 PM',
-            driverName: 'Ravi Kumar (AP 16 TX 4021)',
-            status: 'COMPLETED',
-            totalRupees: 434,
-          },
-          {
-            id: 'AKP-10246',
-            customerName: 'Balaji Fabrication Works',
-            address: 'Autonagar Block B, Guntur',
-            category: 'Heavy Iron & Scrap Metal',
-            estWeightKg: 145,
-            slotTime: '02:00 PM - 04:00 PM',
-            driverName: 'Srinivas Rao (AP 16 TX 4022)',
-            status: 'IN_TRANSIT',
-            totalRupees: 4060,
-          },
-          {
-            id: 'AKP-10247',
-            customerName: 'Sri Sai Residential Apts',
-            address: 'Madhura Nagar, Vijayawada',
-            category: 'Mixed Plastic & PET',
-            estWeightKg: 42,
-            slotTime: '04:30 PM - 06:00 PM',
-            driverName: 'Ravi Kumar (AP 16 TX 4021)',
-            status: 'SCHEDULED',
-            totalRupees: 630,
-          },
-        ]);
+        setPickups([]);
+        setError(pickupsRes.error || 'Unable to load dashboard pickups.');
       }
-    } catch {
-      // Ignored
+    } catch (err: any) {
+      setPickups([]);
+      setError(err.message || 'Unable to load dashboard data.');
     } finally {
       setLoading(false);
     }
@@ -147,9 +164,9 @@ export default function OperationsDashboardPage() {
               <span className="text-[10px] font-black uppercase tracking-wider">Today Scrap Volume</span>
               <Scale className="w-4 h-4 text-emerald-800" />
             </div>
-            <div className="text-2xl font-black text-slate-900">2,840 kg</div>
+            <div className="text-2xl font-black text-slate-900">{kpis.volumeKg.toLocaleString('en-IN')} kg</div>
             <div className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
-              <span>+18.4%</span> vs yesterday
+              <span>Live</span> collected today
             </div>
           </div>
 
@@ -158,9 +175,9 @@ export default function OperationsDashboardPage() {
               <span className="text-[10px] font-black uppercase tracking-wider">Gross Realized Margin</span>
               <Coins className="w-4 h-4 text-amber-500" />
             </div>
-            <div className="text-2xl font-black text-slate-900">₹ 31,450</div>
+            <div className="text-2xl font-black text-slate-900">₹ {kpis.totalAmount.toLocaleString('en-IN')}</div>
             <div className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
-              <span>₹ 11.07 / kg</span> average spread
+              <span>Backend total</span>
             </div>
           </div>
 
@@ -169,9 +186,9 @@ export default function OperationsDashboardPage() {
               <span className="text-[10px] font-black uppercase tracking-wider">Active EV Vehicles</span>
               <Truck className="w-4 h-4 text-sky-500" />
             </div>
-            <div className="text-2xl font-black text-slate-900">8 / 10</div>
+            <div className="text-2xl font-black text-slate-900">{kpis.activeVehicles} / {kpis.totalVehicles}</div>
             <div className="text-[10px] font-bold text-sky-600 flex items-center gap-1">
-              <span>80% fleet on road</span>
+              <span>{kpis.totalVehicles ? Math.round((kpis.activeVehicles / kpis.totalVehicles) * 100) : 0}% fleet active</span>
             </div>
           </div>
 
@@ -191,8 +208,8 @@ export default function OperationsDashboardPage() {
               <span className="text-[10px] font-black uppercase tracking-wider">Cash Float Balance</span>
               <Building2 className="w-4 h-4 text-emerald-800" />
             </div>
-            <div className="text-2xl font-black text-emerald-800">BALANCED</div>
-            <div className="text-[10px] font-bold text-slate-500">₹ 3,419.50 in evening safe</div>
+            <div className="text-2xl font-black text-emerald-800">{kpis.cashFloatStatus}</div>
+            <div className="text-[10px] font-bold text-slate-500">₹ {kpis.cashFloatAmount.toLocaleString('en-IN')} outstanding</div>
           </div>
         </div>
 
@@ -365,6 +382,16 @@ export default function OperationsDashboardPage() {
                 Realized financial realizations, operating expenses and net profit.
               </p>
             </Link>
+            <Link
+              href="/audits"
+              className="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-rose-500 hover:shadow-md transition-all group cursor-pointer"
+            >
+              <div className="p-2 rounded-xl bg-rose-50 text-rose-600 w-fit mb-2">
+                <ShieldAlert className="w-5 h-5" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">Fraud Sentinel & Audits</h3>
+              <p className="text-xs text-slate-500 mt-1">Review live anomaly alerts and resolutions.</p>
+            </Link>
           </div>
         </div>
 
@@ -456,6 +483,11 @@ export default function OperationsDashboardPage() {
                     </td>
                   </tr>
                 ))}
+                {!loading && pickups.length === 0 && (
+                  <tr><td colSpan={7} className="py-10 text-center text-slate-400">
+                    {error || 'No pickups available.'}
+                  </td></tr>
+                )}
               </tbody>
             </table>
           </div>

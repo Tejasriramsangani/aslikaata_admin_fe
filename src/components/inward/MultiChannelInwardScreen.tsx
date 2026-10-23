@@ -100,7 +100,7 @@ export interface YardReconciliationRecord {
 }
 
 // Available Scrap Products for POS Line Builder
-export const POS_AVAILABLE_SCRAP = [
+export const UNUSED_LEGACY_POS_PRODUCTS = [
   { id: 'p_copper', cat: 'Metal', name: 'Copper / Tamba', rate: 605.0, icon: '🟤' },
   { id: 'p_brass', cat: 'Metal', name: 'Brass / Peetal', rate: 390.0, icon: '🟡' },
   { id: 'p_alu', cat: 'Metal', name: 'Aluminium Scrap', rate: 145.0, icon: '⚪' },
@@ -125,7 +125,7 @@ export const DEDUCTION_REASONS = [
 ];
 
 // Seed Inward Vouchers
-const SEED_INWARD_VOUCHERS: InwardVoucherRecord[] = [
+const UNUSED_LEGACY_INWARD_VOUCHERS: InwardVoucherRecord[] = [
   {
     id: 'inv_01',
     voucherNumber: 'YRD-20261012-084',
@@ -298,7 +298,7 @@ const SEED_INWARD_VOUCHERS: InwardVoucherRecord[] = [
 ];
 
 // Seed Daily Route Reconciliation Records
-const SEED_RECONCILIATION: YardReconciliationRecord[] = [
+const UNUSED_LEGACY_RECONCILIATION: YardReconciliationRecord[] = [
   {
     id: 'rec_01',
     date: '2026-10-12',
@@ -354,8 +354,9 @@ const SEED_RECONCILIATION: YardReconciliationRecord[] = [
 
 export const MultiChannelInwardScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'LEDGER' | 'WALK_IN_POS' | 'B2B_WEIGHBRIDGE' | 'RECONCILER'>('LEDGER');
-  const [vouchers, setVouchers] = useState<InwardVoucherRecord[]>(SEED_INWARD_VOUCHERS);
-  const [reconciliations, setReconciliations] = useState<YardReconciliationRecord[]>(SEED_RECONCILIATION);
+  const [vouchers, setVouchers] = useState<InwardVoucherRecord[]>([]);
+  const [reconciliations, setReconciliations] = useState<YardReconciliationRecord[]>([]);
+  const [posProducts, setPosProducts] = useState<{ id: string; cat: string; name: string; rate: number; icon: string }[]>([]);
 
   // Filters
   const [channelFilter, setChannelFilter] = useState<string>('ALL');
@@ -366,15 +367,16 @@ export const MultiChannelInwardScreen: React.FC = () => {
   useEffect(() => {
     const fetchLiveInwardData = async () => {
       try {
-        const [vouchRes, recRes, pickRes] = await Promise.all([
+        const [vouchRes, recRes, pickRes, catalogRes] = await Promise.all([
           adminApiClient.get('/admin/operations/inward-vouchers'),
           adminApiClient.get('/admin/operations/yard-reconciliations'),
           adminApiClient.get('/admin/pickups'),
+          adminApiClient.get('/catalog'),
         ]);
 
         let combinedVouchers: InwardVoucherRecord[] = [];
 
-        if (vouchRes.success && Array.isArray(vouchRes.data) && vouchRes.data.length > 0) {
+        if (vouchRes.success && Array.isArray(vouchRes.data)) {
           combinedVouchers = vouchRes.data.map((v: any) => ({
             id: v._id || v.id,
             voucherNumber: v.voucherNumber,
@@ -404,7 +406,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
           }));
         }
 
-        if (pickRes.success && Array.isArray(pickRes.data) && pickRes.data.length > 0) {
+        if (pickRes.success && Array.isArray(pickRes.data)) {
           const liveDoorstep: InwardVoucherRecord[] = pickRes.data.map((p: any, idx: number) => ({
             id: p._id || p.id || `live_pick_${idx}`,
             voucherNumber: p.pickupCode || `AKP-${10245 + idx}`,
@@ -440,11 +442,9 @@ export const MultiChannelInwardScreen: React.FC = () => {
           combinedVouchers = [...liveDoorstep, ...combinedVouchers];
         }
 
-        if (combinedVouchers.length > 0) {
-          setVouchers(combinedVouchers);
-        }
+        setVouchers(combinedVouchers);
 
-        if (recRes.success && Array.isArray(recRes.data) && recRes.data.length > 0) {
+        if (recRes.success && Array.isArray(recRes.data)) {
           setReconciliations(
             recRes.data.map((r: any) => ({
               id: r._id || r.id,
@@ -465,6 +465,21 @@ export const MultiChannelInwardScreen: React.FC = () => {
             })),
           );
         }
+        if (catalogRes.success && Array.isArray(catalogRes.data)) {
+          const products = catalogRes.data.flatMap((category: any) =>
+            (category.products || []).map((product: any) => ({
+              id: product._id || product.id,
+              cat: category.name || '—',
+              name: product.name || '—',
+              rate: Number(product.activeRate?.ratePerKgRupees ??
+                (product.activeRate?.ratePerKg != null ? product.activeRate.ratePerKg / 100 : 0)),
+              icon: product.emoji || '📦',
+            })),
+          );
+          setPosProducts(products);
+          setSelectedScrapId(products[0]?.id || '');
+          setB2bSelectedProduct(products[0]?.id || '');
+        }
       } catch (err) {
         console.error('Failed to load inward operations data:', err);
       }
@@ -483,37 +498,25 @@ export const MultiChannelInwardScreen: React.FC = () => {
   const [posPaymentMethod, setPosPaymentMethod] = useState<PaymentMethod>('CASH');
 
   // Multi-item Cart for POS
-  const [posCart, setPosCart] = useState<InwardItemRow[]>([
-    {
-      productId: 'p_iron',
-      categoryName: 'Metal',
-      productName: 'Iron / Loha (Heavy)',
-      ratePerKgRupees: 28.0,
-      grossWeightKg: 45.0,
-      deductionKg: 1.0,
-      deductionReason: 'Dust & Sand Contamination',
-      netWeightKg: 44.0,
-      lineTotalRupees: 1232.0,
-    },
-  ]);
+  const [posCart, setPosCart] = useState<InwardItemRow[]>([]);
 
   // Current line item input state
-  const [selectedScrapId, setSelectedScrapId] = useState(POS_AVAILABLE_SCRAP[0].id);
+  const [selectedScrapId, setSelectedScrapId] = useState('');
   const [currentGrossWeight, setCurrentGrossWeight] = useState<number>(0);
   const [currentDeductionKg, setCurrentDeductionKg] = useState<number>(0);
   const [currentDeductionReason, setCurrentDeductionReason] = useState(DEDUCTION_REASONS[0]);
 
   // --- B2B Weighbridge State ---
   const [isB2BModalOpen, setIsB2BModalOpen] = useState(false);
-  const [b2bCompanyName, setB2bCompanyName] = useState('Tirumala Tech Park Facilities');
-  const [b2bPhone, setB2bPhone] = useState('9849011223');
-  const [b2bGst, setB2bGst] = useState('37AAACT5512B1Z8');
-  const [b2bEWayBill, setB2bEWayBill] = useState('2419-8802-9912');
-  const [b2bVehicleReg, setB2bVehicleReg] = useState('AP 16 TH 5541');
-  const [b2bGrossKg, setB2bGrossKg] = useState<number>(6850);
-  const [b2bTareKg, setB2bTareKg] = useState<number>(2720);
-  const [b2bSelectedProduct, setB2bSelectedProduct] = useState('p_carton');
-  const [b2bContractRate, setB2bContractRate] = useState<number>(14.5);
+  const [b2bCompanyName, setB2bCompanyName] = useState('');
+  const [b2bPhone, setB2bPhone] = useState('');
+  const [b2bGst, setB2bGst] = useState('');
+  const [b2bEWayBill, setB2bEWayBill] = useState('');
+  const [b2bVehicleReg, setB2bVehicleReg] = useState('');
+  const [b2bGrossKg, setB2bGrossKg] = useState<number>(0);
+  const [b2bTareKg, setB2bTareKg] = useState<number>(0);
+  const [b2bSelectedProduct, setB2bSelectedProduct] = useState('');
+  const [b2bContractRate, setB2bContractRate] = useState<number>(0);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -562,7 +565,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
       alert('Please enter a valid scale gross weight greater than 0.');
       return;
     }
-    const scrapMeta = POS_AVAILABLE_SCRAP.find((s) => s.id === selectedScrapId) || POS_AVAILABLE_SCRAP[0];
+    const scrapMeta = posProducts.find((s) => s.id === selectedScrapId);
+    if (!scrapMeta) return;
     const deduction = Math.max(0, currentDeductionKg);
     const net = Math.max(0, currentGrossWeight - deduction);
     const lineTotal = net * scrapMeta.rate;
@@ -622,23 +626,22 @@ export const MultiChannelInwardScreen: React.FC = () => {
       status: 'RECEIVED_VERIFIED',
     };
 
-    setVouchers((prev) => [newVoucher, ...prev]);
-    setThermalSlipRecord(newVoucher); // Automatically open thermal receipt modal
-    // Persist to MongoDB
     adminApiClient
       .post('/admin/operations/inward-vouchers', newVoucher)
       .then((res) => {
         if (res.success && res.data) {
-          newVoucher.id = res.data._id || newVoucher.id;
+          const saved = { ...newVoucher, ...res.data, id: res.data._id || res.data.id };
+          setVouchers((prev) => [saved, ...prev]);
+          setThermalSlipRecord(saved);
+          setPosCustomerName('');
+          setPosCustomerPhone('');
+          setPosCart([]);
+          showToast(`Walk-in inward ${saved.voucherNumber || saved.id} created.`);
+        } else {
+          showToast(res.error || 'Failed to save walk-in voucher.');
         }
       })
-      .catch((err) => console.error('Failed to persist POS voucher:', err));
-
-    // Reset Form
-    setPosCustomerName('');
-    setPosCustomerPhone('');
-    setPosCart([]);
-    showToast(`Walk-in Inward #${newVoucher.voucherNumber} created & ₹${Math.round(newVoucher.grandTotalRupees)} disbursed! (Saved to MongoDB)`);
+      .catch((err) => showToast(err.message || 'Failed to save walk-in voucher.'));
   };
 
   // Submit B2B Weighbridge Entry
@@ -648,7 +651,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
       alert('Gross weight must be strictly higher than tare vehicle weight.');
       return;
     }
-    const scrapMeta = POS_AVAILABLE_SCRAP.find((s) => s.id === b2bSelectedProduct) || POS_AVAILABLE_SCRAP[5];
+    const scrapMeta = posProducts.find((s) => s.id === b2bSelectedProduct);
+    if (!scrapMeta) return;
     const totalPayable = netKg * b2bContractRate;
     const randomSuffix = Math.floor(10 + Math.random() * 90);
 
@@ -695,25 +699,25 @@ export const MultiChannelInwardScreen: React.FC = () => {
     try {
       const res = await adminApiClient.post('/admin/operations/inward-vouchers', newVoucher);
       if (res.success && res.data) {
-        newVoucher.id = res.data._id || newVoucher.id;
+        const saved = { ...newVoucher, ...res.data, id: res.data._id || res.data.id };
+        setVouchers((prev) => [saved, ...prev]);
+        setIsB2BModalOpen(false);
+        setThermalSlipRecord(saved);
+        showToast(`B2B weighbridge ticket ${saved.voucherNumber || saved.id} recorded (${netKg} kg net).`);
+      } else {
+        showToast(res.error || 'Failed to save B2B voucher.');
       }
-    } catch (err) {
-      console.error('Failed to save B2B voucher:', err);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to save B2B voucher.');
     }
-
-    setVouchers((prev) => [newVoucher, ...prev]);
-    setIsB2BModalOpen(false);
-    setThermalSlipRecord(newVoucher);
-    showToast(`B2B Weighbridge ticket #${newVoucher.voucherNumber} recorded (${netKg} kg net)! (Saved to MongoDB)`);
   };
 
   // Reconcile / Sign-off Route Dump
-  const handleSignOffReconciliation = (recId: string) => {
-    adminApiClient
-      .patch(`/admin/operations/yard-reconciliations/${recId}/sign-off`, {
-        notes: 'Supervisor physically inspected dump & verified weight on platform scale.',
-      })
-      .catch((err) => console.error('Failed to sign off reconciliation on backend:', err));
+  const handleSignOffReconciliation = async (recId: string) => {
+    const res = await adminApiClient.patch(`/admin/operations/yard-reconciliations/${recId}/sign-off`, {
+      notes: 'Supervisor physically inspected dump & verified weight on platform scale.',
+    });
+    if (!res.success) return showToast(res.error || 'Failed to sign off reconciliation.');
 
     setReconciliations((prev) =>
       prev.map((r) =>
@@ -1151,7 +1155,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                   Select Scrap Product (Active Buying Rates Applied)
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {POS_AVAILABLE_SCRAP.map((scrap) => {
+                  {posProducts.map((scrap) => {
                     const isSelected = selectedScrapId === scrap.id;
                     return (
                       <button
@@ -1242,7 +1246,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                   </span>
                   <span className="text-slate-400 mx-2">×</span>
                   <span className="font-semibold">
-                    ₹{(POS_AVAILABLE_SCRAP.find((s) => s.id === selectedScrapId)?.rate || 0).toFixed(1)}/kg
+                    ₹{(posProducts.find((s) => s.id === selectedScrapId)?.rate || 0).toFixed(1)}/kg
                   </span>
                 </div>
 
@@ -1252,7 +1256,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                     ₹
                     {Math.round(
                       Math.max(0, currentGrossWeight - currentDeductionKg) *
-                        (POS_AVAILABLE_SCRAP.find((s) => s.id === selectedScrapId)?.rate || 0)
+                        (posProducts.find((s) => s.id === selectedScrapId)?.rate || 0)
                     ).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -1851,7 +1855,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                     onChange={(e) => setB2bSelectedProduct(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-semibold text-slate-800"
                   >
-                    {POS_AVAILABLE_SCRAP.map((s) => (
+                    {posProducts.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name}
                       </option>

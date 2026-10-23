@@ -45,7 +45,7 @@ export interface FraudAlertRecord {
   notes?: string;
 }
 
-const INITIAL_FRAUD_ALERTS: FraudAlertRecord[] = [
+const UNUSED_LEGACY_FRAUD_ALERTS: FraudAlertRecord[] = [
   {
     id: 'alt_01',
     category: 'WEIGHT_MISMATCH_DUMP',
@@ -97,7 +97,7 @@ const INITIAL_FRAUD_ALERTS: FraudAlertRecord[] = [
 ];
 
 export const FraudSentinelAndAlertsScreen: React.FC = () => {
-  const [alerts, setAlerts] = useState<FraudAlertRecord[]>(INITIAL_FRAUD_ALERTS);
+  const [alerts, setAlerts] = useState<FraudAlertRecord[]>([]);
   const [severityFilter, setSeverityFilter] = useState<string>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -110,8 +110,11 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
       setIsLoading(true);
       try {
         const res = await adminApiClient.get('/admin/operations/fraud-alerts');
-        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        if (res.success && Array.isArray(res.data)) {
           setAlerts(res.data);
+        } else {
+          setAlerts([]);
+          showToast(res.error || 'Unable to load audit alerts.');
         }
       } catch (err) {
         console.warn('Failed to fetch fraud alerts:', err);
@@ -140,60 +143,45 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
       openCount,
       criticalCount,
       totalRisk: `₹${totalRisk.toLocaleString('en-IN')}`,
+      resolutionRate: totalAlerts
+        ? ((alerts.filter((a) => a.status === 'RESOLVED_CLEARED').length / totalAlerts) * 100).toFixed(1)
+        : '0.0',
     };
   }, [alerts]);
 
   // Action: Acknowledge & Investigate
   const handleAcknowledgeAlert = async (id: string) => {
     const notes = 'Supervisor notified. Employee summoned for scale audit reconciliation.';
-    setAlerts((prev) =>
-      prev.map((a) =>
-        a.id === id
-          ? {
-              ...a,
-              status: 'ACKNOWLEDGED_INVESTIGATING',
-              notes,
-            }
-          : a
-      )
-    );
-    setActiveModalAlert(null);
-    showToast('Alert marked as Investigating. Internal notice sent to yard manager.');
-
     try {
-      await adminApiClient.patch(`/admin/operations/fraud-alerts/${id}`, {
+      const res = await adminApiClient.patch(`/admin/operations/fraud-alerts/${id}`, {
         status: 'ACKNOWLEDGED_INVESTIGATING',
         notes,
       });
-    } catch (err) {
-      console.warn('Failed to persist alert acknowledge:', err);
+      if (!res.success) return showToast(res.error || 'Failed to acknowledge alert.');
+      setAlerts((prev) => prev.map((a) => a.id === id
+        ? { ...a, status: 'ACKNOWLEDGED_INVESTIGATING', notes } : a));
+      setActiveModalAlert(null);
+      showToast('Alert marked as Investigating.');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to acknowledge alert.');
     }
   };
 
   // Action: Mark as Resolved / Clear
   const handleResolveAlert = async (id: string) => {
     const notes = 'Audit completed. Shortage reconciled or verified within valid moisture tolerance.';
-    setAlerts((prev) =>
-      prev.map((a) =>
-        a.id === id
-          ? {
-              ...a,
-              status: 'RESOLVED_CLEARED',
-              notes,
-            }
-          : a
-      )
-    );
-    setActiveModalAlert(null);
-    showToast('Alert resolved and archived into audit log.');
-
     try {
-      await adminApiClient.patch(`/admin/operations/fraud-alerts/${id}`, {
+      const res = await adminApiClient.patch(`/admin/operations/fraud-alerts/${id}`, {
         status: 'RESOLVED_CLEARED',
         notes,
       });
-    } catch (err) {
-      console.warn('Failed to persist alert resolution:', err);
+      if (!res.success) return showToast(res.error || 'Failed to resolve alert.');
+      setAlerts((prev) => prev.map((a) => a.id === id
+        ? { ...a, status: 'RESOLVED_CLEARED', notes } : a));
+      setActiveModalAlert(null);
+      showToast('Alert resolved and archived into audit log.');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to resolve alert.');
     }
   };
 
@@ -289,7 +277,7 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Audit Resolution Rate</span>
             <ShieldCheck className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-2xl font-black text-blue-700">92.4%</div>
+          <div className="text-2xl font-black text-blue-700">{metrics.resolutionRate}%</div>
           <div className="text-[10px] text-slate-400 mt-1">Resolved within 24h</div>
         </div>
       </div>
@@ -399,6 +387,11 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
                   </td>
                 </tr>
               ))}
+              {!isLoading && filteredAlerts.length === 0 && (
+                <tr><td colSpan={6} className="py-10 text-center text-slate-400">
+                  No audit alerts found.
+                </td></tr>
+              )}
             </tbody>
           </table>
         </div>

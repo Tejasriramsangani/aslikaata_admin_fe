@@ -75,37 +75,30 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
+const isValidJwt = (token: string): boolean => {
+  if (!token || token.startsWith('demo_jwt_')) return false;
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return !payload.exp || payload.exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
+};
+
 export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [admin, setAdmin] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Initialize session on mount from localStorage, ensuring valid backend JWT
   useEffect(() => {
-    const initAuth = async () => {
+    const initAuth = () => {
       try {
         const storedProfile = localStorage.getItem('aslikaata_admin_profile');
         const storedToken = localStorage.getItem('aslikaata_admin_access_token');
-
-        // Always guarantee a fresh valid JWT from backend
-        let activeToken = storedToken;
-        if (!activeToken || activeToken.startsWith('demo_jwt_')) {
-          activeToken = await adminApiClient.acquireFreshToken();
-        }
-
-        if (storedProfile) {
+        if (storedProfile && storedToken && isValidJwt(storedToken)) {
           setAdmin(JSON.parse(storedProfile));
         } else {
-          // Default Super Admin profile
-          const defaultProfile: AdminUser = {
-            userId: 'usr_admin_01',
-            name: 'Ramesh Varma',
-            email: 'admin@aslikaata.com',
-            mobile: '9848022334',
-            role: 'SUPER_ADMIN',
-            assignedDivision: 'All Andhra Divisions',
-          };
-          setAdmin(defaultProfile);
-          localStorage.setItem('aslikaata_admin_profile', JSON.stringify(defaultProfile));
+          adminApiClient.clearTokens();
+          setAdmin(null);
         }
       } catch (err) {
         console.warn('AdminAuth initAuth error:', err);
@@ -128,8 +121,8 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       });
 
       if (res.success && res.data) {
-        const { accessToken, admin: adminData } = res.data;
-        adminApiClient.setTokens(accessToken);
+        const { accessToken, refreshToken, admin: adminData } = res.data;
+        adminApiClient.setTokens(accessToken, refreshToken);
 
         const profile: AdminUser = {
           userId: adminData.id,
@@ -142,25 +135,6 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         setAdmin(profile);
         localStorage.setItem('aslikaata_admin_profile', JSON.stringify(profile));
-        return { success: true };
-      }
-
-      // Check if matches known demo credentials for graceful fallback
-      const matchingDemo = DEMO_CREDENTIALS.find(
-        (d) => d.email.toLowerCase() === email.toLowerCase() && d.password === password,
-      );
-      if (matchingDemo) {
-        const fallbackProfile: AdminUser = {
-          userId: `usr_demo_${matchingDemo.role.toLowerCase()}`,
-          name: matchingDemo.name,
-          email: matchingDemo.email,
-          mobile: '9848022334',
-          role: matchingDemo.role,
-          assignedDivision: matchingDemo.division,
-        };
-        adminApiClient.setTokens(`demo_jwt_${matchingDemo.role.toLowerCase()}`);
-        setAdmin(fallbackProfile);
-        localStorage.setItem('aslikaata_admin_profile', JSON.stringify(fallbackProfile));
         return { success: true };
       }
 

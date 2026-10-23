@@ -92,7 +92,7 @@ export interface CashFloatRecord {
 }
 
 // Initial Seed Data for Andhra Pradesh Scrap Operations
-const SEED_EMPLOYEES: EmployeeRecord[] = [
+const UNUSED_LEGACY_EMPLOYEES: EmployeeRecord[] = [
   {
     id: 'emp_01',
     employeeCode: 'AKP-EMP-0247',
@@ -290,7 +290,7 @@ const SEED_EMPLOYEES: EmployeeRecord[] = [
   },
 ];
 
-const SEED_CASH_FLOATS: CashFloatRecord[] = [
+const UNUSED_LEGACY_CASH_FLOATS: CashFloatRecord[] = [
   {
     id: 'flt_101',
     date: '2026-10-12',
@@ -363,8 +363,8 @@ const SEED_CASH_FLOATS: CashFloatRecord[] = [
 
 export const WorkforceHRMScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'ROSTER' | 'FLOAT_DESK' | 'ATTENDANCE' | 'LEADERBOARD'>('ROSTER');
-  const [employees, setEmployees] = useState<EmployeeRecord[]>(SEED_EMPLOYEES);
-  const [cashFloats, setCashFloats] = useState<CashFloatRecord[]>(SEED_CASH_FLOATS);
+  const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
+  const [cashFloats, setCashFloats] = useState<CashFloatRecord[]>([]);
 
   // Filters & State
   const [roleFilter, setRoleFilter] = useState<string>('ALL');
@@ -380,7 +380,7 @@ export const WorkforceHRMScreen: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Form states for Issue Float
-  const [issueEmpCode, setIssueEmpCode] = useState('AKP-EMP-0399');
+  const [issueEmpCode, setIssueEmpCode] = useState('');
   const [issueAmount, setIssueAmount] = useState(15000);
 
   const showToast = (msg: string) => {
@@ -397,24 +397,56 @@ export const WorkforceHRMScreen: React.FC = () => {
           adminApiClient.get('/admin/operations/cash-floats'),
         ]);
 
-        if (empRes.success && Array.isArray(empRes.data) && empRes.data.length > 0) {
-          setEmployees(empRes.data);
+        if (empRes.success && Array.isArray(empRes.data)) {
+          setEmployees(empRes.data.map((employee: any) => ({
+            id: employee._id || employee.id,
+            employeeCode: employee.employeeCode || '—',
+            name: employee.name || '—',
+            phone: employee.phone || employee.mobile || '—',
+            role: employee.role,
+            assignedDivision: employee.assignedDivision?.name || employee.assignedDivision || '—',
+            assignedVehicleReg: employee.assignedVehicle?.registrationNumber || employee.assignedVehicleReg,
+            kyc: {
+              status: employee.kyc?.status || employee.kycStatus || 'PENDING_REVIEW',
+              aadhaarMasked: employee.kyc?.aadhaarMasked || '—',
+              dlNumber: employee.kyc?.dlNumber,
+              dlValidUntil: employee.kyc?.dlValidUntil,
+              policeVerificationDone: Boolean(employee.kyc?.policeVerificationDone),
+              joinedDate: employee.kyc?.joinedDate || employee.joinedDate || '—',
+            },
+            compensation: {
+              payModel: employee.compensation?.payModel || 'MONTHLY_SALARY',
+              basePayRupees: Number(employee.compensation?.basePayRupees || 0),
+              incentivePerKgPaise: Number(employee.compensation?.incentivePerKgPaise || 0),
+              bankAccountMasked: employee.compensation?.bankAccountMasked || '—',
+              upiId: employee.compensation?.upiId || '—',
+            },
+            todayAttendance: employee.todayAttendance || 'ON_LEAVE',
+            checkInTime: employee.checkInTime,
+            metrics: {
+              rating: Number(employee.metrics?.rating || 0),
+              totalPickupsCompleted: Number(employee.metrics?.totalPickupsCompleted || 0),
+              totalKgCollected: Number(employee.metrics?.totalKgCollected || 0),
+              todayKgCollected: Number(employee.metrics?.todayKgCollected || 0),
+              todayPickupsCompleted: Number(employee.metrics?.todayPickupsCompleted || 0),
+            },
+          })));
           if (empRes.data[0]?.employeeCode) {
             setIssueEmpCode(empRes.data[0].employeeCode);
           }
         }
 
-        if (floatRes.success && Array.isArray(floatRes.data) && floatRes.data.length > 0) {
+        if (floatRes.success && Array.isArray(floatRes.data)) {
           setCashFloats(
             floatRes.data.map((f: any) => ({
               id: f._id || f.id,
               date: f.date,
               employeeCode: f.employeeCode,
               employeeName: f.employeeName,
-              vehicleReg: f.vehicleReg || 'AP 16 TX 4021',
+              vehicleReg: f.vehicleReg || '—',
               openingFloatRupees: f.openingFloatRupees,
-              issuedTime: f.issuedTime || '08:00 AM',
-              issuedByAdmin: f.issuedByAdmin || 'Admin Operations',
+              issuedTime: f.issuedTime || f.createdAt || '—',
+              issuedByAdmin: f.issuedByAdmin || '—',
               verifiedCustomerCashPayoutsRupees: f.verifiedCustomerCashPayoutsRupees || 0,
               approvedRouteExpensesRupees: f.approvedRouteExpensesRupees || 0,
               expectedCashReturnRupees: f.expectedCashReturnRupees,
@@ -485,7 +517,7 @@ export const WorkforceHRMScreen: React.FC = () => {
       date: new Date().toISOString().split('T')[0],
       employeeCode: emp.employeeCode,
       employeeName: emp.name,
-      vehicleReg: emp.assignedVehicleReg || 'Ape Auto',
+      vehicleReg: emp.assignedVehicleReg || '—',
       openingFloatRupees: issueAmount,
       issuedTime: 'Just now',
       issuedByAdmin: 'Operations Admin',
@@ -505,15 +537,16 @@ export const WorkforceHRMScreen: React.FC = () => {
       });
 
       if (res.success && res.data) {
-        newFloat.id = res.data._id || newFloat.id;
+        const saved = { ...newFloat, ...res.data, id: res.data._id || res.data.id };
+        setCashFloats((current) => [saved, ...current]);
+        setIsIssueFloatOpen(false);
+        showToast(`Issued morning cash float of ₹${issueAmount.toLocaleString('en-IN')} to ${emp.name}.`);
+      } else {
+        showToast(res.error || 'Failed to issue cash float.');
       }
-    } catch (err) {
-      console.error('Failed to issue cash float on backend:', err);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to issue cash float.');
     }
-
-    setCashFloats([newFloat, ...cashFloats]);
-    setIsIssueFloatOpen(false);
-    showToast(`Issued morning cash float of ₹${issueAmount.toLocaleString('en-IN')} to ${emp.name} (Saved to MongoDB)`);
   };
 
   // Open Settlement Modal
@@ -544,12 +577,13 @@ export const WorkforceHRMScreen: React.FC = () => {
     };
 
     try {
-      await adminApiClient.patch(`/admin/operations/cash-floats/${activeFloatToSettle.id}/settle`, {
+      const res = await adminApiClient.patch(`/admin/operations/cash-floats/${activeFloatToSettle.id}/settle`, {
         actualPhysicalCashReturnedRupees: actualCashInput,
         auditNotes: updated.auditNotes,
       });
-    } catch (err) {
-      console.error('Failed to settle float on backend:', err);
+      if (!res.success) return showToast(res.error || 'Failed to settle float.');
+    } catch (err: any) {
+      return showToast(err.message || 'Failed to settle float.');
     }
 
     setCashFloats((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
@@ -566,11 +600,12 @@ export const WorkforceHRMScreen: React.FC = () => {
   // Quick KYC Approval
   const handleApproveKyc = async (empId: string) => {
     try {
-      await adminApiClient.patch(`/admin/operations/employees/${empId}/kyc`, {
+      const res = await adminApiClient.patch(`/admin/operations/employees/${empId}/kyc`, {
         status: 'APPROVED',
       });
-    } catch (err) {
-      console.error('Failed to update KYC on backend:', err);
+      if (!res.success) return showToast(res.error || 'Failed to approve KYC.');
+    } catch (err: any) {
+      return showToast(err.message || 'Failed to approve KYC.');
     }
 
     setEmployees((prev) =>

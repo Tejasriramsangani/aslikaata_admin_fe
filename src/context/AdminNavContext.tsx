@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { adminApiClient } from '../lib/api-client';
 
 export type AdminNavSection =
   | 'pricing' // Phase 1: Real-time Scrap Rates & Dynamic Margin Engine
@@ -18,15 +19,8 @@ export interface DivisionOption {
   id: string;
   code: string;
   name: string;
-  activePickups: number;
+  activePickups?: number;
 }
-
-export const AVAILABLE_DIVISIONS: DivisionOption[] = [
-  { id: 'div_all', code: 'ALL', name: 'All Divisions (Network-Wide)', activePickups: 42 },
-  { id: 'div_vja_central', code: 'VJA_C', name: 'Vijayawada Central Yard (MG Road, Benz Circle)', activePickups: 18 },
-  { id: 'div_vja_east', code: 'VJA_E', name: 'Vijayawada East (Madhura Nagar, Currency Nagar)', activePickups: 15 },
-  { id: 'div_guntur_hub', code: 'GNT_01', name: 'Guntur Processing Yard (Autonagar)', activePickups: 9 },
-];
 
 interface AdminNavContextType {
   activeSection: AdminNavSection;
@@ -41,19 +35,47 @@ interface AdminNavContextType {
   setUnassignedBulkCount: React.Dispatch<React.SetStateAction<number>>;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
+  divisions: DivisionOption[];
 }
 
 const AdminNavContext = createContext<AdminNavContextType | undefined>(undefined);
 
 export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeSection, setActiveSection] = useState<AdminNavSection>('pricing');
-  const [selectedDivisionId, setSelectedDivisionId] = useState<string>('div_all');
+  const [selectedDivisionId, setSelectedDivisionId] = useState<string>('all');
+  const [divisions, setDivisions] = useState<DivisionOption[]>([
+    { id: 'all', code: 'ALL', name: 'All Divisions (Network-Wide)' },
+  ]);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
-  const [unassignedBulkCount, setUnassignedBulkCount] = useState(2); // Initial active alerts
+  const [unassignedBulkCount, setUnassignedBulkCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
   const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
+
+  useEffect(() => {
+    const loadNavigationData = async () => {
+      const [divisionRes, unassignedRes] = await Promise.all([
+        adminApiClient.get('/admin/divisions'),
+        adminApiClient.get('/admin/pickups/unassigned'),
+      ]);
+      if (divisionRes.success && Array.isArray(divisionRes.data)) {
+        setDivisions([
+          { id: 'all', code: 'ALL', name: 'All Divisions (Network-Wide)' },
+          ...divisionRes.data.map((division: any) => ({
+            id: division._id || division.id,
+            code: division.code || '—',
+            name: division.name || '—',
+            activePickups: Number(division.activePickups || 0),
+          })),
+        ]);
+      }
+      setUnassignedBulkCount(
+        unassignedRes.success && Array.isArray(unassignedRes.data) ? unassignedRes.data.length : 0,
+      );
+    };
+    loadNavigationData();
+  }, []);
 
   // Real-time Socket.IO Connection to NestJS Backend
   useEffect(() => {
@@ -109,6 +131,7 @@ export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setUnassignedBulkCount,
         searchQuery,
         setSearchQuery,
+        divisions,
       }}
     >
       {children}
