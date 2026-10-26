@@ -19,6 +19,7 @@ import {
   Layers,
   Building2,
   FileSpreadsheet,
+  RefreshCw,
 } from 'lucide-react';
 
 export interface CategoryPnLRow {
@@ -33,69 +34,6 @@ export interface CategoryPnLRow {
   totalGrossProfitRupees: number;
   marginPercent: number;
 }
-
-const UNUSED_LEGACY_PNL_ROWS: CategoryPnLRow[] = [
-  {
-    categoryName: 'Copper & High-Value Metals',
-    inwardKg: 1850,
-    totalInwardPaidRupees: 1119250,
-    avgBuyingRateRupees: 605.0,
-    outwardSoldKg: 2500,
-    totalOutwardRevenueRupees: 1625000,
-    avgSellingRateRupees: 650.0,
-    grossSpreadPerKgRupees: 45.0,
-    totalGrossProfitRupees: 112500,
-    marginPercent: 7.4,
-  },
-  {
-    categoryName: 'Heavy Scrap Iron & Steel',
-    inwardKg: 38400,
-    totalInwardPaidRupees: 1075200,
-    avgBuyingRateRupees: 28.0,
-    outwardSoldKg: 42000,
-    totalOutwardRevenueRupees: 1365000,
-    avgSellingRateRupees: 32.5,
-    grossSpreadPerKgRupees: 4.5,
-    totalGrossProfitRupees: 189000,
-    marginPercent: 16.1,
-  },
-  {
-    categoryName: 'Corrugated Cardboard & Paper',
-    inwardKg: 46200,
-    totalInwardPaidRupees: 623700,
-    avgBuyingRateRupees: 13.5,
-    outwardSoldKg: 54000,
-    totalOutwardRevenueRupees: 928800,
-    avgSellingRateRupees: 17.2,
-    grossSpreadPerKgRupees: 3.7,
-    totalGrossProfitRupees: 199800,
-    marginPercent: 27.4,
-  },
-  {
-    categoryName: 'Plastics & HDPE Flakes',
-    inwardKg: 12400,
-    totalInwardPaidRupees: 297600,
-    avgBuyingRateRupees: 24.0,
-    outwardSoldKg: 14000,
-    totalOutwardRevenueRupees: 406000,
-    avgSellingRateRupees: 29.0,
-    grossSpreadPerKgRupees: 5.0,
-    totalGrossProfitRupees: 70000,
-    marginPercent: 20.8,
-  },
-  {
-    categoryName: 'Batteries & E-Waste',
-    inwardKg: 3600,
-    totalInwardPaidRupees: 316800,
-    avgBuyingRateRupees: 88.0,
-    outwardSoldKg: 4000,
-    totalOutwardRevenueRupees: 392000,
-    avgSellingRateRupees: 98.0,
-    grossSpreadPerKgRupees: 10.0,
-    totalGrossProfitRupees: 40000,
-    marginPercent: 11.4,
-  },
-];
 
 export const UnitEconomicsAndPnLScreen: React.FC = () => {
   const [timeWindow, setTimeWindow] = useState<'TODAY' | 'THIS_WEEK' | 'THIS_MONTH'>('THIS_MONTH');
@@ -183,6 +121,13 @@ export const UnitEconomicsAndPnLScreen: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {isLoading && (
+        <div className="flex items-center justify-center gap-2 py-4 text-xs font-semibold text-slate-500">
+          <RefreshCw className="w-4 h-4 animate-spin" />
+          Loading unit economics…
+        </div>
+      )}
 
       {/* Financial Executive Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">

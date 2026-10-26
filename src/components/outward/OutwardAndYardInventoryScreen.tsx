@@ -66,146 +66,6 @@ export interface OutwardDispatchRecord {
   authorizedBy: string;
 }
 
-// Seed Yard Stock Data
-const UNUSED_LEGACY_YARD_STOCK: YardStockItem[] = [
-  {
-    id: 'stk_01',
-    categoryName: 'Metal',
-    productName: 'Heavy Scrap Iron / Loha',
-    stage: 'BALED_READY_FOR_SALE',
-    yardLocation: 'Vijayawada Central - Bay A1',
-    currentTonnageKg: 14200,
-    averageInwardCostPerKgRupees: 28.0,
-    marketWholesaleRatePerKgRupees: 32.5,
-    unrealizedGrossMarginRupees: 63900,
-    lastUpdated: 'Today, 11:30 AM',
-  },
-  {
-    id: 'stk_02',
-    categoryName: 'Paper',
-    productName: 'Corrugated Cardboard (Baled)',
-    stage: 'BALED_READY_FOR_SALE',
-    yardLocation: 'Vijayawada Central - Bay B2',
-    currentTonnageKg: 28500,
-    averageInwardCostPerKgRupees: 13.5,
-    marketWholesaleRatePerKgRupees: 17.2,
-    unrealizedGrossMarginRupees: 105450,
-    lastUpdated: 'Today, 10:45 AM',
-  },
-  {
-    id: 'stk_03',
-    categoryName: 'Metal',
-    productName: 'Copper / Tamba Cut-Pieces',
-    stage: 'BALED_READY_FOR_SALE',
-    yardLocation: 'Vijayawada Central - Secure Vault #1',
-    currentTonnageKg: 1850,
-    averageInwardCostPerKgRupees: 605.0,
-    marketWholesaleRatePerKgRupees: 650.0,
-    unrealizedGrossMarginRupees: 83250,
-    lastUpdated: 'Today, 09:15 AM',
-  },
-  {
-    id: 'stk_04',
-    categoryName: 'Plastic',
-    productName: 'Rigid HDPE Drums & Flakes',
-    stage: 'SORTING_IN_PROGRESS',
-    yardLocation: 'Guntur Hub - Bay C4',
-    currentTonnageKg: 6400,
-    averageInwardCostPerKgRupees: 24.0,
-    marketWholesaleRatePerKgRupees: 29.0,
-    unrealizedGrossMarginRupees: 32000,
-    lastUpdated: 'Yesterday, 16:30',
-  },
-  {
-    id: 'stk_05',
-    categoryName: 'Paper',
-    productName: 'Mixed Raddi / ONP Unsorted',
-    stage: 'RAW_UNSORTED',
-    yardLocation: 'Vijayawada Central - Intake Pit',
-    currentTonnageKg: 8900,
-    averageInwardCostPerKgRupees: 14.0,
-    marketWholesaleRatePerKgRupees: 17.5,
-    unrealizedGrossMarginRupees: 31150,
-    lastUpdated: 'Today, 12:00 PM',
-  },
-  {
-    id: 'stk_06',
-    categoryName: 'E-Waste',
-    productName: 'Lead Acid Batteries (Neutralized)',
-    stage: 'BALED_READY_FOR_SALE',
-    yardLocation: 'Guntur Hub - Hazmat Bay #2',
-    currentTonnageKg: 3200,
-    averageInwardCostPerKgRupees: 88.0,
-    marketWholesaleRatePerKgRupees: 98.0,
-    unrealizedGrossMarginRupees: 32000,
-    lastUpdated: 'Today, 08:30 AM',
-  },
-];
-
-// Seed Outward Dispatches to End Mills & Smelters
-const UNUSED_LEGACY_OUTWARD_DISPATCHES: OutwardDispatchRecord[] = [
-  {
-    id: 'disp_01',
-    gatePassNumber: 'GP-20261012-014',
-    destinationMillName: 'Jindal Steel & Power Ltd (Mandi Branch)',
-    destinationCity: 'Visakhapatnam, AP',
-    categoryName: 'Metal',
-    productName: 'Heavy Scrap Iron / Loha',
-    dispatchedWeightKg: 12000,
-    agreedMillRatePerKgRupees: 32.5,
-    inwardCostPerKgRupees: 28.0,
-    grossRealizedMarginRupees: 54000,
-    totalInvoiceValueRupees: 390000,
-    vehicleReg: 'AP 39 UB 9921',
-    driverName: 'S. Nagesh',
-    driverPhone: '9848556677',
-    eWayBillNumber: '2419-0091-8841',
-    paymentStatus: 'PAID_FULL',
-    dispatchTimestamp: 'Today, 08:30 AM',
-    authorizedBy: 'Ramesh Varma (Yard In-charge)',
-  },
-  {
-    id: 'disp_02',
-    gatePassNumber: 'GP-20261011-008',
-    destinationMillName: 'ITC Bhadrachalam Paperboards Ltd',
-    destinationCity: 'Bhadrachalam, TS',
-    categoryName: 'Paper',
-    productName: 'Corrugated Cardboard (Baled)',
-    dispatchedWeightKg: 22000,
-    agreedMillRatePerKgRupees: 17.2,
-    inwardCostPerKgRupees: 13.5,
-    grossRealizedMarginRupees: 81400,
-    totalInvoiceValueRupees: 378400,
-    vehicleReg: 'AP 16 TE 4432',
-    driverName: 'P. Rambabu',
-    driverPhone: '9908114422',
-    eWayBillNumber: '2418-9902-1134',
-    paymentStatus: 'PENDING_REMITTANCE',
-    dispatchTimestamp: 'Yesterday, 14:15',
-    authorizedBy: 'K. Venkat Rao (Director Ops)',
-  },
-  {
-    id: 'disp_03',
-    gatePassNumber: 'GP-20261010-003',
-    destinationMillName: 'Hyderabad Smelting Works (P) Ltd',
-    destinationCity: 'Hyderabad, TS',
-    categoryName: 'Metal',
-    productName: 'Copper / Tamba Cut-Pieces',
-    dispatchedWeightKg: 2500,
-    agreedMillRatePerKgRupees: 650.0,
-    inwardCostPerKgRupees: 605.0,
-    grossRealizedMarginRupees: 112500,
-    totalInvoiceValueRupees: 1625000,
-    vehicleReg: 'AP 07 TH 7781',
-    driverName: 'G. Suresh',
-    driverPhone: '9701889900',
-    eWayBillNumber: '2417-8821-4490',
-    paymentStatus: 'PAID_FULL',
-    dispatchTimestamp: '10 Oct 2026, 11:00',
-    authorizedBy: 'Ramesh Varma (Yard In-charge)',
-  },
-];
-
 export const OutwardAndYardInventoryScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'YARD_INVENTORY' | 'OUTWARD_DISPATCHES'>('YARD_INVENTORY');
   const [stockItems, setStockItems] = useState<YardStockItem[]>([]);
@@ -283,6 +143,7 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
   const [formMillName, setFormMillName] = useState('');
   const [formDestination, setFormDestination] = useState('');
   const [formProduct, setFormProduct] = useState('');
+  const [formCategory, setFormCategory] = useState('');
   const [formWeightKg, setFormWeightKg] = useState<number>(0);
   const [formAgreedRate, setFormAgreedRate] = useState<number>(0);
   const [formInwardCost, setFormInwardCost] = useState<number>(0);
@@ -331,7 +192,7 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
       gatePassNumber: '',
       destinationMillName: formMillName,
       destinationCity: formDestination,
-      categoryName: 'Scrap Commodities',
+      categoryName: formCategory || 'Scrap Commodities',
       productName: formProduct,
       dispatchedWeightKg: formWeightKg,
       agreedMillRatePerKgRupees: formAgreedRate,
@@ -351,7 +212,46 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
       const res = await adminApiClient.post('/admin/operations/outward-dispatches', newRecord);
       if (res.success && res.data) {
         const saved = { ...newRecord, ...res.data, id: res.data._id || res.data.id };
-        setDispatches((prev) => [saved, ...prev]);
+        const [stockRes, dispatchRes] = await Promise.all([
+          adminApiClient.get('/admin/operations/yard-stock'),
+          adminApiClient.get('/admin/operations/outward-dispatches'),
+        ]);
+        if (stockRes.success && Array.isArray(stockRes.data)) {
+          setStockItems(stockRes.data.map((s: any) => ({
+            id: s._id || s.id,
+            categoryName: s.categoryName,
+            productName: s.productName,
+            stage: s.stage,
+            yardLocation: s.yardLocation || '—',
+            currentTonnageKg: Number(s.currentTonnageKg || 0),
+            averageInwardCostPerKgRupees: Number(s.averageInwardCostPerKgRupees || 0),
+            marketWholesaleRatePerKgRupees: Number(s.marketWholesaleRatePerKgRupees || 0),
+            unrealizedGrossMarginRupees: Number(s.unrealizedGrossMarginRupees || 0),
+            lastUpdated: s.lastUpdated || s.updatedAt || '—',
+          })));
+        }
+        if (dispatchRes.success && Array.isArray(dispatchRes.data)) {
+          setDispatches(dispatchRes.data.map((d: any) => ({
+            id: d._id || d.id,
+            gatePassNumber: d.gatePassNumber,
+            destinationMillName: d.destinationMillName,
+            destinationCity: d.destinationCity,
+            categoryName: d.categoryName || '—',
+            productName: d.productName,
+            dispatchedWeightKg: Number(d.dispatchedWeightKg || 0),
+            agreedMillRatePerKgRupees: Number(d.agreedMillRatePerKgRupees || 0),
+            inwardCostPerKgRupees: Number(d.inwardCostPerKgRupees || 0),
+            grossRealizedMarginRupees: Number(d.grossRealizedMarginRupees || 0),
+            totalInvoiceValueRupees: Number(d.totalInvoiceValueRupees || 0),
+            vehicleReg: d.vehicleReg,
+            driverName: d.driverName || '—',
+            driverPhone: d.driverPhone || '—',
+            eWayBillNumber: d.eWayBillNumber || '—',
+            paymentStatus: d.paymentStatus || 'PENDING_REMITTANCE',
+            dispatchTimestamp: d.dispatchTimestamp || d.createdAt || '—',
+            authorizedBy: d.authorizedBy || '—',
+          })));
+        }
         setIsNewDispatchOpen(false);
         setPrintableGatePass(saved);
         showToast(`Gate Pass #${saved.gatePassNumber || saved.id} created. Realized Margin: ₹${Math.round(totalMargin).toLocaleString('en-IN')}`);
@@ -709,7 +609,15 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                   <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Scrap Commodity</label>
                   <select
                     value={formProduct}
-                    onChange={(e) => setFormProduct(e.target.value)}
+                    onChange={(e) => {
+                      const stock = stockItems.find((item) => item.productName === e.target.value);
+                      setFormProduct(e.target.value);
+                      if (stock) {
+                        setFormCategory(stock.categoryName);
+                        setFormInwardCost(stock.averageInwardCostPerKgRupees);
+                        setFormWeightKg(stock.currentTonnageKg);
+                      }
+                    }}
                     className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-semibold text-slate-800"
                   >
                     <option value="">Select yard stock</option>

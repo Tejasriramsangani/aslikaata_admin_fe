@@ -30,8 +30,21 @@ import {
   Scale,
   Smartphone,
   Eye,
+  Trash2,
+  Pencil,
+  Save,
 } from 'lucide-react';
 import { adminApiClient } from '../../lib/api-client';
+
+export interface AdminWeightRange {
+  id: string;
+  name: string;
+  displayLabel: string;
+  minKg: number;
+  maxKg: number;
+  displayOrder: number;
+  isActive: boolean;
+}
 
 export type HolidayScope = 'ALL' | 'DIVISIONS' | 'VEHICLES';
 export type HolidayHandling = 'NEXT_WORKING_DAY' | 'NEXT_WEEK_SAME_DAY';
@@ -88,332 +101,14 @@ export interface UnassignedPickupRecord {
   flaggedAt: string;
 }
 
-// Initial Seed Dataset for Operations Calendar (October 2026)
-const UNUSED_LEGACY_HOLIDAYS: OperationsHoliday[] = [
-  {
-    id: 'hol_01',
-    name: 'Gandhi Jayanti',
-    date: '2026-10-02',
-    type: 'NATIONAL',
-    scope: 'ALL',
-    scopeDescription: 'All Network Divisions & Fleet',
-    handling: 'NEXT_WORKING_DAY',
-    affectedRunsCount: 8,
-    affectedPickupsCount: 52,
-    shiftedToDate: '2026-10-03',
-    isConfirmed: true,
-  },
-  {
-    id: 'hol_02',
-    name: 'Vijayadasami / Dussehra Holiday',
-    date: '2026-10-19',
-    type: 'STATE_REGIONAL',
-    scope: 'ALL',
-    scopeDescription: 'All Andhra Pradesh Yards & Routes',
-    handling: 'NEXT_WORKING_DAY',
-    affectedRunsCount: 10,
-    affectedPickupsCount: 68,
-    shiftedToDate: '2026-10-20',
-    isConfirmed: true,
-  },
-  {
-    id: 'hol_03',
-    name: 'Kanaka Durga Brahmotsavam Temple Route Diversion',
-    date: '2026-10-24',
-    type: 'MUNICIPAL_LOCAL',
-    scope: 'DIVISIONS',
-    scopeDescription: 'Vijayawada Central Yard & Benz Circle Zones',
-    divisionIds: ['div_vja_central'],
-    handling: 'NEXT_WORKING_DAY',
-    affectedRunsCount: 4,
-    affectedPickupsCount: 26,
-    shiftedToDate: '2026-10-26',
-    isConfirmed: true,
-  },
-  {
-    id: 'hol_04',
-    name: 'Diwali / Deepavali',
-    date: '2026-11-08',
-    type: 'NATIONAL',
-    scope: 'ALL',
-    scopeDescription: 'All Network Divisions',
-    handling: 'NEXT_WORKING_DAY',
-    affectedRunsCount: 12,
-    affectedPickupsCount: 84,
-    shiftedToDate: '2026-11-09',
-    isConfirmed: false,
-  },
-];
-
-// Seed Matrix of Route Runs
-const UNUSED_LEGACY_MATRIX_CELLS: WeeklyMatrixCell[] = [
-  {
-    vehicleReg: 'AP 16 TX 4021',
-    vehicleName: 'Mahindra Treo Zor EV-01',
-    dayOfWeek: 'MON',
-    divisionName: 'Vijayawada Central (Benz Circle)',
-    assignedDriver: 'Ramesh Kumar',
-    collectorName: 'Ramesh Kumar',
-    totalStops: 6,
-    bookedKg: 380,
-    maxCapacityKg: 500,
-    status: 'RUNNING',
-    stops: [
-      { stopNumber: 1, pickupCode: 'AKP-101', customerName: 'Ch. Madhusudhan', area: 'Benz Circle', weightKg: 57, timeSlot: '09:00 - 11:00 AM' },
-      { stopNumber: 2, pickupCode: 'AKP-102', customerName: 'K. Srinivasa Rao', area: 'Pinnamaneni Poly Clinic Rd', weightKg: 85, timeSlot: '11:00 - 01:00 PM' },
-      { stopNumber: 3, pickupCode: 'AKP-103', customerName: 'B. Lakshmi', area: 'Moghalrajpuram', weightKg: 110, timeSlot: '02:00 - 04:00 PM' },
-      { stopNumber: 4, pickupCode: 'AKP-104', customerName: 'Green Meadows Apts', area: 'Labbipet', weightKg: 128, timeSlot: '04:00 - 06:00 PM' },
-    ],
-  },
-  {
-    vehicleReg: 'AP 16 TE 9081',
-    vehicleName: 'Piaggio Ape E-Xtra EV-02',
-    dayOfWeek: 'MON',
-    divisionName: 'Vijayawada East (Currency Nagar)',
-    assignedDriver: 'Siva Krishna',
-    collectorName: 'Siva Krishna',
-    totalStops: 5,
-    bookedKg: 420,
-    maxCapacityKg: 450,
-    status: 'RUNNING',
-    stops: [
-      { stopNumber: 1, pickupCode: 'AKP-201', customerName: 'P. Venkat', area: 'Madhura Nagar', weightKg: 120, timeSlot: '09:00 - 11:00 AM' },
-      { stopNumber: 2, pickupCode: 'AKP-202', customerName: 'Sai Residency', area: 'Currency Nagar', weightKg: 190, timeSlot: '11:00 - 01:00 PM' },
-      { stopNumber: 3, pickupCode: 'AKP-203', customerName: 'Dr. Mohan Clinic', area: 'Gunadala', weightKg: 110, timeSlot: '02:00 - 04:00 PM' },
-    ],
-  },
-  {
-    vehicleReg: 'AP 16 TF 2234',
-    vehicleName: 'Tata 407 Heavy-01',
-    dayOfWeek: 'MON',
-    divisionName: 'Guntur Processing Yard (Autonagar)',
-    assignedDriver: 'K. Venkatesh',
-    collectorName: 'Md. Ismail',
-    totalStops: 4,
-    bookedKg: 1650,
-    maxCapacityKg: 2500,
-    status: 'SCHEDULED',
-    stops: [
-      { stopNumber: 1, pickupCode: 'AKP-301', customerName: 'Andhra Steels Workshop', area: 'Autonagar Gate 2', weightKg: 650, timeSlot: '10:00 - 01:00 PM' },
-      { stopNumber: 2, pickupCode: 'AKP-302', customerName: 'Tirumala Printing Press', area: 'Brodipet', weightKg: 480, timeSlot: '02:00 - 04:00 PM' },
-      { stopNumber: 3, pickupCode: 'AKP-303', customerName: 'Guntur Polychem', area: 'Nallapadu Industrial Area', weightKg: 520, timeSlot: '04:00 - 06:00 PM' },
-    ],
-  },
-  // TUE
-  {
-    vehicleReg: 'AP 16 TX 4021',
-    vehicleName: 'Mahindra Treo Zor EV-01',
-    dayOfWeek: 'TUE',
-    divisionName: 'Vijayawada Central (Governorpet)',
-    assignedDriver: 'Ramesh Kumar',
-    collectorName: 'Ramesh Kumar',
-    totalStops: 7,
-    bookedKg: 460,
-    maxCapacityKg: 500,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  {
-    vehicleReg: 'AP 16 TE 9081',
-    vehicleName: 'Piaggio Ape E-Xtra EV-02',
-    dayOfWeek: 'TUE',
-    divisionName: 'Vijayawada East (Prasadampadu)',
-    assignedDriver: 'Siva Krishna',
-    collectorName: 'Siva Krishna',
-    totalStops: 4,
-    bookedKg: 310,
-    maxCapacityKg: 450,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  {
-    vehicleReg: 'AP 16 TF 2234',
-    vehicleName: 'Tata 407 Heavy-01',
-    dayOfWeek: 'TUE',
-    divisionName: 'Guntur Hub (Gorantla Cleanouts)',
-    assignedDriver: 'K. Venkatesh',
-    collectorName: 'Md. Ismail',
-    totalStops: 3,
-    bookedKg: 2100,
-    maxCapacityKg: 2500,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  // WED
-  {
-    vehicleReg: 'AP 16 TX 4021',
-    vehicleName: 'Mahindra Treo Zor EV-01',
-    dayOfWeek: 'WED',
-    divisionName: 'Vijayawada Central (Patamata)',
-    assignedDriver: 'Ramesh Kumar',
-    collectorName: 'Ramesh Kumar',
-    totalStops: 5,
-    bookedKg: 290,
-    maxCapacityKg: 500,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  {
-    vehicleReg: 'AP 16 TE 9081',
-    vehicleName: 'Piaggio Ape E-Xtra EV-02',
-    dayOfWeek: 'WED',
-    divisionName: 'Vijayawada East (Ramavarappadu)',
-    assignedDriver: 'Siva Krishna',
-    collectorName: 'Siva Krishna',
-    totalStops: 6,
-    bookedKg: 395,
-    maxCapacityKg: 450,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  {
-    vehicleReg: 'AP 16 TF 2234',
-    vehicleName: 'Tata 407 Heavy-01',
-    dayOfWeek: 'WED',
-    divisionName: 'Guntur Hub (Arundelpet)',
-    assignedDriver: 'K. Venkatesh',
-    collectorName: 'Md. Ismail',
-    totalStops: 5,
-    bookedKg: 1800,
-    maxCapacityKg: 2500,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  // THU
-  {
-    vehicleReg: 'AP 16 TX 4021',
-    vehicleName: 'Mahindra Treo Zor EV-01',
-    dayOfWeek: 'THU',
-    divisionName: 'Vijayawada Central (Satyanarayanapuram)',
-    assignedDriver: 'Ramesh Kumar',
-    collectorName: 'Ramesh Kumar',
-    totalStops: 6,
-    bookedKg: 360,
-    maxCapacityKg: 500,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  {
-    vehicleReg: 'AP 16 TE 9081',
-    vehicleName: 'Piaggio Ape E-Xtra EV-02',
-    dayOfWeek: 'THU',
-    divisionName: 'Vijayawada East (Enikepadu)',
-    assignedDriver: 'Siva Krishna',
-    collectorName: 'Siva Krishna',
-    totalStops: 5,
-    bookedKg: 330,
-    maxCapacityKg: 450,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  // FRI
-  {
-    vehicleReg: 'AP 16 TX 4021',
-    vehicleName: 'Mahindra Treo Zor EV-01',
-    dayOfWeek: 'FRI',
-    divisionName: 'Vijayawada Central (Bhavanipuram)',
-    assignedDriver: 'Ramesh Kumar',
-    collectorName: 'Ramesh Kumar',
-    totalStops: 8,
-    bookedKg: 490,
-    maxCapacityKg: 500,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  {
-    vehicleReg: 'AP 16 TE 9081',
-    vehicleName: 'Piaggio Ape E-Xtra EV-02',
-    dayOfWeek: 'FRI',
-    divisionName: 'Vijayawada East (Gannavaram Route)',
-    assignedDriver: 'Siva Krishna',
-    collectorName: 'Siva Krishna',
-    totalStops: 4,
-    bookedKg: 375,
-    maxCapacityKg: 450,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  // SAT
-  {
-    vehicleReg: 'AP 16 TX 4021',
-    vehicleName: 'Mahindra Treo Zor EV-01',
-    dayOfWeek: 'SAT',
-    divisionName: 'Vijayawada Central (One Town / Kaleswara Rao Market)',
-    assignedDriver: 'Ramesh Kumar',
-    collectorName: 'Ramesh Kumar',
-    totalStops: 7,
-    bookedKg: 440,
-    maxCapacityKg: 500,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-  {
-    vehicleReg: 'AP 16 TF 2234',
-    vehicleName: 'Tata 407 Heavy-01',
-    dayOfWeek: 'SAT',
-    divisionName: 'Guntur Industrial Hub Cleanout',
-    assignedDriver: 'K. Venkatesh',
-    collectorName: 'Md. Ismail',
-    totalStops: 4,
-    bookedKg: 2350,
-    maxCapacityKg: 2500,
-    status: 'SCHEDULED',
-    stops: [],
-  },
-];
-
-// Seed Unassigned Exception Queue
-const UNUSED_LEGACY_UNASSIGNED: UnassignedPickupRecord[] = [
-  {
-    id: 'unassign_01',
-    pickupCode: 'AKP-20261012-088',
-    customerName: 'Sri Balaji Fabrication Works',
-    phone: '9848110022',
-    divisionName: 'Guntur Processing Yard (Autonagar Gate 1)',
-    address: 'Plot 42, Autonagar Industrial Area, Guntur',
-    estimatedWeightKg: 480,
-    scrapCategories: ['Iron / Heavy Metal', 'Aluminium Scrap'],
-    requestedDate: '2026-10-12',
-    preferredSlot: '02:00 - 05:00 PM',
-    reason: 'BULK_COMMERCIAL_OVER_100KG',
-    flaggedAt: 'Today, 10:15 AM',
-  },
-  {
-    id: 'unassign_02',
-    pickupCode: 'AKP-20261012-094',
-    customerName: 'Dr. K. Somasekhar (Hospital Cleanout)',
-    phone: '9908334411',
-    divisionName: 'Vijayawada Central (Benz Circle)',
-    address: 'Near Joyalukkas, Benz Circle, Vijayawada',
-    estimatedWeightKg: 350,
-    scrapCategories: ['E-Waste / Medical Batteries', 'Paper / Old Records'],
-    requestedDate: '2026-10-13',
-    preferredSlot: '11:00 - 01:00 PM',
-    reason: 'SLOT_OVERCAPACITY',
-    flaggedAt: 'Today, 11:40 AM',
-  },
-  {
-    id: 'unassign_03',
-    pickupCode: 'AKP-20261012-102',
-    customerName: 'Krishna Riverfront Residency RWA',
-    phone: '9866778899',
-    divisionName: 'Vijayawada Central (Moghalrajpuram)',
-    address: 'Block C, Riverview Heights, Moghalrajpuram',
-    estimatedWeightKg: 620,
-    scrapCategories: ['Carton / Cardboard', 'Plastic Drums', 'Mixed Scrap'],
-    requestedDate: '2026-10-14',
-    preferredSlot: '09:00 - 12:00 PM',
-    reason: 'BULK_COMMERCIAL_OVER_100KG',
-    flaggedAt: 'Today, 12:05 PM',
-  },
-];
-
 export const HolidayAndRoutePlanningScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'CALENDAR' | 'MATRIX' | 'UNASSIGNED_QUEUE' | 'SETTINGS'>('CALENDAR');
   const [holidays, setHolidays] = useState<OperationsHoliday[]>([]);
   const [matrixCells, setMatrixCells] = useState<WeeklyMatrixCell[]>([]);
   const [unassignedQueue, setUnassignedQueue] = useState<UnassignedPickupRecord[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
+  const [divisions, setDivisions] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Calendar State
   const today = new Date();
@@ -446,9 +141,29 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
   const [assignTargetVehicle, setAssignTargetVehicle] = useState('');
 
   // Route Settings
-  const [bulkLimitKg, setBulkLimitKg] = useState(100);
+  const [bulkLimitKg, setBulkLimitKg] = useState(50);
   const [routeFinalizeHours, setRouteFinalizeHours] = useState(12);
   const [autoRetryMinutes, setAutoRetryMinutes] = useState(30);
+
+  // Customer booking weight ranges (editable)
+  const [weightRanges, setWeightRanges] = useState<AdminWeightRange[]>([]);
+  const [weightRangesLoading, setWeightRangesLoading] = useState(false);
+  const [editingWeightId, setEditingWeightId] = useState<string | null>(null);
+  const [editWeightForm, setEditWeightForm] = useState({
+    name: '',
+    displayLabel: '',
+    minKg: 0,
+    maxKg: 10,
+    displayOrder: 1,
+  });
+  const [newWeightForm, setNewWeightForm] = useState({
+    name: '',
+    displayLabel: '',
+    minKg: 0,
+    maxKg: 10,
+    displayOrder: 1,
+  });
+  const [isSavingWeight, setIsSavingWeight] = useState(false);
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -481,16 +196,32 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
   // Dynamic live holidays and unassigned queue from NestJS backend
   React.useEffect(() => {
     const fetchHolidayData = async () => {
+      setIsLoading(true);
       try {
         const date = today.toISOString().split('T')[0];
-        const [holRes, unassignedRes, schedulesRes, runsRes, vehiclesRes, rulesRes] = await Promise.all([
+        const monday = new Date(today);
+        const day = monday.getDay() || 7;
+        monday.setDate(monday.getDate() - day + 1);
+        const weekDates = Array.from({ length: 6 }, (_, index) => {
+          const value = new Date(monday);
+          value.setDate(monday.getDate() + index);
+          return value.toISOString().split('T')[0];
+        });
+        const [holRes, unassignedRes, schedulesRes, runsResponses, vehiclesRes, divisionsRes, rulesRes, weightsRes] = await Promise.all([
           adminApiClient.get('/admin/holidays'),
           adminApiClient.get('/admin/pickups/unassigned'),
           adminApiClient.get('/admin/route-schedules'),
-          adminApiClient.get(`/admin/route-runs?date=${date}`),
+          Promise.all(weekDates.map((runDate) => adminApiClient.get(`/admin/route-runs?date=${runDate}`))),
           adminApiClient.get('/admin/vehicles'),
+          adminApiClient.get('/admin/divisions'),
           adminApiClient.get('/admin/order-rules'),
+          adminApiClient.get('/admin/catalog/weight-ranges'),
         ]);
+        if (!holRes.success || !unassignedRes.success || !schedulesRes.success ||
+            !vehiclesRes.success || !divisionsRes.success || !rulesRes.success ||
+            runsResponses.some((response) => !response.success)) {
+          showToast('Some calendar or route data could not be loaded.');
+        }
 
         if (holRes.success && Array.isArray(holRes.data)) {
           setHolidays(
@@ -501,6 +232,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
               type: h.type || 'NATIONAL',
               scope: h.scope || 'ALL',
               scopeDescription: h.scopeDescription || 'All Network Divisions',
+              divisionIds: h.divisionIds || [],
+              vehicleIds: h.vehicleIds || [],
               handling: h.handling || 'NEXT_WORKING_DAY',
               affectedRunsCount: h.affectedRunsCount || 0,
               affectedPickupsCount: h.affectedPickupsCount || 0,
@@ -528,42 +261,68 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             })),
           );
         }
-        const routeData = runsRes.success && Array.isArray(runsRes.data)
-          ? runsRes.data
+        const weeklyRuns = runsResponses.flatMap((response) =>
+          response.success && Array.isArray(response.data) ? response.data : [],
+        );
+        const routeData = weeklyRuns.length > 0
+          ? weeklyRuns
           : schedulesRes.success && Array.isArray(schedulesRes.data) ? schedulesRes.data : [];
         setMatrixCells(routeData.map((route: any) => ({
-          dayOfWeek: (route.dayOfWeek || new Date(route.date || date)
-            .toLocaleDateString('en-IN', { weekday: 'short' }).toUpperCase()) as WeeklyMatrixCell['dayOfWeek'],
-          divisionName: route.division?.name || route.divisionName || '—',
-          vehicleName: route.vehicle?.name || route.vehicleName || '—',
-          vehicleReg: route.vehicle?.registrationNumber || route.vehicleReg || '—',
-          assignedDriver: route.employee?.name || route.driverName || '—',
-          collectorName: route.collector?.name || route.collectorName || '—',
-          maxCapacityKg: Number(route.maxCapacityKg || route.capacityKg || 0),
-          bookedKg: Number(route.bookedKg || route.totalBookedKg || 0),
-          totalStops: Number(route.totalStops || route.pickups?.length || 0),
-          status: route.status === 'PLANNED' ? 'SCHEDULED' : route.status || 'SCHEDULED',
-          stops: (route.stops || route.pickups || []).map((stop: any, index: number) => ({
-            stopNumber: stop.stopNumber || index + 1,
-            pickupCode: stop.pickupCode || stop.pickup?.pickupCode || '—',
+          dayOfWeek: (route.dayOfWeek || (route.weekday
+            ? ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'][route.weekday - 1]
+            : new Date(route.date || date)
+            .toLocaleDateString('en-IN', { weekday: 'short' }).toUpperCase())) as WeeklyMatrixCell['dayOfWeek'],
+          divisionName: route.divisionId?.name || route.division?.name || route.divisionName || '—',
+          vehicleName: route.vehicleId?.name || route.vehicle?.name ||
+            vehiclesRes.data?.find((v: any) => (v._id || v.id) === route.vehicleId)?.name || '—',
+          vehicleReg: route.vehicleId?.registrationNumber || route.vehicle?.registrationNumber ||
+            vehiclesRes.data?.find((v: any) => (v._id || v.id) === route.vehicleId)?.registrationNumber || '—',
+          assignedDriver: route.employeeProfileId?.name || route.defaultEmployeeId?.name || '—',
+          collectorName: route.employeeProfileId?.name || route.defaultEmployeeId?.name || '—',
+          maxCapacityKg: Number(route.vehicleId?.capacityKg || route.maxCapacityKg || route.capacityKg || 0),
+          bookedKg: Number(route.usedKg || 0),
+          totalStops: Number(route.usedStops ?? route.stops?.length ?? 0),
+          status: route.status === 'IN_PROGRESS' ? 'RUNNING' :
+            route.status === 'PLANNED' || route.status === 'FINALIZED' ? 'SCHEDULED' :
+            route.status || 'SCHEDULED',
+          stops: (route.stops || []).map((stop: any, index: number) => ({
+            stopNumber: stop.sequence || index + 1,
+            pickupCode: stop.pickupId?.pickupCode || stop.pickupId?._id || stop.pickupId || '—',
             customerName: stop.customerName || stop.pickup?.orderMeta?.customerName || 'Customer',
             area: stop.area || stop.pickup?.addressSnapshot?.area || '—',
-            weightKg: Number(stop.weightKg || stop.pickup?.estimatedWeightSnapshot?.kg || 0),
-            timeSlot: stop.timeSlot || stop.pickup?.timeSlotSnapshot?.displayLabel || '—',
+            weightKg: Number(stop.plannedMaxKg || 0),
+            timeSlot: stop.timeSlot || `${route.windowStart || '—'} – ${route.windowEnd || '—'}`,
           })),
         })));
         if (vehiclesRes.success && Array.isArray(vehiclesRes.data)) {
           setVehicles(vehiclesRes.data);
           setAssignTargetVehicle(vehiclesRes.data[0]?.registrationNumber || '');
         }
+        if (divisionsRes.success && Array.isArray(divisionsRes.data)) setDivisions(divisionsRes.data);
         if (rulesRes.success && rulesRes.data) {
           const rules = rulesRes.data.rules || rulesRes.data;
           setBulkLimitKg(Number(rules.bulkLimitKg || 0));
           setRouteFinalizeHours(Number(rules.routeFinalizeHoursBefore || 0));
           setAutoRetryMinutes(Number(rules.autoAssignRetryMinutes || 0));
         }
+        if (weightsRes.success && Array.isArray(weightsRes.data)) {
+          setWeightRanges(
+            weightsRes.data.map((w: any) => ({
+              id: String(w._id || w.id),
+              name: w.name || '',
+              displayLabel: w.displayLabel || w.name || '',
+              minKg: Number(w.minGrams || 0) / 1000,
+              maxKg: Number(w.maxGrams || 0) / 1000,
+              displayOrder: Number(w.displayOrder || 0),
+              isActive: w.isActive !== false,
+            })),
+          );
+        }
       } catch (err) {
         console.error('Failed to fetch holiday data:', err);
+        showToast('Failed to load calendar and route planning data.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -571,12 +330,32 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
   }, []);
 
   // Trigger Simulation
-  const handleSimulateImpact = async () => {
+  const handleSimulateImpact = async (values?: Partial<OperationsHoliday>) => {
+    const date = values?.date || formDate;
+    const name = values?.name || formName;
+    const type = values?.type || formType;
+    const scope = values?.scope || formScope;
+    const handling = values?.handling || formHandling;
+    const divisionIds = values?.divisionIds || divisions.map((item) => item._id || item.id);
+    const vehicleIds = values?.vehicleIds || vehicles.map((item) => item._id || item.id);
     const res = await adminApiClient.post('/admin/holidays/preview', {
-      name: formName, date: formDate, type: formType, scope: formScope, handling: formHandling,
+      name, date, type, scope, handling,
+      ...(scope === 'DIVISIONS' ? { divisionIds } : {}),
+      ...(scope === 'VEHICLES' ? { vehicleIds } : {}),
     });
     if (res.success && res.data) {
-      setSimulationData(res.data);
+      setFormDate(date);
+      setFormName(name);
+      setFormType(type);
+      setFormScope(scope);
+      setFormHandling(handling);
+      setSimulationData({
+        affectedRunsCount: Number(res.data.affectedRunsCount || 0),
+        affectedPickupsCount: Number(res.data.affectedPickupsCount || 0),
+        shiftsToDate: res.data.shiftsToDate || date,
+        sampleNotificationText: res.data.sampleNotificationText ||
+          `Your pickup scheduled for ${date} will move to ${res.data.shiftsToDate || date} due to ${name || 'an operations holiday'}.`,
+      });
       setIsSimulationModalOpen(true);
     } else showToast(res.error || 'Unable to preview holiday impact.');
   };
@@ -606,10 +385,19 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
         type: newHoliday.type,
         scope: newHoliday.scope,
         handling: newHoliday.handling,
+        ...(newHoliday.scope === 'DIVISIONS' ? { divisionIds: divisions.map((item) => item._id || item.id) } : {}),
+        ...(newHoliday.scope === 'VEHICLES' ? { vehicleIds: vehicles.map((item) => item._id || item.id) } : {}),
       });
 
       if (res.success && res.data) {
-        const saved = { ...newHoliday, ...res.data, id: res.data._id || res.data.id };
+        const payload = res.data.holiday || res.data;
+        const saved = {
+          ...newHoliday,
+          ...payload,
+          id: payload._id || payload.id,
+          affectedRunsCount: Number(res.data.affectedRuns ?? newHoliday.affectedRunsCount),
+          affectedPickupsCount: Number(res.data.affectedPickups ?? newHoliday.affectedPickupsCount),
+        };
         setHolidays((prev) => [...prev, saved].sort((a, b) => a.date.localeCompare(b.date)));
         setIsSimulationModalOpen(false);
         setIsHolidayModalOpen(false);
@@ -655,6 +443,142 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
     showToast(res.success ? 'Routing parameters saved successfully.' : res.error || 'Failed to save routing parameters.');
   };
 
+  /** Assign bulk option: any range with minKg >= this range's min becomes bulk. */
+  const handleSetBulkFromRange = async (range: AdminWeightRange) => {
+    const nextLimit = Math.max(0, Number(range.minKg) || 0);
+    setBulkLimitKg(nextLimit);
+    const res = await adminApiClient.put('/admin/order-rules', {
+      bulkLimitKg: nextLimit,
+      routeFinalizeHoursBefore: routeFinalizeHours,
+      autoAssignRetryMinutes: autoRetryMinutes,
+    });
+    showToast(
+      res.success
+        ? `Bulk minimum set to ${nextLimit} kg — “${range.displayLabel}” and above are bulk.`
+        : res.error || 'Failed to update bulk minimum.',
+    );
+  };
+
+  const loadWeightRanges = async () => {
+    setWeightRangesLoading(true);
+    try {
+      const res = await adminApiClient.get('/admin/catalog/weight-ranges');
+      if (res.success && Array.isArray(res.data)) {
+        setWeightRanges(
+          res.data.map((w: any) => ({
+            id: String(w._id || w.id),
+            name: w.name || '',
+            displayLabel: w.displayLabel || w.name || '',
+            minKg: Number(w.minGrams || 0) / 1000,
+            maxKg: Number(w.maxGrams || 0) / 1000,
+            displayOrder: Number(w.displayOrder || 0),
+            isActive: w.isActive !== false,
+          })),
+        );
+      } else {
+        showToast(res.error || 'Unable to load weight ranges.');
+      }
+    } finally {
+      setWeightRangesLoading(false);
+    }
+  };
+
+  const startEditWeight = (range: AdminWeightRange) => {
+    setEditingWeightId(range.id);
+    setEditWeightForm({
+      name: range.name,
+      displayLabel: range.displayLabel,
+      minKg: range.minKg,
+      maxKg: range.maxKg,
+      displayOrder: range.displayOrder,
+    });
+  };
+
+  const handleSaveWeightEdit = async () => {
+    if (!editingWeightId) return;
+    if (editWeightForm.maxKg <= editWeightForm.minKg) {
+      showToast('Max kg must be greater than min kg.');
+      return;
+    }
+    setIsSavingWeight(true);
+    try {
+      const res = await adminApiClient.patch(`/admin/catalog/weight-ranges/${editingWeightId}`, {
+        name: editWeightForm.name.trim().toUpperCase().replace(/\s+/g, '_'),
+        displayLabel: editWeightForm.displayLabel.trim(),
+        minGrams: Math.round(editWeightForm.minKg * 1000),
+        maxGrams: Math.round(editWeightForm.maxKg * 1000),
+        displayOrder: editWeightForm.displayOrder,
+      });
+      if (res.success) {
+        setEditingWeightId(null);
+        await loadWeightRanges();
+        showToast('Weight range updated.');
+      } else {
+        showToast(res.error || 'Failed to update weight range.');
+      }
+    } finally {
+      setIsSavingWeight(false);
+    }
+  };
+
+  const handleCreateWeightRange = async () => {
+    if (!newWeightForm.displayLabel.trim() || !newWeightForm.name.trim()) {
+      showToast('Name and display label are required.');
+      return;
+    }
+    if (newWeightForm.maxKg <= newWeightForm.minKg) {
+      showToast('Max kg must be greater than min kg.');
+      return;
+    }
+    setIsSavingWeight(true);
+    try {
+      const res = await adminApiClient.post('/admin/catalog/weight-ranges', {
+        name: newWeightForm.name.trim().toUpperCase().replace(/\s+/g, '_'),
+        displayLabel: newWeightForm.displayLabel.trim(),
+        minGrams: Math.round(newWeightForm.minKg * 1000),
+        maxGrams: Math.round(newWeightForm.maxKg * 1000),
+        displayOrder: newWeightForm.displayOrder || weightRanges.length + 1,
+      });
+      if (res.success) {
+        setNewWeightForm({
+          name: '',
+          displayLabel: '',
+          minKg: 0,
+          maxKg: 10,
+          displayOrder: weightRanges.length + 2,
+        });
+        await loadWeightRanges();
+        showToast('Weight range added. Customer app will show it on next refresh.');
+      } else {
+        showToast(res.error || 'Failed to create weight range.');
+      }
+    } finally {
+      setIsSavingWeight(false);
+    }
+  };
+
+  const handleToggleWeightActive = async (range: AdminWeightRange) => {
+    const res = await adminApiClient.patch(`/admin/catalog/weight-ranges/${range.id}`, {
+      isActive: !range.isActive,
+    });
+    if (res.success) {
+      await loadWeightRanges();
+      showToast(range.isActive ? 'Weight range deactivated.' : 'Weight range activated.');
+    } else {
+      showToast(res.error || 'Failed to update weight range status.');
+    }
+  };
+
+  const handleDeleteWeightRange = async (range: AdminWeightRange) => {
+    const res = await adminApiClient.delete(`/admin/catalog/weight-ranges/${range.id}`);
+    if (res.success) {
+      await loadWeightRanges();
+      showToast('Weight range deactivated (soft delete).');
+    } else {
+      showToast(res.error || 'Failed to delete weight range.');
+    }
+  };
+
   const calendarYear = today.getFullYear();
   const calendarMonth = today.getMonth();
   const daysInOctober = Array.from({ length: new Date(calendarYear, calendarMonth + 1, 0).getDate() }, (_, i) => {
@@ -672,6 +596,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {isLoading && <div className="text-xs font-semibold text-slate-500">Loading calendar and route data…</div>}
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 right-8 z-50 flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-2xl border border-emerald-500/40 animate-in fade-in slide-in-from-top-4 duration-200">
@@ -757,14 +682,19 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
           <div className="text-[10px] text-amber-600/80 mt-0.5">Requires vehicle assign</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
+        <button
+          type="button"
+          onClick={() => setActiveTab('SETTINGS')}
+          className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-left hover:border-amber-400 hover:shadow-md transition-all cursor-pointer w-full"
+          title="Open Settings to edit weight ranges & bulk limit"
+        >
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider">Bulk Weight Limit</span>
             <Zap className="w-4 h-4 text-purple-600" />
           </div>
           <div className="text-lg font-black text-purple-700">{bulkLimitKg} kg</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Triggers heavy truck</div>
-        </div>
+          <div className="text-[10px] text-amber-700 mt-0.5 font-bold">Open Settings → edit weight ranges</div>
+        </button>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 mb-1">
@@ -776,57 +706,60 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-1">
-        <div className="flex items-center gap-1.5 overflow-x-auto">
+      {/* Navigation Sub-Tabs — Settings pinned on the right so it never scrolls away */}
+      <div className="flex items-center justify-between gap-3 border-b border-slate-200 pb-1">
+        <div className="flex items-center gap-1.5 overflow-x-auto min-w-0">
           <button
             onClick={() => setActiveTab('CALENDAR')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
               activeTab === 'CALENDAR'
                 ? 'bg-[#0A3D2B] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <CalendarIcon className="w-3.5 h-3.5" />
-            Operations Holiday Calendar ({holidays.length})
+            Holiday Calendar
+            <span className="text-[10px] opacity-80">({holidays.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('MATRIX')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
               activeTab === 'MATRIX'
                 ? 'bg-[#0A3D2B] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            Weekly Route Run Master Matrix
+            Route Matrix
           </button>
 
           <button
             onClick={() => setActiveTab('UNASSIGNED_QUEUE')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
               activeTab === 'UNASSIGNED_QUEUE'
                 ? 'bg-[#0A3D2B] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            Bulk Auto-Assign & Exceptions ({unassignedQueue.length})
-          </button>
-
-          <button
-            onClick={() => setActiveTab('SETTINGS')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeTab === 'SETTINGS'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            Routing & Shift Rules Config
+            Unassigned Queue
+            <span className="text-[10px] opacity-80">({unassignedQueue.length})</span>
           </button>
         </div>
+
+        <button
+          onClick={() => setActiveTab('SETTINGS')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 border ${
+            activeTab === 'SETTINGS'
+              ? 'bg-[#0A3D2B] text-white border-[#0A3D2B] shadow-sm'
+              : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
+          }`}
+          title="Weight ranges, bulk limits & routing rules"
+        >
+          <Sliders className="w-3.5 h-3.5" />
+          Settings
+        </button>
       </div>
 
       {/* TAB 1: OPERATIONS HOLIDAY CALENDAR */}
@@ -887,7 +820,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                         setFormType(day.holidayMatch.type);
                         setFormScope(day.holidayMatch.scope);
                         setFormHandling(day.holidayMatch.handling);
-                        handleSimulateImpact();
+                        handleSimulateImpact(day.holidayMatch);
                       } else {
                         setFormDate(day.dateStr);
                         setFormName('');
@@ -1022,7 +955,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                             setFormType(h.type);
                             setFormScope(h.scope);
                             setFormHandling(h.handling);
-                            handleSimulateImpact();
+                            handleSimulateImpact(h);
                           }}
                           className="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-[#0A3D2B] hover:text-white font-bold text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
                         >
@@ -1258,9 +1191,273 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 4: ROUTE RULES CONFIG */}
+      {/* TAB 4: ROUTE RULES + WEIGHT RANGES CONFIG */}
       {activeTab === 'SETTINGS' && (
-        <div className="max-w-3xl space-y-5">
+        <div className="max-w-4xl space-y-5">
+          {/* Section A: Customer booking weight ranges */}
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-emerald-700" />
+                  <h3 className="font-bold text-slate-900 text-sm">Customer Estimated Weight Ranges</h3>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  These options appear on Customer App → Request Pickup → Step 2 (estimated weight).
+                  Edit labels and kg bounds here; changes apply after customers refresh the app.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={loadWeightRanges}
+                disabled={weightRangesLoading}
+                className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${weightRangesLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+            </div>
+
+            <div className="overflow-x-auto rounded-xl border border-slate-200">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-extrabold border-b border-slate-200">
+                  <tr>
+                    <th className="py-2.5 px-3">Order</th>
+                    <th className="py-2.5 px-3">Code</th>
+                    <th className="py-2.5 px-3">Display Label</th>
+                    <th className="py-2.5 px-3">Min kg</th>
+                    <th className="py-2.5 px-3">Max kg</th>
+                    <th className="py-2.5 px-3">Bulk</th>
+                    <th className="py-2.5 px-3">Status</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {weightRanges.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="py-8 px-3 text-center text-slate-400 font-semibold">
+                        {weightRangesLoading
+                          ? 'Loading weight ranges…'
+                          : 'No weight ranges found. Add one below or restart backend to auto-seed.'}
+                      </td>
+                    </tr>
+                  ) : (
+                    weightRanges.map((range) => {
+                      const isEditing = editingWeightId === range.id;
+                      const isBulkRange = range.minKg >= bulkLimitKg;
+                      return (
+                        <tr key={range.id} className={!range.isActive ? 'bg-slate-50/80 opacity-70' : ''}>
+                          <td className="py-2.5 px-3">
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                value={editWeightForm.displayOrder}
+                                onChange={(e) =>
+                                  setEditWeightForm((f) => ({ ...f, displayOrder: Number(e.target.value) || 0 }))
+                                }
+                                className="w-16 px-2 py-1 rounded-lg border border-slate-200 font-mono"
+                              />
+                            ) : (
+                              <span className="font-mono font-bold text-slate-700">{range.displayOrder}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {isEditing ? (
+                              <input
+                                value={editWeightForm.name}
+                                onChange={(e) => setEditWeightForm((f) => ({ ...f, name: e.target.value }))}
+                                className="w-28 px-2 py-1 rounded-lg border border-slate-200 font-mono uppercase"
+                              />
+                            ) : (
+                              <span className="font-mono text-slate-800">{range.name}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {isEditing ? (
+                              <input
+                                value={editWeightForm.displayLabel}
+                                onChange={(e) =>
+                                  setEditWeightForm((f) => ({ ...f, displayLabel: e.target.value }))
+                                }
+                                className="w-36 px-2 py-1 rounded-lg border border-slate-200 font-bold"
+                              />
+                            ) : (
+                              <span className="font-bold text-slate-900">{range.displayLabel}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                min={0}
+                                step={1}
+                                value={editWeightForm.minKg}
+                                onChange={(e) =>
+                                  setEditWeightForm((f) => ({ ...f, minKg: Number(e.target.value) || 0 }))
+                                }
+                                className="w-20 px-2 py-1 rounded-lg border border-slate-200 font-mono"
+                              />
+                            ) : (
+                              <span className="font-mono">{range.minKg}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                min={1}
+                                step={1}
+                                value={editWeightForm.maxKg}
+                                onChange={(e) =>
+                                  setEditWeightForm((f) => ({ ...f, maxKg: Number(e.target.value) || 0 }))
+                                }
+                                className="w-20 px-2 py-1 rounded-lg border border-slate-200 font-mono"
+                              />
+                            ) : (
+                              <span className="font-mono">{range.maxKg}</span>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            {isBulkRange ? (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-50 text-amber-800 border border-amber-200">
+                                Bulk+
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleSetBulkFromRange(range)}
+                                className="px-2 py-0.5 rounded-full text-[10px] font-bold border border-slate-200 text-slate-600 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-800 cursor-pointer"
+                                title={`Set bulk minimum to ${range.minKg} kg (this range and above)`}
+                              >
+                                Set as bulk min
+                              </button>
+                            )}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <button
+                              type="button"
+                              onClick={() => handleToggleWeightActive(range)}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase border cursor-pointer ${
+                                range.isActive
+                                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                  : 'bg-slate-100 text-slate-500 border-slate-200'
+                              }`}
+                            >
+                              {range.isActive ? 'Active' : 'Inactive'}
+                            </button>
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <div className="flex items-center justify-end gap-1.5">
+                              {isEditing ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    disabled={isSavingWeight}
+                                    onClick={handleSaveWeightEdit}
+                                    className="p-1.5 rounded-lg bg-[#0A3D2B] text-white hover:bg-[#0E4D36] cursor-pointer"
+                                    title="Save"
+                                  >
+                                    <Save className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingWeightId(null)}
+                                    className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer"
+                                    title="Cancel"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => startEditWeight(range)}
+                                    className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer"
+                                    title="Edit"
+                                  >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteWeightRange(range)}
+                                    className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 cursor-pointer"
+                                    title="Deactivate"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Add new weight range */}
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5" />
+                Add Weight Range
+              </h4>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                <input
+                  placeholder="Code (e.g. SMALL)"
+                  value={newWeightForm.name}
+                  onChange={(e) => setNewWeightForm((f) => ({ ...f, name: e.target.value }))}
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono uppercase"
+                />
+                <input
+                  placeholder="Label (e.g. 10 – 20 kg)"
+                  value={newWeightForm.displayLabel}
+                  onChange={(e) => setNewWeightForm((f) => ({ ...f, displayLabel: e.target.value }))}
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold"
+                />
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="Min kg"
+                  value={newWeightForm.minKg}
+                  onChange={(e) => setNewWeightForm((f) => ({ ...f, minKg: Number(e.target.value) || 0 }))}
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono"
+                />
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="Max kg"
+                  value={newWeightForm.maxKg}
+                  onChange={(e) => setNewWeightForm((f) => ({ ...f, maxKg: Number(e.target.value) || 0 }))}
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono"
+                />
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="Order"
+                  value={newWeightForm.displayOrder}
+                  onChange={(e) =>
+                    setNewWeightForm((f) => ({ ...f, displayOrder: Number(e.target.value) || 0 }))
+                  }
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono"
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  disabled={isSavingWeight}
+                  onClick={handleCreateWeightRange}
+                  className="px-4 py-2 rounded-xl bg-[#0A3D2B] text-white text-xs font-bold hover:bg-[#0E4D36] cursor-pointer disabled:opacity-60"
+                >
+                  Add Weight Range
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Section B: Order / routing rules */}
           <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
             <h3 className="font-bold text-slate-900 text-sm">Order Rules & Bulk Commercial Limits</h3>
             <p className="text-xs text-slate-500">
@@ -1275,15 +1472,16 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                 </div>
                 <input
                   type="range"
-                  min="50"
+                  min="0"
                   max="500"
-                  step="25"
+                  step="5"
                   value={bulkLimitKg}
                   onChange={(e) => setBulkLimitKg(parseInt(e.target.value))}
                   className="w-full accent-[#0A3D2B] cursor-pointer"
                 />
                 <span className="text-[10px] text-slate-400">
-                  Pickups estimating above this limit are routed to Tata 407 / heavy vehicle queue.
+                  Any weight range whose minimum is ≥ this value is marked Bulk on the customer app
+                  and routed to the heavy-vehicle queue. Tip: use “Set as bulk min” on a range above.
                 </span>
               </div>
 
@@ -1456,7 +1654,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                 Cancel
               </button>
               <button
-                onClick={handleSimulateImpact}
+                onClick={() => handleSimulateImpact()}
                 className="px-5 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
                 <Sparkles className="w-4 h-4 text-emerald-400" />

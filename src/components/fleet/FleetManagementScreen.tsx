@@ -107,7 +107,15 @@ export interface IncidentalRecord {
   incurredAt: string;
 }
 
+const mapVehicleStatus = (status?: string): VehicleStatus => {
+  if (status === 'MAINTENANCE') return 'IN_MAINTENANCE';
+  if (status === 'RETIRED') return 'DECOMMISSIONED';
+  return (status || 'ACTIVE') as VehicleStatus;
+};
+
 export const FleetManagementScreen: React.FC = () => {
+  const complianceWarningDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    .toISOString().split('T')[0];
   const [activeTab, setActiveTab] = useState<'REGISTRY' | 'RENTALS' | 'FUEL' | 'MAINTENANCE' | 'INCIDENTALS'>('REGISTRY');
   const [vehicles, setVehicles] = useState<VehicleAsset[]>([]);
   const [fuelLogs, setFuelLogs] = useState<FuelLogRecord[]>([]);
@@ -123,7 +131,6 @@ export const FleetManagementScreen: React.FC = () => {
   // Modals
   const [isAddVehicleOpen, setIsAddVehicleOpen] = useState(false);
   const [isLogFuelOpen, setIsLogFuelOpen] = useState(false);
-  const [isLogMaintenanceOpen, setIsLogMaintenanceOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Form states for adding vehicle
@@ -141,6 +148,8 @@ export const FleetManagementScreen: React.FC = () => {
   const [fuelLitres, setFuelLitres] = useState(15);
   const [fuelRate, setFuelRate] = useState(98.5);
   const [fuelOdometer, setFuelOdometer] = useState(15500);
+  const [fuelDriver, setFuelDriver] = useState('');
+  const [fuelStation, setFuelStation] = useState('');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -186,13 +195,14 @@ export const FleetManagementScreen: React.FC = () => {
               name: v.defaultDriver?.name || '—',
               phone: v.defaultDriver?.phone || '—',
             },
-            status: v.status || 'ACTIVE',
+            status: mapVehicleStatus(v.status),
             todayTrips: Number(v.todayTrips || 0),
             todayCollectedKg: Number(v.todayCollectedKg || 0),
           }));
           setVehicles(mapped);
           if (mapped[0]?.registrationNumber) {
             setSelectedFuelVeh(mapped[0].registrationNumber);
+            setFuelDriver(mapped[0].defaultDriver.name === '—' ? '' : mapped[0].defaultDriver.name);
           }
         }
 
@@ -319,40 +329,6 @@ export const FleetManagementScreen: React.FC = () => {
       });
 
       if (res.success && res.data) {
-        const v = res.data;
-        const newAsset: VehicleAsset = {
-          id: v._id || v.id || `veh_${Date.now()}`,
-          registrationNumber: v.registrationNumber || regUpper,
-          name: v.name || finalName,
-          vehicleType: v.vehicleType || newType,
-          ownership: v.ownership || newOwnership,
-          ownershipDetails: {
-            vendorName: v.ownershipDetails?.vendorName || (newOwnership === 'RENTED' ? newVendorName : ''),
-            rentBillingModel: v.ownershipDetails?.rentBillingModel || 'DAILY_FLAT',
-            rentalChargeRupees: v.ownershipDetails?.rentalChargeRupees || (newOwnership === 'RENTED' ? newRentRupees : 0),
-            contractValidUntil: v.ownershipDetails?.contractValidUntil || '2027-03-31',
-            assetValueRupees: v.ownershipDetails?.assetValueRupees || (newOwnership === 'OWNED' ? 350000 : 0),
-          },
-          capacityKg: v.capacityKg || newCapacity,
-          maxStops: v.maxStops || 20,
-          compliance: {
-            fitnessValidUntil: v.compliance?.fitnessValidUntil || '2027-10-01',
-            insuranceValidUntil: v.compliance?.insuranceValidUntil || '2027-10-01',
-            pucValidUntil: v.compliance?.pucValidUntil || '2027-04-01',
-            lastServiceOdometer: v.compliance?.lastServiceOdometer || 0,
-          },
-          currentOdometer: v.currentOdometer || 0,
-          assignedDivision: v.assignedDivision || 'Vijayawada Central',
-          defaultDriver: {
-            name: v.defaultDriver?.name || 'Assigned on Dispatch',
-            phone: v.defaultDriver?.phone || '',
-          },
-          status: v.status || 'ACTIVE',
-          todayTrips: 0,
-          todayCollectedKg: 0,
-        };
-
-        setVehicles((prev) => [newAsset, ...prev.filter((item) => item.registrationNumber !== regUpper)]);
         setSelectedFuelVeh(regUpper);
         setIsAddVehicleOpen(false);
         setNewRegNo('');
@@ -370,27 +346,27 @@ export const FleetManagementScreen: React.FC = () => {
             vehicleType: item.vehicleType || 'EV_AUTO',
             ownership: item.ownership || 'OWNED',
             ownershipDetails: {
-              vendorName: item.ownershipDetails?.vendorName || '',
-              rentBillingModel: item.ownershipDetails?.rentBillingModel || 'DAILY_FLAT',
+              vendorName: item.ownershipDetails?.vendorName || '—',
+              rentBillingModel: item.ownershipDetails?.rentBillingModel,
               rentalChargeRupees: item.ownershipDetails?.rentalChargeRupees || 0,
-              contractValidUntil: item.ownershipDetails?.contractValidUntil || '2027-03-31',
-              assetValueRupees: item.ownershipDetails?.assetValueRupees || 350000,
+              contractValidUntil: item.ownershipDetails?.contractValidUntil || '—',
+              assetValueRupees: item.ownershipDetails?.assetValueRupees || 0,
             },
-            capacityKg: item.capacityKg || 500,
-            maxStops: item.maxStops || 20,
+            capacityKg: item.capacityKg || 0,
+            maxStops: item.maxStops || 0,
             compliance: {
-              fitnessValidUntil: item.compliance?.fitnessValidUntil || '2027-10-01',
-              insuranceValidUntil: item.compliance?.insuranceValidUntil || '2027-10-01',
-              pucValidUntil: item.compliance?.pucValidUntil || '2027-04-01',
+              fitnessValidUntil: item.compliance?.fitnessValidUntil || '—',
+              insuranceValidUntil: item.compliance?.insuranceValidUntil || '—',
+              pucValidUntil: item.compliance?.pucValidUntil || '—',
               lastServiceOdometer: item.compliance?.lastServiceOdometer || 0,
             },
             currentOdometer: item.currentOdometer || 0,
-            assignedDivision: item.assignedDivision || 'Vijayawada Central',
+            assignedDivision: item.assignedDivision?.name || item.assignedDivision || '—',
             defaultDriver: {
-              name: item.defaultDriver?.name || 'Assigned on Dispatch',
-              phone: item.defaultDriver?.phone || '',
+              name: item.defaultDriver?.name || '—',
+              phone: item.defaultDriver?.phone || '—',
             },
-            status: item.status || 'ACTIVE',
+            status: mapVehicleStatus(item.status),
             todayTrips: 0,
             todayCollectedKg: 0,
           }));
@@ -410,25 +386,10 @@ export const FleetManagementScreen: React.FC = () => {
   // Handle Fuel Entry Submit
   const handleFuelEntrySubmit = async () => {
     const total = fuelLitres * fuelRate;
-    const newRecord: FuelLogRecord = {
-      id: `fl_${Date.now()}`,
-      vehicleReg: selectedFuelVeh,
-      driverName: 'Assigned Driver',
-      fuelType: 'DIESEL',
-      quantity: fuelLitres,
-      ratePerUnit: fuelRate,
-      totalCostRupees: total,
-      odometerReading: fuelOdometer,
-      kmSinceLastRefuel: 180,
-      calculatedMileage: '12.0 km/L',
-      incurredAt: 'Just now',
-      stationName: 'Local Fuel Station',
-    };
-
     try {
       const res = await adminApiClient.post('/admin/operations/fuel-logs', {
         vehicleReg: selectedFuelVeh,
-        driverName: 'Fleet Operator',
+        driverName: fuelDriver || '—',
         fuelType: 'DIESEL',
         quantity: fuelLitres,
         ratePerUnit: fuelRate,
@@ -436,7 +397,7 @@ export const FleetManagementScreen: React.FC = () => {
         odometerReading: fuelOdometer,
         kmSinceLastRefuel: 180,
         calculatedMileage: `${(180 / fuelLitres).toFixed(1)} km/L`,
-        stationName: 'Local Fuel Station',
+        stationName: fuelStation,
       });
 
       if (res.success && res.data) {
@@ -452,10 +413,10 @@ export const FleetManagementScreen: React.FC = () => {
             ratePerUnit: f.ratePerUnit,
             totalCostRupees: f.totalCostRupees,
             odometerReading: f.odometerReading,
-            kmSinceLastRefuel: f.kmSinceLastRefuel || 180,
-            calculatedMileage: f.calculatedMileage || '12.0 km/L',
-            incurredAt: f.incurredAt || new Date(f.createdAt).toLocaleString('en-IN'),
-            stationName: f.stationName || 'Local Fuel Station',
+            kmSinceLastRefuel: Number(f.kmSinceLastRefuel || 0),
+            calculatedMileage: f.calculatedMileage || '—',
+            incurredAt: f.incurredAt || (f.createdAt ? new Date(f.createdAt).toLocaleString('en-IN') : '—'),
+            stationName: f.stationName || '—',
           })));
         }
         setIsLogFuelOpen(false);
@@ -722,13 +683,13 @@ export const FleetManagementScreen: React.FC = () => {
                           <div className="space-y-0.5 text-[10px]">
                             <div className="flex items-center gap-1 font-bold">
                               <span className="text-slate-400">FC:</span>
-                              <span className={veh.compliance.fitnessValidUntil < '2026-10-20' ? 'text-rose-600 font-black' : 'text-slate-700'}>
+                              <span className={veh.compliance.fitnessValidUntil !== '—' && veh.compliance.fitnessValidUntil <= complianceWarningDate ? 'text-rose-600 font-black' : 'text-slate-700'}>
                                 {veh.compliance.fitnessValidUntil}
                               </span>
                             </div>
                             <div className="flex items-center gap-1 font-bold">
                               <span className="text-slate-400">Ins:</span>
-                              <span className={veh.compliance.insuranceValidUntil < '2026-10-30' ? 'text-amber-600 font-black' : 'text-slate-700'}>
+                              <span className={veh.compliance.insuranceValidUntil !== '—' && veh.compliance.insuranceValidUntil <= complianceWarningDate ? 'text-amber-600 font-black' : 'text-slate-700'}>
                                 {veh.compliance.insuranceValidUntil}
                               </span>
                             </div>
@@ -1282,7 +1243,11 @@ export const FleetManagementScreen: React.FC = () => {
                 <label className="font-bold text-slate-700 block mb-1">Select Vehicle</label>
                 <select
                   value={selectedFuelVeh}
-                  onChange={(e) => setSelectedFuelVeh(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedFuelVeh(e.target.value);
+                    const vehicle = vehicles.find((item) => item.registrationNumber === e.target.value);
+                    setFuelDriver(vehicle?.defaultDriver.name === '—' ? '' : vehicle?.defaultDriver.name || '');
+                  }}
                   className="w-full p-2.5 rounded-xl border border-slate-200 font-bold bg-slate-50 outline-none"
                 >
                   {vehicles.map((v) => (
@@ -1291,6 +1256,36 @@ export const FleetManagementScreen: React.FC = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Driver</label>
+                  <select
+                    value={fuelDriver}
+                    onChange={(e) => setFuelDriver(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-bold bg-slate-50 outline-none"
+                  >
+                    <option value="">—</option>
+                    {vehicles
+                      .filter((vehicle) => vehicle.defaultDriver.name !== '—')
+                      .map((vehicle) => (
+                        <option key={vehicle.id} value={vehicle.defaultDriver.name}>
+                          {vehicle.defaultDriver.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Station</label>
+                  <input
+                    type="text"
+                    value={fuelStation}
+                    onChange={(e) => setFuelStation(e.target.value)}
+                    placeholder="Fuel / charging station"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-bold bg-slate-50 outline-none"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

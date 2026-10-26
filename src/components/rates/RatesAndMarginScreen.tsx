@@ -52,217 +52,6 @@ export interface ScrapProductRateRow {
   updatedAt: string;
 }
 
-// Initial Seed Dataset representing Real Andhra Pradesh Scrap Mandi Rates
-const UNUSED_LEGACY_PRODUCTS_RATES: ScrapProductRateRow[] = [
-  // --- METAL ---
-  {
-    productId: 'prod_copper_01',
-    categoryId: 'cat_metal',
-    categoryName: 'Metal',
-    name: 'Copper / Tamba',
-    code: 'COPPER',
-    emoji: '🟤',
-    marketBenchmarkRateRupees: 650.0,
-    marketName: 'Hyderabad Smelter Spot',
-    lastMarketSync: 'Today, 10:30 AM',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 45.0, // Gross margin = Rs 45.00/kg
-    calculatedCustomerRateRupees: 605.0,
-    bulkTier1PremiumRupees: 5.0,
-    bulkTier2PremiumRupees: 10.0,
-    isActive: true,
-    historyCount: 14,
-    updatedAt: '2026-10-12 09:15',
-  },
-  {
-    productId: 'prod_brass_01',
-    categoryId: 'cat_metal',
-    categoryName: 'Metal',
-    name: 'Brass / Peetal',
-    code: 'BRASS',
-    emoji: '🟡',
-    marketBenchmarkRateRupees: 420.0,
-    marketName: 'Hyderabad Smelter Spot',
-    lastMarketSync: 'Today, 10:30 AM',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 30.0,
-    calculatedCustomerRateRupees: 390.0,
-    bulkTier1PremiumRupees: 3.0,
-    bulkTier2PremiumRupees: 6.0,
-    isActive: true,
-    historyCount: 9,
-    updatedAt: '2026-10-11 16:40',
-  },
-  {
-    productId: 'prod_iron_01',
-    categoryId: 'cat_metal',
-    categoryName: 'Metal',
-    name: 'Iron / Loha',
-    code: 'IRON',
-    emoji: '⚙️',
-    marketBenchmarkRateRupees: 32.5,
-    marketName: 'Vizag Steel Mandi',
-    lastMarketSync: 'Today, 11:00 AM',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 4.5,
-    calculatedCustomerRateRupees: 28.0,
-    bulkTier1PremiumRupees: 1.0,
-    bulkTier2PremiumRupees: 2.0,
-    isActive: true,
-    historyCount: 22,
-    updatedAt: '2026-10-12 08:30',
-  },
-  {
-    productId: 'prod_alu_01',
-    categoryId: 'cat_metal',
-    categoryName: 'Metal',
-    name: 'Aluminium Section',
-    code: 'ALUMINIUM',
-    emoji: '⚪',
-    marketBenchmarkRateRupees: 145.0,
-    marketName: 'Vizag Smelter Spot',
-    lastMarketSync: 'Today, 10:30 AM',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 15.0,
-    calculatedCustomerRateRupees: 130.0,
-    bulkTier1PremiumRupees: 2.5,
-    bulkTier2PremiumRupees: 5.0,
-    isActive: true,
-    historyCount: 8,
-    updatedAt: '2026-10-10 14:20',
-  },
-
-  // --- PAPER ---
-  {
-    productId: 'prod_paper_news_01',
-    categoryId: 'cat_paper',
-    categoryName: 'Paper',
-    name: 'Newspaper (Raddi)',
-    code: 'NEWSPAPER',
-    emoji: '📰',
-    marketBenchmarkRateRupees: 17.0,
-    marketName: 'Rajahmundry Paper Mill',
-    lastMarketSync: 'Yesterday',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 3.0,
-    calculatedCustomerRateRupees: 14.0,
-    bulkTier1PremiumRupees: 0.5,
-    bulkTier2PremiumRupees: 1.0,
-    isActive: true,
-    historyCount: 16,
-    updatedAt: '2026-10-11 11:00',
-  },
-  {
-    productId: 'prod_paper_carton_01',
-    categoryId: 'cat_paper',
-    categoryName: 'Paper',
-    name: 'Cardboard / Corrugated Box',
-    code: 'CARDBOARD',
-    emoji: '📦',
-    marketBenchmarkRateRupees: 12.0,
-    marketName: 'Rajahmundry Paper Mill',
-    lastMarketSync: 'Yesterday',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 2.5,
-    calculatedCustomerRateRupees: 9.5,
-    bulkTier1PremiumRupees: 0.5,
-    bulkTier2PremiumRupees: 1.0,
-    isActive: true,
-    historyCount: 12,
-    updatedAt: '2026-10-10 09:40',
-  },
-
-  // --- PLASTIC ---
-  {
-    productId: 'prod_pet_01',
-    categoryId: 'cat_plastic',
-    categoryName: 'Plastic',
-    name: 'PET Bottles (Water / Soda)',
-    code: 'PET_BOTTLE',
-    emoji: '🍾',
-    marketBenchmarkRateRupees: 18.0,
-    marketName: 'Vijayawada Pelletizer',
-    lastMarketSync: 'Today, 09:00 AM',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 3.5,
-    calculatedCustomerRateRupees: 14.5,
-    bulkTier1PremiumRupees: 1.0,
-    bulkTier2PremiumRupees: 2.0,
-    isActive: true,
-    historyCount: 18,
-    updatedAt: '2026-10-12 10:00',
-  },
-  {
-    productId: 'prod_hard_plastic_01',
-    categoryId: 'cat_plastic',
-    categoryName: 'Plastic',
-    name: 'Hard Plastic (Buckets / Chairs)',
-    code: 'HARD_PLASTIC',
-    emoji: '🪑',
-    marketBenchmarkRateRupees: 15.0,
-    marketName: 'Vijayawada Pelletizer',
-    lastMarketSync: 'Today, 09:00 AM',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 3.0,
-    calculatedCustomerRateRupees: 12.0,
-    bulkTier1PremiumRupees: 0.5,
-    bulkTier2PremiumRupees: 1.5,
-    isActive: true,
-    historyCount: 7,
-    updatedAt: '2026-10-09 17:15',
-  },
-
-  // --- E-WASTE ---
-  {
-    productId: 'prod_ewaste_pcb_01',
-    categoryId: 'cat_ewaste',
-    categoryName: 'E-Waste',
-    name: 'Motherboards & PCBs',
-    code: 'PCB_BOARDS',
-    emoji: '💻',
-    marketBenchmarkRateRupees: 220.0,
-    marketName: 'Hyderabad E-Recycler',
-    lastMarketSync: 'Oct 08',
-    marginMode: 'PERCENTAGE',
-    marginDirection: 'SUBTRACT',
-    marginValue: 15.0, // 15% margin
-    calculatedCustomerRateRupees: 187.0,
-    bulkTier1PremiumRupees: 5.0,
-    bulkTier2PremiumRupees: 10.0,
-    isActive: true,
-    historyCount: 5,
-    updatedAt: '2026-10-08 12:00',
-  },
-  {
-    productId: 'prod_battery_01',
-    categoryId: 'cat_ewaste',
-    categoryName: 'E-Waste',
-    name: 'Lead Acid Batteries (Inverter/Car)',
-    code: 'LEAD_BATTERY',
-    emoji: '🔋',
-    marketBenchmarkRateRupees: 92.0,
-    marketName: 'Exide Authorized Smelter',
-    lastMarketSync: 'Today, 11:30 AM',
-    marginMode: 'FLAT',
-    marginDirection: 'SUBTRACT',
-    marginValue: 12.0,
-    calculatedCustomerRateRupees: 80.0,
-    bulkTier1PremiumRupees: 2.0,
-    bulkTier2PremiumRupees: 4.0,
-    isActive: true,
-    historyCount: 11,
-    updatedAt: '2026-10-12 11:30',
-  },
-];
-
 export const RatesAndMarginScreen: React.FC = () => {
   const [ratesList, setRatesList] = useState<ScrapProductRateRow[]>([]);
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('ALL');
@@ -386,6 +175,12 @@ export const RatesAndMarginScreen: React.FC = () => {
       const res = await adminApiClient.post('/admin/catalog/rates', {
         productId: row.productId,
         ratePerKg: ratePaise,
+        marketBenchmarkRate: Math.round(row.marketBenchmarkRateRupees * 100),
+        marginDelta: Math.round(
+          row.marginValue * (row.marginMode === 'FLAT' ? 100 : 1) *
+          (row.marginDirection === 'SUBTRACT' ? -1 : 1),
+        ),
+        marginType: row.marginMode,
       });
 
       if (res.success) {
@@ -402,25 +197,18 @@ export const RatesAndMarginScreen: React.FC = () => {
   const handleBroadcastToApps = async () => {
     setIsBroadcasting(true);
     try {
-      // Trigger API sync
-      const res = await adminApiClient.post('/catalog/broadcast-refresh', {
-        reason: 'Admin revised scrap rates & margin spread',
-      });
-      showToast(res.success
-        ? '⚡ Rate Card Broadcasted to Customer & Employee Apps via WebSockets!'
-        : `Broadcast failed: ${res.error || 'Backend rejected request'}`);
-    } catch {
-      showToast('Broadcast failed: unable to reach backend.');
+      showToast('Rates saved — customer apps refresh on next open.');
     } finally {
       setIsBroadcasting(false);
     }
   };
 
   // Bulk category adjustment handler
-  const handleApplyBulkCategoryAdjustment = () => {
-    setRatesList((prev) =>
-      prev.map((item) => {
-        if (item.categoryName.toLowerCase() !== bulkCategory.toLowerCase()) return item;
+  const handleApplyBulkCategoryAdjustment = async () => {
+    const matching = ratesList.filter(
+      (item) => item.categoryName.toLowerCase() === bulkCategory.toLowerCase(),
+    );
+    const adjusted = matching.map((item) => {
         const newMargin = Math.abs(bulkDeltaRupees);
         const newDirection = bulkDeltaRupees <= 0 ? 'SUBTRACT' : 'ADD';
         const updated: ScrapProductRateRow = {
@@ -432,18 +220,38 @@ export const RatesAndMarginScreen: React.FC = () => {
         };
         updated.calculatedCustomerRateRupees = calculateCustomerRate(updated);
         return updated;
-      }),
-    );
+    });
+    try {
+      for (const row of adjusted) {
+        const res = await adminApiClient.post('/admin/catalog/rates', {
+          productId: row.productId,
+          ratePerKg: Math.round(row.calculatedCustomerRateRupees * 100),
+          marketBenchmarkRate: Math.round(row.marketBenchmarkRateRupees * 100),
+          marginDelta: Math.round(bulkDeltaRupees * 100),
+          marginType: 'FLAT',
+        });
+        if (!res.success) throw new Error(res.error || `Failed to update ${row.name}`);
+      }
+      setRatesList((prev) =>
+        prev.map((item) => adjusted.find((row) => row.productId === item.productId) || item),
+      );
+    } catch (err: any) {
+      showToast(err.message || 'Bulk rate update failed.');
+      return;
+    }
     setIsBulkAdjustOpen(false);
-    showToast(`Applied ${bulkDeltaRupees >= 0 ? '+' : ''}₹${bulkDeltaRupees}/kg across ${bulkCategory}!`);
+    showToast(`Saved ${matching.length} ${bulkCategory} rates.`);
   };
 
   // Filtered rows
   const filteredProducts = useMemo(() => {
     if (selectedCategoryTab === 'ALL') return ratesList;
     return ratesList.filter(
-      (p) => p.categoryId.toLowerCase().includes(selectedCategoryTab.toLowerCase()) ||
-             p.categoryName.toLowerCase().includes(selectedCategoryTab.toLowerCase()),
+      (p) =>
+        p.categoryId === selectedCategoryTab ||
+        p.categoryName === selectedCategoryTab ||
+        p.categoryId.toLowerCase() === selectedCategoryTab.toLowerCase() ||
+        p.categoryName.toLowerCase() === selectedCategoryTab.toLowerCase(),
     );
   }, [ratesList, selectedCategoryTab]);
 
@@ -456,12 +264,18 @@ export const RatesAndMarginScreen: React.FC = () => {
       totalMarginRupees += spread;
     });
     const avgSpread = totalCount > 0 ? totalMarginRupees / totalCount : 0;
+    const avgMarginPct = totalCount > 0
+      ? ratesList.reduce((sum, rate) => sum +
+        (rate.marketBenchmarkRateRupees > 0
+          ? ((rate.marketBenchmarkRateRupees - rate.calculatedCustomerRateRupees) /
+            rate.marketBenchmarkRateRupees) * 100 : 0), 0) / totalCount
+      : null;
     return {
       activeCount: totalCount,
       avgGrossMarginRupees: avgSpread.toFixed(2),
-      avgMarginPct: '14.8%',
-      estimatedDailyCollectionKg: '3,850 kg',
-      projectedDailyGrossProfit: `₹${Math.round(3850 * avgSpread).toLocaleString('en-IN')}`,
+      avgMarginPct: avgMarginPct == null ? '—' : `${avgMarginPct.toFixed(1)}%`,
+      estimatedDailyCollectionKg: '—',
+      projectedDailyGrossProfit: '—',
     };
   }, [ratesList]);
 
@@ -520,7 +334,7 @@ export const RatesAndMarginScreen: React.FC = () => {
               className="px-4 py-2.5 rounded-xl bg-[#0A3D2B] hover:bg-[#0E4D36] text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-950/20 transition-all cursor-pointer"
             >
               <Send className={`w-3.5 h-3.5 ${isBroadcasting ? 'animate-spin' : ''}`} />
-              <span>{isBroadcasting ? 'Broadcasting...' : 'Broadcast Rates Live'}</span>
+              <span>{isBroadcasting ? 'Saving...' : 'Confirm Rates Saved'}</span>
             </button>
           </div>
         </div>
@@ -574,13 +388,26 @@ export const RatesAndMarginScreen: React.FC = () => {
       {/* Category Tabs & Quick Search Filter */}
       <div className="flex items-center justify-between gap-4 overflow-x-auto pb-1">
         <div className="flex items-center gap-2">
-          {[
-            { id: 'ALL', label: 'All Scrap Products', count: ratesList.length },
-            { id: 'cat_metal', label: '⚙️ Metals', count: 4 },
-            { id: 'cat_paper', label: '📰 Paper', count: 2 },
-            { id: 'cat_plastic', label: '🍾 Plastics', count: 2 },
-            { id: 'cat_ewaste', label: '💻 E-Waste & Battery', count: 2 },
-          ].map((tab) => (
+          {(() => {
+            const categoryTabs = Array.from(
+              ratesList.reduce((map, row) => {
+                const key = row.categoryId || row.categoryName;
+                if (!map.has(key)) {
+                  map.set(key, {
+                    id: key,
+                    label: row.categoryName || key,
+                    count: 0,
+                  });
+                }
+                map.get(key)!.count += 1;
+                return map;
+              }, new Map<string, { id: string; label: string; count: number }>()),
+            ).map(([, tab]) => tab);
+            return [
+              { id: 'ALL', label: 'All Scrap Products', count: ratesList.length },
+              ...categoryTabs,
+            ];
+          })().map((tab) => (
             <button
               key={tab.id}
               onClick={() => setSelectedCategoryTab(tab.id)}
@@ -897,7 +724,7 @@ export const RatesAndMarginScreen: React.FC = () => {
                 }}
                 className="w-full py-3 rounded-2xl bg-[#0A3D2B] text-white font-black text-xs hover:bg-[#0E4D36] transition-all cursor-pointer"
               >
-                Broadcast These Rates to All Customers
+                Confirm Rates Saved
               </button>
             </div>
           </div>

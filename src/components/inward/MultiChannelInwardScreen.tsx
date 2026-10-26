@@ -99,23 +99,6 @@ export interface YardReconciliationRecord {
   auditNotes?: string;
 }
 
-// Available Scrap Products for POS Line Builder
-export const UNUSED_LEGACY_POS_PRODUCTS = [
-  { id: 'p_copper', cat: 'Metal', name: 'Copper / Tamba', rate: 605.0, icon: '🟤' },
-  { id: 'p_brass', cat: 'Metal', name: 'Brass / Peetal', rate: 390.0, icon: '🟡' },
-  { id: 'p_alu', cat: 'Metal', name: 'Aluminium Scrap', rate: 145.0, icon: '⚪' },
-  { id: 'p_iron', cat: 'Metal', name: 'Iron / Loha (Heavy)', rate: 28.0, icon: '⚙️' },
-  { id: 'p_tin', cat: 'Metal', name: 'Tin / Sheet Metal', rate: 22.0, icon: '🥫' },
-  { id: 'p_carton', cat: 'Paper', name: 'Cardboard / Carton (Raddi)', rate: 13.5, icon: '📦' },
-  { id: 'p_newspaper', cat: 'Paper', name: 'Old Newspaper (ONP)', rate: 14.0, icon: '📰' },
-  { id: 'p_books', cat: 'Paper', name: 'Office Records / White Paper', rate: 16.0, icon: '📄' },
-  { id: 'p_hdpe', cat: 'Plastic', name: 'Rigid Plastic / HDPE Drums', rate: 24.0, icon: '🪣' },
-  { id: 'p_pet', cat: 'Plastic', name: 'PET Bottles (Clean Baled)', rate: 16.5, icon: '🧴' },
-  { id: 'p_ewaste', cat: 'E-Waste', name: 'Mixed Circuit Boards / PCBA', rate: 180.0, icon: '💻' },
-  { id: 'p_battery', cat: 'E-Waste', name: 'Lead Acid Batteries', rate: 88.0, icon: '🔋' },
-  { id: 'p_ac', cat: 'Appliances', name: 'Split AC 1.5T Unit (Full Scrap)', rate: 4200.0, icon: '❄️', isUnit: true },
-];
-
 export const DEDUCTION_REASONS = [
   'Moisture / Water Dampness',
   'Dust & Sand Contamination',
@@ -124,239 +107,12 @@ export const DEDUCTION_REASONS = [
   'Plastic Caps / Labels Contamination',
 ];
 
-// Seed Inward Vouchers
-const UNUSED_LEGACY_INWARD_VOUCHERS: InwardVoucherRecord[] = [
-  {
-    id: 'inv_01',
-    voucherNumber: 'YRD-20261012-084',
-    channel: 'YARD_WALK_IN',
-    timestamp: 'Today, 11:42 AM',
-    divisionId: 'div_vja_central',
-    divisionName: 'Vijayawada Central Yard',
-    sellerName: 'B. Subba Rao',
-    sellerPhone: '9848123456',
-    sellerType: 'LOCAL_KABADIS',
-    items: [
-      {
-        productId: 'p_iron',
-        categoryName: 'Metal',
-        productName: 'Iron / Loha (Heavy)',
-        ratePerKgRupees: 28.0,
-        grossWeightKg: 184.5,
-        deductionKg: 4.5,
-        deductionReason: 'Dust & Sand Contamination',
-        netWeightKg: 180.0,
-        lineTotalRupees: 5040.0,
-      },
-      {
-        productId: 'p_carton',
-        categoryName: 'Paper',
-        productName: 'Cardboard / Carton (Raddi)',
-        ratePerKgRupees: 13.5,
-        grossWeightKg: 320.0,
-        deductionKg: 10.0,
-        deductionReason: 'Moisture / Water Dampness',
-        netWeightKg: 310.0,
-        lineTotalRupees: 4185.0,
-      },
-    ],
-    totalGrossKg: 504.5,
-    totalDeductionKg: 14.5,
-    totalNetKg: 490.0,
-    grandTotalRupees: 9225.0,
-    paymentMethod: 'CASH',
-    paymentStatus: 'PAID',
-    operatorName: 'Ramesh Varma (Gate Weighmaster)',
-    status: 'RECEIVED_VERIFIED',
-  },
-  {
-    id: 'inv_02',
-    voucherNumber: 'AKP-20261012-019',
-    channel: 'DOORSTEP_PICKUP',
-    timestamp: 'Today, 11:15 AM',
-    divisionId: 'div_vja_central',
-    divisionName: 'Vijayawada Central Yard',
-    sellerName: 'Ch. Madhusudhan',
-    sellerPhone: '9908112233',
-    sellerType: 'HOUSEHOLD',
-    vehicleReg: 'AP 16 TX 4021',
-    assignedCollectorName: 'Ramesh Kumar (AKP-EMP-0247)',
-    items: [
-      {
-        productId: 'p_copper',
-        categoryName: 'Metal',
-        productName: 'Copper / Tamba',
-        ratePerKgRupees: 605.0,
-        grossWeightKg: 12.4,
-        deductionKg: 0.4,
-        deductionReason: 'Heavy Rust & Non-Metallic Attachments',
-        netWeightKg: 12.0,
-        lineTotalRupees: 7260.0,
-      },
-      {
-        productId: 'p_newspaper',
-        categoryName: 'Paper',
-        productName: 'Old Newspaper (ONP)',
-        ratePerKgRupees: 14.0,
-        grossWeightKg: 45.0,
-        deductionKg: 0.0,
-        deductionReason: 'None',
-        netWeightKg: 45.0,
-        lineTotalRupees: 630.0,
-      },
-    ],
-    totalGrossKg: 57.4,
-    totalDeductionKg: 0.4,
-    totalNetKg: 57.0,
-    grandTotalRupees: 7890.0,
-    paymentMethod: 'UPI_INSTANT',
-    paymentStatus: 'PAID',
-    operatorName: 'Field App Auto-Sync',
-    status: 'RECEIVED_VERIFIED',
-  },
-  {
-    id: 'inv_03',
-    voucherNumber: 'B2B-20261012-005',
-    channel: 'B2B_COMMERCIAL',
-    timestamp: 'Today, 10:20 AM',
-    divisionId: 'div_guntur_hub',
-    divisionName: 'Guntur Processing Yard',
-    sellerName: 'Sri Durga Automotives Ltd',
-    sellerPhone: '9866009988',
-    sellerType: 'CORPORATE_B2B',
-    vehicleReg: 'AP 07 TJ 8820',
-    assignedCollectorName: 'Heavy Weighbridge Scale #1',
-    truckGrossWeightKg: 8450.0,
-    truckTareWeightKg: 4120.0,
-    gstin: '37AABCS1429K1ZX',
-    eWayBillNumber: '2418-9901-8273',
-    items: [
-      {
-        productId: 'p_iron',
-        categoryName: 'Metal',
-        productName: 'Industrial Stamping Scrap / Iron',
-        ratePerKgRupees: 30.5,
-        grossWeightKg: 4330.0,
-        deductionKg: 0.0,
-        deductionReason: 'None',
-        netWeightKg: 4330.0,
-        lineTotalRupees: 132065.0,
-      },
-    ],
-    totalGrossKg: 4330.0,
-    totalDeductionKg: 0.0,
-    totalNetKg: 4330.0,
-    grandTotalRupees: 132065.0,
-    paymentMethod: 'NEFT_RTGS',
-    paymentStatus: 'PAID',
-    operatorName: 'K. Venkat Rao (Yard Mgr)',
-    status: 'RECEIVED_VERIFIED',
-  },
-  {
-    id: 'inv_04',
-    voucherNumber: 'YRD-20261012-083',
-    channel: 'YARD_WALK_IN',
-    timestamp: 'Today, 09:50 AM',
-    divisionId: 'div_vja_east',
-    divisionName: 'Vijayawada East Yard',
-    sellerName: 'M. Venkateswarlu',
-    sellerPhone: '9701443322',
-    sellerType: 'TRADESMAN',
-    items: [
-      {
-        productId: 'p_alu',
-        categoryName: 'Metal',
-        productName: 'Aluminium Section Cut-pieces',
-        ratePerKgRupees: 145.0,
-        grossWeightKg: 28.5,
-        deductionKg: 0.5,
-        deductionReason: 'Dust & Sand Contamination',
-        netWeightKg: 28.0,
-        lineTotalRupees: 4060.0,
-      },
-      {
-        productId: 'p_brass',
-        categoryName: 'Metal',
-        productName: 'Brass Plumbing Fixtures',
-        ratePerKgRupees: 390.0,
-        grossWeightKg: 8.2,
-        deductionKg: 0.2,
-        deductionReason: 'Plastic Caps / Labels Contamination',
-        netWeightKg: 8.0,
-        lineTotalRupees: 3120.0,
-      },
-    ],
-    totalGrossKg: 36.7,
-    totalDeductionKg: 0.7,
-    totalNetKg: 36.0,
-    grandTotalRupees: 7180.0,
-    paymentMethod: 'UPI_INSTANT',
-    paymentStatus: 'PAID',
-    operatorName: 'Ramesh Varma (Gate Weighmaster)',
-    status: 'RECEIVED_VERIFIED',
-  },
-];
-
-// Seed Daily Route Reconciliation Records
-const UNUSED_LEGACY_RECONCILIATION: YardReconciliationRecord[] = [
-  {
-    id: 'rec_01',
-    date: '2026-10-12',
-    vehicleReg: 'AP 16 TX 4021',
-    collectorCode: 'AKP-EMP-0247',
-    collectorName: 'Ramesh Kumar',
-    routeDivision: 'Vijayawada Central (Benz Circle)',
-    expectedFieldPickupsCount: 6,
-    reportedFieldTotalKg: 342.5,
-    physicalYardScaleKg: 341.8,
-    weightVarianceKg: -0.7,
-    variancePercentage: -0.2,
-    status: 'PERFECT_MATCH',
-    verifiedAt: '12:45 PM',
-    supervisorName: 'K. Venkat Rao',
-    auditNotes: 'Scale variance under 0.5% (normal dust loss). Batch cleared for sorting.',
-  },
-  {
-    id: 'rec_02',
-    date: '2026-10-12',
-    vehicleReg: 'AP 16 TE 9081',
-    collectorCode: 'AKP-EMP-0182',
-    collectorName: 'Siva Krishna',
-    routeDivision: 'Vijayawada East (Madhura Nagar)',
-    expectedFieldPickupsCount: 4,
-    reportedFieldTotalKg: 280.0,
-    physicalYardScaleKg: 276.5,
-    weightVarianceKg: -3.5,
-    variancePercentage: -1.25,
-    status: 'ACCEPTABLE_TOLERANCE',
-    verifiedAt: '12:15 PM',
-    supervisorName: 'K. Venkat Rao',
-    auditNotes: 'High cardboard content; minor moisture drying during noon transport.',
-  },
-  {
-    id: 'rec_03',
-    date: '2026-10-12',
-    vehicleReg: 'AP 16 TF 2234',
-    collectorCode: 'AKP-EMP-0310',
-    collectorName: 'K. Venkatesh',
-    routeDivision: 'Guntur Processing Yard (Autonagar)',
-    expectedFieldPickupsCount: 8,
-    reportedFieldTotalKg: 780.0,
-    physicalYardScaleKg: 755.0,
-    weightVarianceKg: -25.0,
-    variancePercentage: -3.2,
-    status: 'WEIGHT_SHORTAGE_FLAGGED',
-    verifiedAt: '11:30 AM',
-    supervisorName: 'K. Venkat Rao',
-    auditNotes: 'Discrepancy exceeds 2.5% threshold. Field scales recalibration requested.',
-  },
-];
-
 export const MultiChannelInwardScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'LEDGER' | 'WALK_IN_POS' | 'B2B_WEIGHBRIDGE' | 'RECONCILER'>('LEDGER');
   const [vouchers, setVouchers] = useState<InwardVoucherRecord[]>([]);
   const [reconciliations, setReconciliations] = useState<YardReconciliationRecord[]>([]);
   const [posProducts, setPosProducts] = useState<{ id: string; cat: string; name: string; rate: number; icon: string }[]>([]);
+  const [loadError, setLoadError] = useState('');
 
   // Filters
   const [channelFilter, setChannelFilter] = useState<string>('ALL');
@@ -366,6 +122,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
   // Dynamic live vouchers and reconciliations integration from backend
   useEffect(() => {
     const fetchLiveInwardData = async () => {
+      setLoadError('');
       try {
         const [vouchRes, recRes, pickRes, catalogRes] = await Promise.all([
           adminApiClient.get('/admin/operations/inward-vouchers'),
@@ -373,6 +130,9 @@ export const MultiChannelInwardScreen: React.FC = () => {
           adminApiClient.get('/admin/pickups'),
           adminApiClient.get('/catalog'),
         ]);
+        if (!vouchRes.success || !recRes.success || !pickRes.success || !catalogRes.success) {
+          setLoadError('Some inward data could not be loaded. Please retry.');
+        }
 
         let combinedVouchers: InwardVoucherRecord[] = [];
 
@@ -382,9 +142,9 @@ export const MultiChannelInwardScreen: React.FC = () => {
             voucherNumber: v.voucherNumber,
             channel: v.channel,
             timestamp: v.timestamp || new Date(v.createdAt).toLocaleTimeString(),
-            divisionId: v.divisionId || 'div_vja_central',
-            divisionName: v.divisionName || 'Vijayawada Central Yard',
-            sellerName: v.sellerName,
+            divisionId: v.divisionId || '—',
+            divisionName: v.divisionName || '—',
+            sellerName: v.sellerName || '—',
             sellerPhone: v.sellerPhone || '',
             sellerType: v.sellerType || 'LOCAL_KABADIS',
             vehicleReg: v.vehicleReg,
@@ -400,45 +160,68 @@ export const MultiChannelInwardScreen: React.FC = () => {
             grandTotalRupees: v.grandTotalRupees,
             paymentMethod: v.paymentMethod || 'CASH',
             paymentStatus: v.paymentStatus || 'PAID',
-            operatorName: v.operatorName || 'System Weighmaster',
+            operatorName: v.operatorName || '—',
             status: v.status || 'RECEIVED_VERIFIED',
             reconciliationNotes: v.reconciliationNotes,
           }));
         }
 
         if (pickRes.success && Array.isArray(pickRes.data)) {
-          const liveDoorstep: InwardVoucherRecord[] = pickRes.data.map((p: any, idx: number) => ({
-            id: p._id || p.id || `live_pick_${idx}`,
-            voucherNumber: p.pickupCode || `AKP-${10245 + idx}`,
-            channel: 'DOORSTEP_PICKUP' as const,
-            timestamp: new Date(p.createdAt || Date.now()).toLocaleTimeString(),
-            divisionId: p.divisionId || 'div_vja_central',
-            divisionName: 'Vijayawada Central Hub',
-            sellerName: p.customerName || p.customerId || 'Field Customer',
-            sellerPhone: p.mobile || '9848022334',
-            sellerType: 'HOUSEHOLD' as const,
-            items: [
-              {
-                productId: 'prod_scrap_01',
-                categoryName: 'Mixed Recyclables',
-                productName: p.category || 'Doorstep Scrap Collection',
-                ratePerKgRupees: 18.0,
-                grossWeightKg: p.totalWeightKg || p.estWeightKg || 25,
-                deductionKg: 0,
-                deductionReason: 'None',
-                netWeightKg: p.totalWeightKg || p.estWeightKg || 25,
-                lineTotalRupees: p.totalValueRupees || (p.totalWeightKg || 25) * 18,
-              },
-            ],
-            totalGrossKg: p.totalWeightKg || p.estWeightKg || 25,
-            totalDeductionKg: 0,
-            totalNetKg: p.totalWeightKg || p.estWeightKg || 25,
-            grandTotalRupees: p.totalValueRupees || (p.totalWeightKg || 25) * 18,
-            paymentMethod: (p.paymentMethod || 'CASH') as PaymentMethod,
-            paymentStatus: (p.status === 'COMPLETED' ? 'PAID' : 'PENDING') as any,
-            operatorName: 'Ravi Kumar (AP 16 TX 4021)',
-            status: (p.status === 'COMPLETED' ? 'RECEIVED_VERIFIED' : 'PENDING_WEIGHMENT') as any,
-          }));
+          const liveDoorstep: InwardVoucherRecord[] = pickRes.data.map((p: any, idx: number) => {
+            const estMaxKg = p.estimatedWeightSnapshot?.maxGrams != null
+              ? p.estimatedWeightSnapshot.maxGrams / 1000 : 0;
+            const estMinKg = p.estimatedWeightSnapshot?.minGrams != null
+              ? p.estimatedWeightSnapshot.minGrams / 1000 : 0;
+            const operator =
+              p.assignment?.employeeName ||
+              p.assignment?.driverName ||
+              p.assignment?.vehicleNumber ||
+              '—';
+            return {
+              id: p._id || p.id || `live_pick_${idx}`,
+              voucherNumber: p.pickupCode || p._id || p.id || '—',
+              channel: 'DOORSTEP_PICKUP' as const,
+              timestamp: new Date(p.createdAt || Date.now()).toLocaleTimeString(),
+              divisionId: p.divisionId?._id || p.divisionId || '—',
+              divisionName: p.divisionId?.name || p.divisionName || '—',
+              sellerName: p.addressSnapshot?.name || p.orderMeta?.customerName || '—',
+              sellerPhone: p.mobile || p.orderMeta?.customerPhone || '—',
+              sellerType: 'HOUSEHOLD' as const,
+              vehicleReg: p.assignment?.vehicleNumber || undefined,
+              assignedCollectorName: operator !== '—' ? operator : undefined,
+              items: Array.isArray(p.items) ? p.items.map((item: any) => ({
+                productId: item.productId?._id || item.productId || item.id || '',
+                categoryName: item.categoryName || '—',
+                productName: item.productName || item.name || '—',
+                ratePerKgRupees: Number(item.ratePerKgRupees ??
+                  (item.ratePerKg != null ? item.ratePerKg / 100 : 0)),
+                grossWeightKg: Number(item.grossWeightKg ??
+                  (item.grossWeightGrams != null ? item.grossWeightGrams / 1000 : 0)),
+                deductionKg: Number(item.deductionKg ??
+                  (item.deductionGrams != null ? item.deductionGrams / 1000 : 0)),
+                deductionReason: item.deductionReason || 'None',
+                netWeightKg: Number(item.netWeightKg ??
+                  (item.netWeightGrams != null ? item.netWeightGrams / 1000 : 0)),
+                lineTotalRupees: Number(item.lineTotalRupees ??
+                  (item.lineTotal != null ? item.lineTotal / 100 : 0)),
+              })) : [],
+              totalGrossKg: Number(p.totals?.grossWeightGrams != null
+                ? p.totals.grossWeightGrams / 1000
+                : estMaxKg),
+              totalDeductionKg: Number(p.totals?.wastageGrams != null
+                ? p.totals.wastageGrams / 1000 : 0),
+              totalNetKg: Number(p.totals?.netWeightGrams != null
+                ? p.totals.netWeightGrams / 1000
+                : estMinKg || estMaxKg),
+              grandTotalRupees: Number(p.totals?.totalAmount != null
+                ? p.totals.totalAmount / 100
+                : p.totalAmountPaise != null ? p.totalAmountPaise / 100 : 0),
+              paymentMethod: (p.settlementPreference || p.paymentMethod || 'CASH') as PaymentMethod,
+              paymentStatus: (p.status === 'COMPLETED' ? 'PAID' : 'PENDING') as any,
+              operatorName: operator,
+              status: (p.status === 'COMPLETED' ? 'RECEIVED_VERIFIED' : 'PENDING_WEIGHMENT') as any,
+            };
+          });
           combinedVouchers = [...liveDoorstep, ...combinedVouchers];
         }
 
@@ -482,6 +265,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
         }
       } catch (err) {
         console.error('Failed to load inward operations data:', err);
+        setLoadError('Unable to load inward ledger data. Please retry.');
       }
     };
 
@@ -604,14 +388,13 @@ export const MultiChannelInwardScreen: React.FC = () => {
       return;
     }
 
-    const randomSuffix = Math.floor(100 + Math.random() * 900);
     const newVoucher: InwardVoucherRecord = {
       id: `inv_${Date.now()}`,
-      voucherNumber: `YRD-20261012-${randomSuffix}`,
+      voucherNumber: '',
       channel: 'YARD_WALK_IN',
       timestamp: 'Just now',
-      divisionId: 'div_vja_central',
-      divisionName: 'Vijayawada Central Yard',
+      divisionId: '—',
+      divisionName: '—',
       sellerName: posCustomerName.trim(),
       sellerPhone: posCustomerPhone.trim() || 'Not Provided',
       sellerType: posCustomerType,
@@ -626,8 +409,9 @@ export const MultiChannelInwardScreen: React.FC = () => {
       status: 'RECEIVED_VERIFIED',
     };
 
+    const { id: _id, voucherNumber: _voucherNumber, ...payload } = newVoucher;
     adminApiClient
-      .post('/admin/operations/inward-vouchers', newVoucher)
+      .post('/admin/operations/inward-vouchers', payload)
       .then((res) => {
         if (res.success && res.data) {
           const saved = { ...newVoucher, ...res.data, id: res.data._id || res.data.id };
@@ -654,15 +438,13 @@ export const MultiChannelInwardScreen: React.FC = () => {
     const scrapMeta = posProducts.find((s) => s.id === b2bSelectedProduct);
     if (!scrapMeta) return;
     const totalPayable = netKg * b2bContractRate;
-    const randomSuffix = Math.floor(10 + Math.random() * 90);
-
     const newVoucher: InwardVoucherRecord = {
       id: `inv_b2b_${Date.now()}`,
-      voucherNumber: `B2B-20261012-0${randomSuffix}`,
+      voucherNumber: '',
       channel: 'B2B_COMMERCIAL',
       timestamp: 'Just now',
-      divisionId: 'div_vja_central',
-      divisionName: 'Vijayawada Central Yard (Heavy Scale #1)',
+      divisionId: '—',
+      divisionName: '—',
       sellerName: b2bCompanyName.trim(),
       sellerPhone: b2bPhone.trim(),
       sellerType: 'CORPORATE_B2B',
@@ -697,7 +479,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
 
     // Persist to MongoDB
     try {
-      const res = await adminApiClient.post('/admin/operations/inward-vouchers', newVoucher);
+      const { id: _id, voucherNumber: _voucherNumber, ...payload } = newVoucher;
+      const res = await adminApiClient.post('/admin/operations/inward-vouchers', payload);
       if (res.success && res.data) {
         const saved = { ...newVoucher, ...res.data, id: res.data._id || res.data.id };
         setVouchers((prev) => [saved, ...prev]);
@@ -1077,6 +860,11 @@ export const MultiChannelInwardScreen: React.FC = () => {
                       </td>
                     </tr>
                   ))}
+                  {filteredVouchers.length === 0 && (
+                    <tr><td colSpan={9} className="py-10 text-center text-slate-400">
+                      {loadError || 'No inward vouchers available.'}
+                    </td></tr>
+                  )}
                 </tbody>
               </table>
             </div>

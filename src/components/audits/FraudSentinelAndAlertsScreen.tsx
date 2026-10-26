@@ -45,57 +45,6 @@ export interface FraudAlertRecord {
   notes?: string;
 }
 
-const UNUSED_LEGACY_FRAUD_ALERTS: FraudAlertRecord[] = [
-  {
-    id: 'alt_01',
-    category: 'WEIGHT_MISMATCH_DUMP',
-    severity: 'CRITICAL',
-    title: 'Dump Scale Weight Shortage > 3.2%',
-    description: 'Vehicle AP 16 TF 2234 reported 780.0 kg on mobile app, but physical yard platform scale weighed 755.0 kg (-25.0 kg shortage).',
-    subjectCode: 'AKP-EMP-0310',
-    subjectName: 'K. Venkatesh (Driver) & Md. Ismail (Collector)',
-    detectedAt: 'Today, 11:32 AM',
-    financialRiskRupees: 700,
-    status: 'OPEN_PENDING_ACTION',
-  },
-  {
-    id: 'alt_02',
-    category: 'FLOAT_CASH_SHORTAGE',
-    severity: 'WARNING',
-    title: 'Evening Cash Float Unexplained Discrepancy',
-    description: 'Cash float flt_092 closed with ₹450 unexplained shortage after deducting verified OTP pickups and approved EV charging vouchers.',
-    subjectCode: 'AKP-EMP-0182',
-    subjectName: 'Siva Krishna (Field Picker)',
-    detectedAt: '11 Oct 2026, 18:45',
-    financialRiskRupees: 450,
-    status: 'ACKNOWLEDGED_INVESTIGATING',
-  },
-  {
-    id: 'alt_03',
-    category: 'HIGH_WASTAGE_DEDUCTION',
-    severity: 'WARNING',
-    title: 'Abnormal Deduction Frequency (6.8% vs Yard Avg 2.1%)',
-    description: 'Collector recorded 6.8% average moisture deduction across 12 consecutive pickups in Moghalrajpuram. Exceeds historical weather threshold.',
-    subjectCode: 'AKP-EMP-0247',
-    subjectName: 'Ramesh Kumar (Field Collector)',
-    detectedAt: 'Today, 12:15 PM',
-    financialRiskRupees: 380,
-    status: 'OPEN_PENDING_ACTION',
-  },
-  {
-    id: 'alt_04',
-    category: 'DUPLICATE_CUSTOMER_PHONE',
-    severity: 'INFO',
-    title: 'Multiple Pickup Requests from Same Number in Different Divisions',
-    description: 'Phone 9848112233 scheduled 3 simultaneous pickups across Vijayawada East and Guntur on the same day.',
-    subjectCode: 'CUST-9848112233',
-    subjectName: 'Aggregator Trader (Unverified)',
-    detectedAt: 'Today, 09:10 AM',
-    status: 'RESOLVED_CLEARED',
-    notes: 'Verified commercial bulk cleanout aggregator operating across two yards.',
-  },
-];
-
 export const FraudSentinelAndAlertsScreen: React.FC = () => {
   const [alerts, setAlerts] = useState<FraudAlertRecord[]>([]);
   const [severityFilter, setSeverityFilter] = useState<string>('ALL');
@@ -157,7 +106,9 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
         status: 'ACKNOWLEDGED_INVESTIGATING',
         notes,
       });
-      if (!res.success) return showToast(res.error || 'Failed to acknowledge alert.');
+      if (!res.success || res.data?.success === false) {
+        return showToast(res.data?.error || res.error || 'Failed to acknowledge alert.');
+      }
       setAlerts((prev) => prev.map((a) => a.id === id
         ? { ...a, status: 'ACKNOWLEDGED_INVESTIGATING', notes } : a));
       setActiveModalAlert(null);
@@ -175,7 +126,9 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
         status: 'RESOLVED_CLEARED',
         notes,
       });
-      if (!res.success) return showToast(res.error || 'Failed to resolve alert.');
+      if (!res.success || res.data?.success === false) {
+        return showToast(res.data?.error || res.error || 'Failed to resolve alert.');
+      }
       setAlerts((prev) => prev.map((a) => a.id === id
         ? { ...a, status: 'RESOLVED_CLEARED', notes } : a));
       setActiveModalAlert(null);

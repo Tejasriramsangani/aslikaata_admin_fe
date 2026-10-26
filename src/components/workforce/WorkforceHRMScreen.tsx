@@ -91,276 +91,6 @@ export interface CashFloatRecord {
   auditNotes?: string;
 }
 
-// Initial Seed Data for Andhra Pradesh Scrap Operations
-const UNUSED_LEGACY_EMPLOYEES: EmployeeRecord[] = [
-  {
-    id: 'emp_01',
-    employeeCode: 'AKP-EMP-0247',
-    name: 'Ramesh Kumar',
-    phone: '9876543210',
-    role: 'FIELD_COLLECTOR',
-    assignedDivision: 'Vijayawada Central',
-    assignedVehicleReg: 'AP 16 TX 4021',
-    kyc: {
-      status: 'APPROVED',
-      aadhaarMasked: 'XXXX-XXXX-4091',
-      dlNumber: 'AP16-2019-0028491',
-      dlValidUntil: '2029-08-14',
-      policeVerificationDone: true,
-      joinedDate: '2025-11-10',
-    },
-    compensation: {
-      payModel: 'MONTHLY_SALARY',
-      basePayRupees: 18500,
-      incentivePerKgPaise: 50, // Rs 0.50 per kg bonus
-      bankAccountMasked: 'SBIN-XXXX-8921',
-      upiId: 'ramesh.scrap@oksbi',
-    },
-    todayAttendance: 'PRESENT_ON_ROUTE',
-    checkInTime: '07:45 AM',
-    metrics: {
-      rating: 4.9,
-      totalPickupsCompleted: 482,
-      totalKgCollected: 42800,
-      todayKgCollected: 640,
-      todayPickupsCompleted: 3,
-    },
-  },
-  {
-    id: 'emp_02',
-    employeeCode: 'AKP-EMP-0182',
-    name: 'Siva Krishna',
-    phone: '9440112233',
-    role: 'FIELD_COLLECTOR',
-    assignedDivision: 'Vijayawada East',
-    assignedVehicleReg: 'AP 16 TE 9081',
-    kyc: {
-      status: 'APPROVED',
-      aadhaarMasked: 'XXXX-XXXX-7712',
-      dlNumber: 'AP16-2021-0081923',
-      dlValidUntil: '2031-02-20',
-      policeVerificationDone: true,
-      joinedDate: '2026-02-15',
-    },
-    compensation: {
-      payModel: 'MONTHLY_SALARY',
-      basePayRupees: 18000,
-      incentivePerKgPaise: 50,
-      bankAccountMasked: 'HDFC-XXXX-4491',
-      upiId: 'siva.krishna@okhdfc',
-    },
-    todayAttendance: 'PRESENT_ON_ROUTE',
-    checkInTime: '07:50 AM',
-    metrics: {
-      rating: 4.8,
-      totalPickupsCompleted: 310,
-      totalKgCollected: 29400,
-      todayKgCollected: 490,
-      todayPickupsCompleted: 2,
-    },
-  },
-  {
-    id: 'emp_03',
-    employeeCode: 'AKP-EMP-0310',
-    name: 'K. Venkatesh',
-    phone: '9988776655',
-    role: 'DRIVER',
-    assignedDivision: 'Vijayawada Central',
-    assignedVehicleReg: 'AP 16 TF 2234',
-    kyc: {
-      status: 'APPROVED',
-      aadhaarMasked: 'XXXX-XXXX-3341',
-      dlNumber: 'AP07-2018-0019284',
-      dlValidUntil: '2028-11-04',
-      policeVerificationDone: true,
-      joinedDate: '2026-01-05',
-    },
-    compensation: {
-      payModel: 'MONTHLY_SALARY',
-      basePayRupees: 20000,
-      incentivePerKgPaise: 25,
-      bankAccountMasked: 'ICIC-XXXX-9912',
-      upiId: 'k.venkat@okicici',
-    },
-    todayAttendance: 'PRESENT_ON_ROUTE',
-    checkInTime: '08:00 AM',
-    metrics: {
-      rating: 4.7,
-      totalPickupsCompleted: 245,
-      totalKgCollected: 68200,
-      todayKgCollected: 1250,
-      todayPickupsCompleted: 4,
-    },
-  },
-  {
-    id: 'emp_04',
-    employeeCode: 'AKP-EMP-0399',
-    name: 'Md. Ismail',
-    phone: '9655443322',
-    role: 'FIELD_COLLECTOR',
-    assignedDivision: 'Guntur Processing Yard',
-    assignedVehicleReg: 'AP 07 TJ 1120',
-    kyc: {
-      status: 'APPROVED',
-      aadhaarMasked: 'XXXX-XXXX-9021',
-      dlNumber: 'AP07-2020-0044192',
-      dlValidUntil: '2030-05-18',
-      policeVerificationDone: true,
-      joinedDate: '2026-04-01',
-    },
-    compensation: {
-      payModel: 'DAILY_WAGE',
-      basePayRupees: 750, // Rs 750 / working day
-      incentivePerKgPaise: 50,
-      bankAccountMasked: 'ANDB-XXXX-1142',
-      upiId: 'ismail.gnt@unionbank',
-    },
-    todayAttendance: 'PRESENT_ON_ROUTE',
-    checkInTime: '07:30 AM',
-    metrics: {
-      rating: 4.9,
-      totalPickupsCompleted: 180,
-      totalKgCollected: 18900,
-      todayKgCollected: 380,
-      todayPickupsCompleted: 2,
-    },
-  },
-  {
-    id: 'emp_05',
-    employeeCode: 'AKP-EMP-0412',
-    name: 'Ch. Nageswara Rao',
-    phone: '9701998877',
-    role: 'YARD_SORTER',
-    assignedDivision: 'Vijayawada Central Yard',
-    kyc: {
-      status: 'APPROVED',
-      aadhaarMasked: 'XXXX-XXXX-6623',
-      policeVerificationDone: true,
-      joinedDate: '2026-05-12',
-    },
-    compensation: {
-      payModel: 'DAILY_WAGE',
-      basePayRupees: 650,
-      incentivePerKgPaise: 0,
-      bankAccountMasked: 'SBIN-XXXX-5521',
-      upiId: 'nagesh.yard@oksbi',
-    },
-    todayAttendance: 'PRESENT_IN_YARD',
-    checkInTime: '07:00 AM',
-    metrics: {
-      rating: 5.0,
-      totalPickupsCompleted: 0,
-      totalKgCollected: 94000,
-      todayKgCollected: 2100,
-      todayPickupsCompleted: 0,
-    },
-  },
-  {
-    id: 'emp_06',
-    employeeCode: 'AKP-EMP-0455',
-    name: 'B. Jagadeesh',
-    phone: '9490223344',
-    role: 'DRIVER',
-    assignedDivision: 'All Divisions (Bulk Heavy)',
-    assignedVehicleReg: 'AP 16 TH 5541',
-    kyc: {
-      status: 'PENDING_REVIEW', // Needs Admin KYC Review!
-      aadhaarMasked: 'XXXX-XXXX-1994',
-      dlNumber: 'AP16-2022-0099412',
-      dlValidUntil: '2032-12-10',
-      policeVerificationDone: false,
-      joinedDate: '2026-10-08',
-    },
-    compensation: {
-      payModel: 'MONTHLY_SALARY',
-      basePayRupees: 21000,
-      incentivePerKgPaise: 25,
-      bankAccountMasked: 'AXIS-XXXX-0012',
-      upiId: 'jagadeesh.b@axisbank',
-    },
-    todayAttendance: 'PRESENT_IN_YARD',
-    checkInTime: '08:15 AM',
-    metrics: {
-      rating: 4.5,
-      totalPickupsCompleted: 15,
-      totalKgCollected: 4500,
-      todayKgCollected: 0,
-      todayPickupsCompleted: 0,
-    },
-  },
-];
-
-const UNUSED_LEGACY_CASH_FLOATS: CashFloatRecord[] = [
-  {
-    id: 'flt_101',
-    date: '2026-10-12',
-    employeeCode: 'AKP-EMP-0247',
-    employeeName: 'Ramesh Kumar',
-    vehicleReg: 'AP 16 TX 4021',
-    openingFloatRupees: 15000,
-    issuedTime: '08:00 AM',
-    issuedByAdmin: 'Ramesh Varma (Admin)',
-    verifiedCustomerCashPayoutsRupees: 11450, // 3 pickups paid in cash
-    approvedRouteExpensesRupees: 130.5, // EV charging logged
-    expectedCashReturnRupees: 3419.5, // 15000 - 11450 - 130.5 = 3419.5
-    actualPhysicalCashReturnedRupees: undefined, // Currently on route!
-    varianceRupees: 0,
-    status: 'ISSUED',
-  },
-  {
-    id: 'flt_102',
-    date: '2026-10-12',
-    employeeCode: 'AKP-EMP-0182',
-    employeeName: 'Siva Krishna',
-    vehicleReg: 'AP 16 TE 9081',
-    openingFloatRupees: 12000,
-    issuedTime: '08:10 AM',
-    issuedByAdmin: 'Ramesh Varma (Admin)',
-    verifiedCustomerCashPayoutsRupees: 8900,
-    approvedRouteExpensesRupees: 80, // puncture repair
-    expectedCashReturnRupees: 3020,
-    actualPhysicalCashReturnedRupees: undefined,
-    varianceRupees: 0,
-    status: 'ISSUED',
-  },
-  {
-    id: 'flt_103',
-    date: '2026-10-12',
-    employeeCode: 'AKP-EMP-0310',
-    employeeName: 'K. Venkatesh',
-    vehicleReg: 'AP 16 TF 2234',
-    openingFloatRupees: 25000,
-    issuedTime: '08:15 AM',
-    issuedByAdmin: 'Ramesh Varma (Admin)',
-    verifiedCustomerCashPayoutsRupees: 19850,
-    approvedRouteExpensesRupees: 1883, // fuel + toll
-    expectedCashReturnRupees: 3267,
-    actualPhysicalCashReturnedRupees: undefined,
-    varianceRupees: 0,
-    status: 'ISSUED',
-  },
-  // Yesterday's settled sample
-  {
-    id: 'flt_098',
-    date: '2026-10-11',
-    employeeCode: 'AKP-EMP-0247',
-    employeeName: 'Ramesh Kumar',
-    vehicleReg: 'AP 16 TX 4021',
-    openingFloatRupees: 15000,
-    issuedTime: '08:00 AM',
-    issuedByAdmin: 'Ramesh Varma (Admin)',
-    verifiedCustomerCashPayoutsRupees: 12800,
-    approvedRouteExpensesRupees: 0,
-    expectedCashReturnRupees: 2200,
-    actualPhysicalCashReturnedRupees: 2200,
-    varianceRupees: 0,
-    reconciledTime: '06:15 PM',
-    reconciledByAdmin: 'K. Venkat Rao (Yard Mgr)',
-    status: 'BALANCED',
-    auditNotes: 'Perfect count matching scale vouchers.',
-  },
-];
-
 export const WorkforceHRMScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'ROSTER' | 'FLOAT_DESK' | 'ATTENDANCE' | 'LEADERBOARD'>('ROSTER');
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
@@ -551,6 +281,7 @@ export const WorkforceHRMScreen: React.FC = () => {
 
   // Open Settlement Modal
   const openSettlementModal = (flt: CashFloatRecord) => {
+    if (flt.status !== 'ISSUED') return;
     setActiveFloatToSettle(flt);
     setActualCashInput(flt.expectedCashReturnRupees);
     setSettleNotes('');
@@ -720,7 +451,7 @@ export const WorkforceHRMScreen: React.FC = () => {
             { id: 'ROSTER', label: '👥 Workforce Roster & KYC', count: employees.length },
             { id: 'FLOAT_DESK', label: '💵 Daily Cash Float Desk', count: cashFloats.length },
             { id: 'ATTENDANCE', label: '📅 Geofenced Attendance', count: metrics.onRouteCount + metrics.inYardCount },
-            { id: 'LEADERBOARD', label: '🏆 Collection Leaderboard', count: 6 },
+            { id: 'LEADERBOARD', label: '🏆 Collection Leaderboard', count: employees.length },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -962,7 +693,7 @@ export const WorkforceHRMScreen: React.FC = () => {
 
                 <tbody className="divide-y divide-slate-100">
                   {cashFloats.map((flt) => {
-                    const isSettled = flt.status === 'BALANCED' || flt.status === 'SHORTAGE_FLAGGED';
+                    const isSettled = flt.status !== 'ISSUED';
 
                     return (
                       <tr key={flt.id} className="hover:bg-slate-50/80 transition-colors">
@@ -997,7 +728,7 @@ export const WorkforceHRMScreen: React.FC = () => {
 
                         {/* 6. Actual Return */}
                         <td className="py-3.5 px-3 font-extrabold text-slate-900 text-xs">
-                          {flt.actualPhysicalCashReturnedRupees !== undefined
+                          {flt.actualPhysicalCashReturnedRupees != null
                             ? `₹${flt.actualPhysicalCashReturnedRupees.toLocaleString('en-IN')}`
                             : <span className="text-amber-600 text-[11px] font-bold">On Route</span>}
                         </td>
@@ -1054,6 +785,11 @@ export const WorkforceHRMScreen: React.FC = () => {
                       </tr>
                     );
                   })}
+                  {cashFloats.length === 0 && (
+                    <tr><td colSpan={9} className="py-10 text-center text-slate-400">
+                      No cash floats have been issued.
+                    </td></tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1095,6 +831,11 @@ export const WorkforceHRMScreen: React.FC = () => {
                   </div>
                 </div>
               ))}
+              {employees.length === 0 && (
+                <div className="md:col-span-2 py-10 text-center text-xs text-slate-400">
+                  No workforce roster records available.
+                </div>
+              )}
             </div>
           </div>
         </div>

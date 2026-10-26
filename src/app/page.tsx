@@ -31,7 +31,7 @@ import { adminApiClient } from '../lib/api-client';
 
 export default function OperationsDashboardPage() {
   const { admin } = useAdminAuth();
-  const { isBackendConnected, unassignedBulkCount, setUnassignedBulkCount } = useAdminNav();
+  const { isBackendConnected, unassignedBulkCount } = useAdminNav();
 
   const [loading, setLoading] = useState(false);
   const [pickups, setPickups] = useState<any[]>([]);
@@ -58,17 +58,21 @@ export default function OperationsDashboardPage() {
       const analytics: any = analyticsRes.success ? analyticsRes.data || {} : {};
       const vehicles: any[] = vehiclesRes.success && Array.isArray(vehiclesRes.data) ? vehiclesRes.data : [];
       const floats: any[] = floatsRes.success && Array.isArray(floatsRes.data) ? floatsRes.data : [];
-      const unassigned = Number(analytics.unassignedRequests || 0);
-      setUnassignedBulkCount(unassigned);
-      const outstandingFloats = floats.filter((item) => !['SETTLED', 'CLOSED'].includes(item.status));
+      const outstandingFloats = floats.filter((item) =>
+        ['ISSUED', 'SHORTAGE_FLAGGED', 'SURPLUS_FLAGGED'].includes(item.status),
+      );
       setKpis({
         volumeKg: Number(analytics.weightCollected?.netWeightGrams || 0) / 1000,
-        totalAmount: Number(analytics.financials?.totalAmount || 0),
+        totalAmount: Number(analytics.financials?.totalAmount || 0) / 100,
         activeVehicles: vehicles.filter((vehicle) => vehicle.status === 'ACTIVE').length,
         totalVehicles: vehicles.length,
         cashFloatStatus: floats.length === 0 ? 'NO DATA' : outstandingFloats.length === 0 ? 'BALANCED' : 'PENDING',
         cashFloatAmount: outstandingFloats.reduce(
-          (sum, item) => sum + Number(item.balanceRupees ?? item.balance ?? item.amountRupees ?? 0),
+          (sum, item) => sum + Number(
+            item.status === 'ISSUED'
+              ? item.openingFloatRupees
+              : item.actualPhysicalCashReturnedRupees ?? item.expectedCashReturnRupees ?? 0,
+          ),
           0,
         ),
       });
@@ -83,8 +87,15 @@ export default function OperationsDashboardPage() {
             address: [address.line1, address.area, address.city].filter(Boolean).join(', ') || '—',
             category: pickup.categories?.[0]?.name || pickup.categories?.[0] ||
               pickup.items?.[0]?.productName || '—',
-            estWeightKg: Number(pickup.estimatedWeightSnapshot?.kg ??
-              pickup.estimatedWeightSnapshot ?? pickup.totals?.netWeightKg ?? 0),
+            estWeightKg: Number(
+              pickup.totals?.netWeightGrams != null
+                ? pickup.totals.netWeightGrams / 1000
+                : pickup.estimatedWeightSnapshot?.maxGrams != null
+                  ? pickup.estimatedWeightSnapshot.maxGrams / 1000
+                  : pickup.estimatedWeightSnapshot?.minGrams != null
+                    ? pickup.estimatedWeightSnapshot.minGrams / 1000
+                    : pickup.estimatedWeightSnapshot?.kg ?? pickup.totals?.netWeightKg ?? 0,
+            ),
             slotTime: pickup.timeSlotSnapshot?.displayLabel || '—',
             driverName: assignment.employee?.name || assignment.driverName ||
               assignment.vehicle?.registrationNumber || 'Unassigned',
@@ -172,7 +183,7 @@ export default function OperationsDashboardPage() {
 
           <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-1">
             <div className="flex items-center justify-between text-slate-400">
-              <span className="text-[10px] font-black uppercase tracking-wider">Gross Realized Margin</span>
+              <span className="text-[10px] font-black uppercase tracking-wider">Today Collections / Payouts</span>
               <Coins className="w-4 h-4 text-amber-500" />
             </div>
             <div className="text-2xl font-black text-slate-900">₹ {kpis.totalAmount.toLocaleString('en-IN')}</div>
