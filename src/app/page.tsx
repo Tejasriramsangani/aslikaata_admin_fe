@@ -23,6 +23,7 @@ import {
   MapPin,
   Clock,
   Radio,
+  ClipboardList,
 } from 'lucide-react';
 import { AdminAppShell } from '../components/layout/AdminAppShell';
 import { useAdminAuth } from '../context/AdminAuthContext';
@@ -151,18 +152,21 @@ export default function OperationsDashboardPage() {
 
             <div className="flex flex-wrap items-center gap-3">
               <Link
-                href="/pricing"
+                href="/dispatch"
                 className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-md transition-all cursor-pointer"
+              >
+                <ClipboardList className="w-4 h-4" />
+                <span>
+                  Assign Pickups
+                  {unassignedBulkCount > 0 ? ` (${unassignedBulkCount})` : ''}
+                </span>
+              </Link>
+              <Link
+                href="/pricing"
+                className="px-4 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider border border-emerald-600/60 flex items-center gap-2 shadow-md transition-all cursor-pointer"
               >
                 <TrendingUp className="w-4 h-4" />
                 <span>Adjust Rates</span>
-              </Link>
-              <Link
-                href="/inward"
-                className="px-4 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider border border-emerald-600/60 flex items-center gap-2 shadow-md transition-all cursor-pointer"
-              >
-                <PackagePlus className="w-4 h-4" />
-                <span>Inward Queue</span>
               </Link>
             </div>
           </div>

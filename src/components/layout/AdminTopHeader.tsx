@@ -40,6 +40,8 @@ export const AdminTopHeader: React.FC = () => {
       ? 'Workforce HRM & Daily Cash Float Desk'
       : pathname === '/inward'
       ? 'Multi-Channel Inward Scrap Receiving Desk'
+      : pathname === '/dispatch'
+      ? 'Assign Pickups — Orders & Employees'
       : pathname === '/calendar'
       ? 'Operations Holiday Calendar & Route Matrix'
       : pathname === '/outward'

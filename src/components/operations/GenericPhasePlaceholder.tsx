@@ -73,6 +73,19 @@ const SECTION_METAS: Record<AdminNavSection, PhaseMeta> = {
       'B2B Weighbridge Slips & GST e-Way Bill Documentation',
     ],
   },
+  dispatch: {
+    title: 'Assign Pickups',
+    badge: 'Live',
+    phaseNum: 4,
+    description:
+      'Simple board: customer orders on the left, free pickup employees on the right. Assign or reschedule.',
+    keyFeatures: [
+      'See every waiting customer order with date & slot',
+      'See which employees are free vs busy',
+      'Assign free employee + vehicle in one click',
+      'Reschedule when nobody is available',
+    ],
+  },
   calendar: {
     title: 'Holiday Operations Calendar & Weekly Route Matrix',
     badge: 'Phase 5 Next',

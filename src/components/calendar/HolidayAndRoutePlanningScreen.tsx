@@ -245,20 +245,32 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
         if (unassignedRes.success && Array.isArray(unassignedRes.data)) {
           setUnassignedQueue(
-            unassignedRes.data.map((u: any) => ({
-              id: u._id || u.id,
-              pickupCode: u.pickupCode || u._id || '—',
-              customerName: u.addressSnapshot?.name || u.orderMeta?.customerName || 'Customer',
-              phone: u.mobile || u.orderMeta?.customerPhone || '—',
-              divisionName: u.division?.name || u.divisionName || '—',
-              address: [u.addressSnapshot?.line1, u.addressSnapshot?.area, u.addressSnapshot?.city].filter(Boolean).join(', ') || '—',
-              estimatedWeightKg: Number(u.estimatedWeightSnapshot?.kg ?? u.estimatedWeightSnapshot ?? u.totals?.netWeightKg ?? 0),
-              scrapCategories: (u.categories || u.items || []).map((item: any) => item.name || item.productName || item),
-              requestedDate: u.preferredDate || u.requestedDate || '—',
-              preferredSlot: u.timeSlotSnapshot?.displayLabel || u.preferredSlot || '—',
-              reason: u.unassignedReason || '—',
-              flaggedAt: u.updatedAt || u.createdAt || '—',
-            })),
+            unassignedRes.data.map((u: any) => {
+              const weight = u.estimatedWeightSnapshot;
+              const estKg =
+                weight?.maxGrams != null
+                  ? Math.round(Number(weight.maxGrams) / 1000)
+                  : Number(u.totals?.netWeightKg || 0);
+              return {
+                id: u._id || u.id,
+                pickupCode: u.pickupCode || u._id || '—',
+                customerName: u.addressSnapshot?.name || u.orderMeta?.customerName || 'Customer',
+                phone: u.mobile || u.orderMeta?.customerPhone || '—',
+                divisionName: u.division?.name || u.divisionName || u.addressSnapshot?.pincode || '—',
+                address:
+                  [u.addressSnapshot?.line1, u.addressSnapshot?.line2, u.addressSnapshot?.city]
+                    .filter(Boolean)
+                    .join(', ') || '—',
+                estimatedWeightKg: estKg,
+                scrapCategories: (u.categories || []).map((item: any) =>
+                  typeof item === 'string' ? item : item?.name || item?.productName || '—',
+                ),
+                requestedDate: u.scheduledDate || u.preferredDate || u.requestedDate || '—',
+                preferredSlot: u.timeSlotSnapshot?.displayLabel || u.preferredSlot || '—',
+                reason: u.unassignedReason || (u.needsAdminReview ? 'AWAITING_ADMIN_ASSIGN' : 'UNASSIGNED'),
+                flaggedAt: u.updatedAt || u.createdAt || '—',
+              };
+            }),
           );
         }
         const weeklyRuns = runsResponses.flatMap((response) =>
@@ -1089,14 +1101,18 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
-                <h3 className="font-bold text-slate-900 text-sm">Bulk Commercial & Unassigned Exception Queue</h3>
+                <h3 className="font-bold text-slate-900 text-sm">Pending Customer Pickups (Manual Assign)</h3>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Orders requiring manual supervisor vehicle assignment due to heavy bulk weight (&gt;100kg) or slot saturation
+                Customer-booked slots awaiting admin accept + employee assignment. Prefer{' '}
+                <a href="/dispatch" className="text-emerald-700 font-bold underline">
+                  Pickup Dispatch
+                </a>{' '}
+                for full assign UI.
               </p>
             </div>
             <span className="text-xs font-bold text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-              {unassignedQueue.length} Pending Exceptions
+              {unassignedQueue.length} Pending
             </span>
           </div>
 

@@ -9,6 +9,7 @@ export type AdminNavSection =
   | 'fleet' // Phase 2: Vehicle Registry, Maintenance & Fuel
   | 'workforce' // Phase 3: HRM, Pickers, Drivers, Daily Cash Floats
   | 'inward' // Phase 4: Multi-Channel Scrap Intake & Yard Gate Walk-in
+  | 'dispatch' // Manual accept + assign customer pickup requests
   | 'calendar' // Phase 5: Holiday Operations Calendar & Weekly Shift
   | 'outward' // Phase 6: Outward Mill Dispatches & Sales
   | 'analytics' // Phase 6: Financial P&L & Unit Economics

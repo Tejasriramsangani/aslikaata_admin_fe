@@ -22,6 +22,7 @@ import {
   Layers,
   UserCog,
   LayoutDashboard,
+  ClipboardList,
 } from 'lucide-react';
 import { useAdminNav, AdminNavSection } from '../../context/AdminNavContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
@@ -51,6 +52,14 @@ const NAV_GROUPS: NavGroup[] = [
         badge: 'Live',
         badgeVariant: 'emerald',
         icon: LayoutDashboard,
+      },
+      {
+        id: 'dispatch',
+        href: '/dispatch',
+        label: 'Assign Pickups',
+        badge: 'Orders',
+        badgeVariant: 'amber',
+        icon: ClipboardList,
       },
       {
         id: 'inward',
@@ -199,12 +208,12 @@ export const AdminSidebar: React.FC = () => {
         {/* Unassigned Quick Notification Pill */}
         {!isSidebarCollapsed && unassignedBulkCount > 0 && (
           <Link
-            href="/inward"
+            href="/dispatch"
             className="mx-3 mt-3 px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-between text-amber-300 text-xs font-bold hover:bg-amber-500/25 transition-all block animate-pulse"
           >
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-amber-400" />
-              <span>{unassignedBulkCount} Bulk Pickups Pending</span>
+              <span>{unassignedBulkCount} Pickups Awaiting Assign</span>
             </div>
             <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded-md">
               ACT
