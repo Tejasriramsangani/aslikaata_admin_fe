@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { adminApiClient } from '../lib/api-client';
 
-export type AdminRole = 'SUPER_ADMIN' | 'YARD_MANAGER' | 'DISPATCHER' | 'ACCOUNTANT' | 'COLLECTOR';
+export type AdminRole = 'SUPER_ADMIN' | 'YARD_MANAGER' | 'DISPATCHER' | 'ACCOUNTANT';
 
 export interface AdminUser {
   userId: string;
@@ -15,68 +15,18 @@ export interface AdminUser {
   assignedDivision?: string;
 }
 
-export interface DemoCredential {
-  role: AdminRole;
-  label: string;
-  name: string;
-  email: string;
-  password: string;
-  division: string;
-  description: string;
-}
-
-export const DEMO_CREDENTIALS: DemoCredential[] = [
-  {
-    role: 'SUPER_ADMIN',
-    label: 'Super Admin',
-    name: 'Ramesh Varma',
-    email: 'admin@aslikaata.com',
-    password: 'Admin@123456',
-    division: 'All Andhra Divisions',
-    description: 'Full ERP access, margins, system settings & audits',
-  },
-  {
-    role: 'YARD_MANAGER',
-    label: 'Yard Manager',
-    name: 'K. Venkat Rao',
-    email: 'yard.manager@aslikaata.com',
-    password: 'Yard@123456',
-    division: 'Vijayawada Central Yard',
-    description: 'Inward gate, scale weighing, baling & outward dispatch',
-  },
-  {
-    role: 'DISPATCHER',
-    label: 'Fleet Dispatcher',
-    name: 'Suresh Reddy',
-    email: 'dispatcher@aslikaata.com',
-    password: 'Dispatch@123456',
-    division: 'Guntur Autonagar Fleet Hub',
-    description: 'Vehicle fleet, driver assignment, route schedules',
-  },
-  {
-    role: 'ACCOUNTANT',
-    label: 'Chief Accountant',
-    name: 'P. Anitha',
-    email: 'accounts@aslikaata.com',
-    password: 'Accounts@123456',
-    division: 'All Andhra Divisions',
-    description: 'Daily cash float reconciliation, ledger & P&L realized margins',
-  },
-];
-
 interface AdminAuthContextType {
   admin: AdminUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithDemo: (role: AdminRole) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
 const isValidJwt = (token: string): boolean => {
-  if (!token || token.startsWith('demo_jwt_')) return false;
+  if (!token) return false;
   try {
     const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
     return !payload.exp || payload.exp * 1000 > Date.now();
@@ -90,18 +40,47 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const initAuth = () => {
+    // Restore the session after a reload. The access token only lives 15 minutes,
+    // so an expired one must be renewed with the (30 day) refresh token instead of
+    // sending the admin back to the login screen.
+    const initAuth = async () => {
       try {
         const storedProfile = localStorage.getItem('aslikaata_admin_profile');
         const storedToken = localStorage.getItem('aslikaata_admin_access_token');
-        if (storedProfile && storedToken && isValidJwt(storedToken)) {
-          setAdmin(JSON.parse(storedProfile));
+        if (!storedProfile) {
+          adminApiClient.clearTokens();
+          return;
+        }
+        let tokenOk = !!storedToken && isValidJwt(storedToken);
+        if (!tokenOk) {
+          const fresh = await adminApiClient.acquireFreshToken();
+          // A rejected refresh token is cleared by the client. If it is still stored the
+          // backend was just unreachable, so keep the admin signed in and retry later.
+          tokenOk = !!fresh || !!localStorage.getItem('aslikaata_admin_refresh_token');
+        }
+        if (tokenOk) {
+          const profile: AdminUser = JSON.parse(storedProfile);
+          // The role shown/used in the UI always comes from the server, never from storage.
+          const me = await adminApiClient.get('/auth/me');
+          if (me.success && me.data?.staffRole) {
+            profile.role = me.data.staffRole as AdminRole;
+            localStorage.setItem('aslikaata_admin_profile', JSON.stringify(profile));
+            setAdmin(profile);
+          } else if (me.success) {
+            // Valid token but no staff role (removed/never assigned): not an admin session.
+            adminApiClient.clearTokens();
+            setAdmin(null);
+          } else {
+            // Server unreachable or temporarily failing: keep the stored profile.
+            setAdmin(profile);
+          }
         } else {
           adminApiClient.clearTokens();
           setAdmin(null);
         }
       } catch (err) {
         console.warn('AdminAuth initAuth error:', err);
+        adminApiClient.clearTokens();
       } finally {
         setIsLoading(false);
       }
@@ -150,15 +129,6 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
-  /**
-   * One-click demo login helper
-   */
-  const loginWithDemo = async (role: AdminRole): Promise<{ success: boolean; error?: string }> => {
-    const cred = DEMO_CREDENTIALS.find((d) => d.role === role);
-    if (!cred) return { success: false, error: 'Unknown role' };
-    return login(cred.email, cred.password);
-  };
-
   const logout = () => {
     setAdmin(null);
     adminApiClient.clearTokens();
@@ -174,7 +144,6 @@ export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         isAuthenticated: !!admin,
         isLoading,
         login,
-        loginWithDemo,
         logout,
       }}
     >

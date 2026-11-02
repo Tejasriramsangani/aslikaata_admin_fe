@@ -178,7 +178,7 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
                   Fraud Sentinel & Anomaly Alert Monitor
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
-                  Phase 6 • Live Sentinel
+                  Live Sentinel
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">

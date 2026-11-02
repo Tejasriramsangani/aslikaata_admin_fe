@@ -12,6 +12,22 @@ export interface ApiResponse<T = any> {
   timestamp?: string;
 }
 
+/**
+ * The backend wraps errors as { error: { statusCode, message, details, path } }
+ * (or a plain string). Always reduce that to a string so UIs can render it safely.
+ */
+function extractErrorMessage(json: any, status: number): string {
+  const candidates = [json?.error, json?.message];
+  for (const c of candidates) {
+    if (typeof c === 'string' && c) return c;
+    if (c && typeof c === 'object') {
+      if (typeof c.message === 'string' && c.message) return c.message;
+      if (Array.isArray(c.message) && c.message.length) return c.message.join(', ');
+    }
+  }
+  return `HTTP ${status}`;
+}
+
 class AdminApiClient {
   private refreshPromise: Promise<string | null> | null = null;
 
@@ -52,6 +68,13 @@ class AdminApiClient {
     localStorage.removeItem('aslikaata_admin_profile');
   }
 
+  /** The stored access token, renewed with the refresh token first if it has expired. */
+  public async getValidAccessToken(): Promise<string | null> {
+    const token = this.getAccessToken();
+    if (token && !this.isTokenExpired(token)) return token;
+    return this.acquireFreshToken();
+  }
+
   public async acquireFreshToken(): Promise<string | null> {
     if (this.refreshPromise) return this.refreshPromise;
     this.refreshPromise = (async () => {
@@ -75,9 +98,10 @@ class AdminApiClient {
           this.setTokens(tokens.accessToken, tokens.refreshToken || refreshToken);
           return tokens.accessToken;
         }
+        // The refresh token was rejected (expired/revoked): the session is over.
         this.clearTokens();
       } catch {
-        this.clearTokens();
+        // Network error: keep the stored tokens so a backend restart does not log everyone out.
       } finally {
         this.refreshPromise = null;
       }
@@ -146,7 +170,7 @@ class AdminApiClient {
         return {
           success: false,
           data: null as any,
-          error: json.message || json.error || `HTTP ${response.status}`,
+          error: extractErrorMessage(json, response.status),
           timestamp: new Date().toISOString(),
         };
       }

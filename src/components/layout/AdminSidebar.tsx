@@ -23,12 +23,14 @@ import {
   UserCog,
   LayoutDashboard,
   ClipboardList,
+  UserPlus,
 } from 'lucide-react';
 import { useAdminNav, AdminNavSection } from '../../context/AdminNavContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import { canAccessPath, ROLE_LABELS } from '../../lib/permissions';
 
 interface NavItem {
-  id: AdminNavSection | 'dashboard';
+  id: AdminNavSection | 'dashboard' | 'picker-requests';
   href: string;
   label: string;
   badge?: string;
@@ -125,6 +127,14 @@ const NAV_GROUPS: NavGroup[] = [
         icon: Users,
       },
       {
+        id: 'picker-requests',
+        href: '/picker-requests',
+        label: 'Picker Requests',
+        badge: 'New',
+        badgeVariant: 'amber',
+        icon: UserPlus,
+      },
+      {
         id: 'users',
         href: '/users',
         label: 'Users & RBAC Roles',
@@ -157,7 +167,8 @@ const NAV_GROUPS: NavGroup[] = [
 
 export const AdminSidebar: React.FC = () => {
   const pathname = usePathname();
-  const { isSidebarCollapsed, toggleSidebar, unassignedBulkCount, setActiveSection } = useAdminNav();
+  const { isSidebarCollapsed, toggleSidebar, unassignedBulkCount, setActiveSection, pendingPickerRequests } =
+    useAdminNav();
   const { admin, logout } = useAdminAuth();
 
   return (
@@ -206,7 +217,7 @@ export const AdminSidebar: React.FC = () => {
         </div>
 
         {/* Unassigned Quick Notification Pill */}
-        {!isSidebarCollapsed && unassignedBulkCount > 0 && (
+        {!isSidebarCollapsed && unassignedBulkCount > 0 && canAccessPath(admin?.role, '/dispatch') && (
           <Link
             href="/dispatch"
             className="mx-3 mt-3 px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-between text-amber-300 text-xs font-bold hover:bg-amber-500/25 transition-all block animate-pulse"
@@ -223,7 +234,12 @@ export const AdminSidebar: React.FC = () => {
 
         {/* Navigation Group Sections */}
         <div className="px-2.5 py-3 space-y-4 overflow-y-auto max-h-[calc(100vh-190px)]">
-          {NAV_GROUPS.map((group, gIdx) => (
+          {NAV_GROUPS.map((group) => ({
+            ...group,
+            items: group.items.filter((item) => canAccessPath(admin?.role, item.href)),
+          }))
+            .filter((group) => group.items.length > 0)
+            .map((group, gIdx) => (
             <div key={gIdx} className="space-y-1">
               {!isSidebarCollapsed && (
                 <p className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-emerald-400/70 mb-1">
@@ -233,6 +249,13 @@ export const AdminSidebar: React.FC = () => {
 
               {group.items.map((item) => {
                 const IconComponent = item.icon;
+                // "Picker Requests" shows how many are waiting; hidden when there are none.
+                const badgeText =
+                  item.id === 'picker-requests'
+                    ? pendingPickerRequests > 0
+                      ? String(pendingPickerRequests)
+                      : undefined
+                    : item.badge;
                 const isActive =
                   item.href === '/'
                     ? pathname === '/'
@@ -243,7 +266,7 @@ export const AdminSidebar: React.FC = () => {
                     key={item.id}
                     href={item.href}
                     onClick={() => {
-                      if (item.id !== 'dashboard') {
+                      if (item.id !== 'dashboard' && item.id !== 'picker-requests') {
                         setActiveSection(item.id as AdminNavSection);
                       }
                     }}
@@ -263,7 +286,7 @@ export const AdminSidebar: React.FC = () => {
                     {!isSidebarCollapsed && (
                       <div className="flex-1 flex items-center justify-between overflow-hidden">
                         <span className="truncate">{item.label}</span>
-                        {item.badge && (
+                        {badgeText && (
                           <span
                             className={`text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0 ml-1.5 ${
                               isActive
@@ -277,7 +300,7 @@ export const AdminSidebar: React.FC = () => {
                                 : 'bg-slate-800 text-slate-300'
                             }`}
                           >
-                            {item.badge}
+                            {badgeText}
                           </span>
                         )}
                       </div>
@@ -304,15 +327,7 @@ export const AdminSidebar: React.FC = () => {
                   {admin?.name || 'Administrator'}
                 </span>
                 <span className="text-[10px] text-emerald-300 font-bold truncate">
-                  {admin?.role === 'SUPER_ADMIN'
-                    ? 'Super Admin'
-                    : admin?.role === 'YARD_MANAGER'
-                    ? 'Yard Manager'
-                    : admin?.role === 'DISPATCHER'
-                    ? 'Dispatcher'
-                    : admin?.role === 'ACCOUNTANT'
-                    ? 'Accountant'
-                    : admin?.role || 'Staff'}
+                  {(admin?.role && ROLE_LABELS[admin.role]) || 'Staff'}
                 </span>
               </div>
             )}

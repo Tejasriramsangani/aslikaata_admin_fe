@@ -359,11 +359,21 @@ export const DispatchPickupScreen: React.FC = () => {
               orders.map((order) => {
                 const selected = selectedOrderId === order.id;
                 return (
-                  <button
+                  // A div, not a <button>: the card contains the Reschedule <button>, and buttons cannot nest.
+                  <div
                     key={order.id}
-                    type="button"
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={selected}
                     onClick={() => setSelectedOrderId(order.id)}
-                    className={`w-full text-left rounded-2xl border-2 p-3.5 transition-all cursor-pointer ${
+                    onKeyDown={(e) => {
+                      if (e.target !== e.currentTarget) return;
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedOrderId(order.id);
+                      }
+                    }}
+                    className={`w-full text-left rounded-2xl border-2 p-3.5 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A3D2B]/40 ${
                       selected
                         ? 'border-[#0A3D2B] bg-emerald-50 ring-2 ring-[#0A3D2B]/15'
                         : 'border-slate-200 bg-white hover:border-slate-300'
@@ -409,7 +419,7 @@ export const DispatchPickupScreen: React.FC = () => {
                         Reschedule
                       </button>
                     </div>
-                  </button>
+                  </div>
                 );
               })
             )}

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { adminApiClient } from '../../lib/api-client';
+import { useUrlTab } from '../../lib/use-url-tab';
 import {
   SendHorizontal,
   Layers,
@@ -67,7 +68,11 @@ export interface OutwardDispatchRecord {
 }
 
 export const OutwardAndYardInventoryScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'YARD_INVENTORY' | 'OUTWARD_DISPATCHES'>('YARD_INVENTORY');
+  // Active tab lives in the URL (?tab=...) so reload / Back keep the screen.
+  const [activeTab, setActiveTab] = useUrlTab({
+    YARD_INVENTORY: 'yard-inventory',
+    OUTWARD_DISPATCHES: 'outward-dispatches',
+  });
   const [stockItems, setStockItems] = useState<YardStockItem[]>([]);
   const [dispatches, setDispatches] = useState<OutwardDispatchRecord[]>([]);
 
@@ -286,7 +291,7 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                   Yard Stock Inventory & Outward Mill Dispatches
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  Phase 6 • B2B Sales & Baling
+                  B2B Sales & Baling
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">

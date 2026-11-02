@@ -1,8 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { adminApiClient } from '../lib/api-client';
+import { useAdminAuth } from './AdminAuthContext';
 
 export type AdminNavSection =
   | 'pricing' // Phase 1: Real-time Scrap Rates & Dynamic Margin Engine
@@ -37,6 +38,11 @@ interface AdminNavContextType {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   divisions: DivisionOption[];
+  /** Freelance-picker requests waiting for a decision (sidebar badge). */
+  pendingPickerRequests: number;
+  refreshPickerRequestCount: () => Promise<void>;
+  /** Bumps whenever a picker request is raised/decided so open screens can reload. */
+  pickerRequestEventTick: number;
 }
 
 const AdminNavContext = createContext<AdminNavContextType | undefined>(undefined);
@@ -51,10 +57,24 @@ export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [unassignedBulkCount, setUnassignedBulkCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const { admin } = useAdminAuth();
+  const [pendingPickerRequests, setPendingPickerRequests] = useState(0);
+  const [pickerRequestEventTick, setPickerRequestEventTick] = useState(0);
+  const adminId = admin?.userId;
 
   const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
 
+  const refreshPickerRequestCount = useCallback(async () => {
+    const res = await adminApiClient.get<{ pending: number }>('/admin/picker-requests/pending-count');
+    if (res.success && res.data) setPendingPickerRequests(Number(res.data.pending) || 0);
+  }, []);
+
   useEffect(() => {
+    if (adminId) void refreshPickerRequestCount();
+  }, [adminId, refreshPickerRequestCount]);
+
+  useEffect(() => {
+    if (!adminId) return; // not signed in (e.g. login page): nothing to load
     const loadNavigationData = async () => {
       const [divisionRes, unassignedRes] = await Promise.all([
         adminApiClient.get('/admin/divisions'),
@@ -76,20 +96,23 @@ export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       );
     };
     loadNavigationData();
-  }, []);
+  }, [adminId]);
 
   // Real-time Socket.IO Connection to NestJS Backend
   useEffect(() => {
+    if (!adminId) return; // sockets require a valid token; connect only once signed in
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
     let socket: Socket | null = null;
 
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('aslikaata_admin_access_token') : null;
       socket = io(socketUrl, {
         transports: ['websocket', 'polling'],
         timeout: 5000,
         reconnectionAttempts: 10,
-        auth: token ? { token } : undefined,
+        // Resolved on every (re)connect so an expired access token is renewed first.
+        auth: (cb) => {
+          adminApiClient.getValidAccessToken().then((token) => cb(token ? { token } : {}));
+        },
       });
 
       socket.on('connect', () => {
@@ -104,6 +127,16 @@ export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setIsBackendConnected(false);
       });
 
+      // Freelance-picker requests raised / decided (by anyone) -> keep badge + open list fresh
+      socket.on('picker_request.created', () => {
+        setPendingPickerRequests((c) => c + 1);
+        setPickerRequestEventTick((t) => t + 1);
+      });
+      socket.on('picker_request.updated', () => {
+        void refreshPickerRequestCount();
+        setPickerRequestEventTick((t) => t + 1);
+      });
+
       // Listen for unassigned pickup alerts
       socket.on('pickup.unassigned_alert', () => {
         setUnassignedBulkCount((c) => c + 1);
@@ -114,8 +147,9 @@ export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     return () => {
       if (socket) socket.disconnect();
+      setIsBackendConnected(false);
     };
-  }, []);
+  }, [adminId, refreshPickerRequestCount]);
 
   return (
     <AdminNavContext.Provider
@@ -133,6 +167,9 @@ export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         searchQuery,
         setSearchQuery,
         divisions,
+        pendingPickerRequests,
+        refreshPickerRequestCount,
+        pickerRequestEventTick,
       }}
     >
       {children}

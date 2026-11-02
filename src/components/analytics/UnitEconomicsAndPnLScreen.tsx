@@ -92,7 +92,7 @@ export const UnitEconomicsAndPnLScreen: React.FC = () => {
                   Unit Economics & Operations P&L Analytics
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  Phase 6 • Executive Financials
+                  Executive Financials
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">

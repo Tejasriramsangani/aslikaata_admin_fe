@@ -31,6 +31,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { adminApiClient } from '../../lib/api-client';
+import { useUrlTab } from '../../lib/use-url-tab';
 
 export type VehicleOwnership = 'OWNED' | 'RENTED';
 export type VehicleType = 'EV_AUTO' | 'DIESEL_AUTO' | 'TATA_ACE' | 'BOLERO_PICKUP' | 'E_RICKSHAW';
@@ -116,7 +117,14 @@ const mapVehicleStatus = (status?: string): VehicleStatus => {
 export const FleetManagementScreen: React.FC = () => {
   const complianceWarningDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     .toISOString().split('T')[0];
-  const [activeTab, setActiveTab] = useState<'REGISTRY' | 'RENTALS' | 'FUEL' | 'MAINTENANCE' | 'INCIDENTALS'>('REGISTRY');
+  // Active tab lives in the URL (?tab=...) so reload / Back keep the screen.
+  const [activeTab, setActiveTab] = useUrlTab({
+    REGISTRY: 'registry',
+    RENTALS: 'rentals',
+    FUEL: 'fuel',
+    MAINTENANCE: 'maintenance',
+    INCIDENTALS: 'incidentals',
+  });
   const [vehicles, setVehicles] = useState<VehicleAsset[]>([]);
   const [fuelLogs, setFuelLogs] = useState<FuelLogRecord[]>([]);
   const [maintenanceLogs, setMaintenanceLogs] = useState<MaintenanceRecord[]>([]);
@@ -450,7 +458,7 @@ export const FleetManagementScreen: React.FC = () => {
                 Fleet Logistics & Vehicle ERP
               </span>
               <span className="text-xs font-semibold text-slate-400">
-                Phase 2: Rented vs Owned Fleet & Daily Fuel Control
+                Rented vs Owned Fleet & Daily Fuel Control
               </span>
             </div>
             <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">

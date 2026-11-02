@@ -57,13 +57,10 @@ const ROLE_DEFINITIONS: Record<
     badgeText: 'text-purple-800',
     description: 'Master operational control across all divisions and financial realization.',
     permissions: [
-      'Live Pricing & Margin Engine',
-      'Fleet & Logistics Control',
-      'Inward Scrap Intake',
-      'Workforce & Cash Float Reconciler',
-      'Outward Mill Sales & Dispatch',
-      'Financial P&L Realization',
-      'User & RBAC Role Administration',
+      'Everything below, plus:',
+      'Live Rates, Margins & Market Rates (only role)',
+      'Users & Staff Role Administration',
+      'All screens and all data',
     ],
   },
   YARD_MANAGER: {
@@ -72,10 +69,9 @@ const ROLE_DEFINITIONS: Record<
     badgeText: 'text-emerald-800',
     description: 'Yard gate receiving, weighment scale verification, baling & outward dispatches.',
     permissions: [
-      'Inward Scrap Intake & Weighment Scale',
-      'Outward Mill Dispatches & Baled Inventory',
-      'Gate Drop Cash Receipts',
-      'Daily Yard Waste Audits',
+      'Inward Receiving: Yard Counter POS, B2B Weighbridge, Route Reconciler',
+      'Outward Mill Dispatches & Baled Yard Stock',
+      'Dispatch Cockpit & pickups (view)',
     ],
   },
   DISPATCHER: {
@@ -84,10 +80,10 @@ const ROLE_DEFINITIONS: Record<
     badgeText: 'text-sky-800',
     description: 'Route run planning, automated pickup assignments, and vehicle logistics.',
     permissions: [
-      'Fleet & Vehicle Registry',
-      'Driver Roster & Route Run Scheduling',
-      'Unassigned Bulk Queue Dispatch',
-      'Vehicle Maintenance & Fuel Logs',
+      'Assign & reschedule pickups',
+      'Fleet registry, fuel, maintenance & incidental logs',
+      'Holiday calendar, route runs & bulk queue',
+      'Workforce roster & cash floats (view)',
     ],
   },
   ACCOUNTANT: {
@@ -96,22 +92,10 @@ const ROLE_DEFINITIONS: Record<
     badgeText: 'text-amber-800',
     description: 'Cash float custody, field collection reconciliations, and P&L realization.',
     permissions: [
-      'Daily Cash Float Wallet Desk',
-      'Doorstep Cash Settlement Verifications',
-      'Unit Economics & P&L Statements',
-      'Invoice Ledger Audits',
-    ],
-  },
-  COLLECTOR: {
-    label: 'Field Collector / Driver',
-    badgeBg: 'bg-indigo-100 border-indigo-300',
-    badgeText: 'text-indigo-800',
-    description: 'Field collection operative using handheld companion app for weighment & OTPs.',
-    permissions: [
-      'Mobile Companion App Access',
-      'Doorstep QR & Geofence Check',
-      'Digital Scale Bluetooth Weight Entry',
-      'Customer OTP Handshake & Invoicing',
+      'Issue & settle daily cash floats',
+      'Unit Economics & P&L statements',
+      'Fraud Sentinel alerts',
+      'Inward / outward ledgers & fleet costs (view only)',
     ],
   },
 };
@@ -145,7 +129,7 @@ export const UserManagementScreen: React.FC = () => {
     mobile: '',
     role: 'SUPER_ADMIN' as AdminRole,
     assignedDivision: 'Vijayawada Central Yard',
-    password: 'Staff@123456',
+    password: '',
   });
 
   const loadUsers = async () => {
@@ -220,7 +204,7 @@ export const UserManagementScreen: React.FC = () => {
           mobile: '',
           role: 'SUPER_ADMIN',
           assignedDivision: 'Vijayawada Central Yard',
-          password: 'Staff@123456',
+          password: '',
         });
         await loadUsers();
       } else {
@@ -581,6 +565,9 @@ export const UserManagementScreen: React.FC = () => {
                     <input
                       type="text"
                       required
+                      minLength={8}
+                      placeholder="Min. 8 characters"
+                      autoComplete="new-password"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
@@ -602,7 +589,6 @@ export const UserManagementScreen: React.FC = () => {
                     <option value="YARD_MANAGER">YARD_MANAGER (Inward/Outward/Scale)</option>
                     <option value="DISPATCHER">DISPATCHER (Fleet & Logistics)</option>
                     <option value="ACCOUNTANT">ACCOUNTANT (Floats & Financials)</option>
-                    <option value="COLLECTOR">COLLECTOR (Mobile Field Operative)</option>
                   </select>
                 </div>
 

@@ -35,6 +35,7 @@ import {
   Save,
 } from 'lucide-react';
 import { adminApiClient } from '../../lib/api-client';
+import { useUrlTab } from '../../lib/use-url-tab';
 
 export interface AdminWeightRange {
   id: string;
@@ -102,7 +103,13 @@ export interface UnassignedPickupRecord {
 }
 
 export const HolidayAndRoutePlanningScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'CALENDAR' | 'MATRIX' | 'UNASSIGNED_QUEUE' | 'SETTINGS'>('CALENDAR');
+  // Active tab lives in the URL (?tab=...) so reload / Back keep the screen.
+  const [activeTab, setActiveTab] = useUrlTab({
+    CALENDAR: 'calendar',
+    MATRIX: 'route-matrix',
+    UNASSIGNED_QUEUE: 'unassigned-queue',
+    SETTINGS: 'settings',
+  });
   const [holidays, setHolidays] = useState<OperationsHoliday[]>([]);
   const [matrixCells, setMatrixCells] = useState<WeeklyMatrixCell[]>([]);
   const [unassignedQueue, setUnassignedQueue] = useState<UnassignedPickupRecord[]>([]);
@@ -630,7 +637,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                   Operations Holiday Calendar & Route Planning
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  Phase 5 • Smart Scheduling
+                  Smart Scheduling
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">

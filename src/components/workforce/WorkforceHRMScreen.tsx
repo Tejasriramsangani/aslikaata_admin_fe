@@ -30,6 +30,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { adminApiClient } from '../../lib/api-client';
+import { useUrlTab } from '../../lib/use-url-tab';
 
 export type EmployeeRole = 'FIELD_COLLECTOR' | 'DRIVER' | 'YARD_SORTER' | 'WEIGHBRIDGE_OPERATOR';
 export type KycStatus = 'APPROVED' | 'PENDING_REVIEW' | 'SUSPENDED';
@@ -92,7 +93,13 @@ export interface CashFloatRecord {
 }
 
 export const WorkforceHRMScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'ROSTER' | 'FLOAT_DESK' | 'ATTENDANCE' | 'LEADERBOARD'>('ROSTER');
+  // Active tab lives in the URL (?tab=...) so reload / Back keep the screen.
+  const [activeTab, setActiveTab] = useUrlTab({
+    ROSTER: 'roster',
+    FLOAT_DESK: 'cash-float',
+    ATTENDANCE: 'attendance',
+    LEADERBOARD: 'leaderboard',
+  });
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
   const [cashFloats, setCashFloats] = useState<CashFloatRecord[]>([]);
 
@@ -372,7 +379,7 @@ export const WorkforceHRMScreen: React.FC = () => {
                 Workforce HRM & Cash Float Desk
               </span>
               <span className="text-xs font-semibold text-slate-400">
-                Phase 3: Drivers, Pickers & Physical Currency Control
+                Drivers, Pickers & Physical Currency Control
               </span>
             </div>
             <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">

@@ -25,6 +25,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { adminApiClient } from '../../lib/api-client';
+import { MarketRatesPanel } from './MarketRatesPanel';
 
 export interface ScrapProductRateRow {
   productId: string;
@@ -47,13 +48,23 @@ export interface ScrapProductRateRow {
   bulkTier1PremiumRupees: number; // for >50kg
   bulkTier2PremiumRupees: number; // for >100kg
   // 5. Meta
-  isActive: boolean;
+  isActive: boolean; // product enabled (shown in customer + employee apps)
+  categoryActive: boolean; // parent category enabled
   historyCount: number;
   updatedAt: string;
 }
 
+interface AdminCategoryRow {
+  id: string;
+  name: string;
+  emoji: string;
+  isActive: boolean;
+  productCount: number;
+}
+
 export const RatesAndMarginScreen: React.FC = () => {
   const [ratesList, setRatesList] = useState<ScrapProductRateRow[]>([]);
+  const [categoryRows, setCategoryRows] = useState<AdminCategoryRow[]>([]);
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('ALL');
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [activeHistoryItem, setActiveHistoryItem] = useState<ScrapProductRateRow | null>(null);
@@ -64,47 +75,70 @@ export const RatesAndMarginScreen: React.FC = () => {
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [rateHistory, setRateHistory] = useState<any[]>([]);
   const [loadError, setLoadError] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
 
   // Dynamic live rate fetching from NestJS backend
   useEffect(() => {
     const fetchLiveRates = async () => {
       try {
-        const res = await adminApiClient.get('/catalog');
+        // Admin catalog = every category/product (including hidden) + full margin detail.
+        const res = await adminApiClient.get('/admin/catalog');
         if (res.success && Array.isArray(res.data)) {
           const mapped: ScrapProductRateRow[] = res.data
             .map((cat: any) =>
               (cat.products || []).map((prod: any) => {
                 const rate = prod.activeRate || {};
-                const customerRate = Number(rate.ratePerKgRupees ?? prod.ratePerKgRupees ??
-                  (rate.ratePerKg != null ? rate.ratePerKg / 100 : 0));
-                const benchmark = Number(rate.marketBenchmarkRateRupees ??
-                  (rate.marketBenchmarkRate != null ? rate.marketBenchmarkRate / 100 : customerRate));
-                const margin = Number(rate.marginValue ?? Math.max(0, benchmark - customerRate));
+                const customerRate = Number(rate.ratePerKgPaise ?? 0) / 100;
+                const storedBenchmark = Number(rate.marketBenchmarkRatePaise ?? 0) / 100;
+                const benchmark = storedBenchmark > 0 ? storedBenchmark : customerRate;
+                const isPercent = String(rate.marginType || 'FLAT').toUpperCase().startsWith('PERCENT');
+                const deltaRaw = Number(rate.marginDeltaPaise ?? 0);
+                // Backend stores a signed delta: negative = discount, positive = premium.
+                const marginDirection: 'SUBTRACT' | 'ADD' =
+                  storedBenchmark > 0 && deltaRaw !== 0
+                    ? deltaRaw < 0 ? 'SUBTRACT' : 'ADD'
+                    : benchmark >= customerRate ? 'SUBTRACT' : 'ADD';
+                const margin =
+                  storedBenchmark > 0 && deltaRaw !== 0
+                    ? Math.abs(isPercent ? deltaRaw : deltaRaw / 100)
+                    : Math.abs(benchmark - customerRate);
 
                 return {
-                  productId: prod._id || prod.id,
-                  categoryId: cat._id || cat.id,
+                  productId: String(prod.id),
+                  categoryId: String(cat.id),
                   categoryName: cat.name || 'General',
                   name: prod.name,
                   code: prod.code || prod.name.toLowerCase().replace(/\s+/g, '_'),
-                  emoji: prod.emoji || '📦',
+                  emoji: prod.emoji || cat.emoji || '📦',
                   marketBenchmarkRateRupees: benchmark,
-                  marketName: rate.marketName || '—',
-                  lastMarketSync: rate.updatedAt || prod.updatedAt || '—',
-                  marginMode: rate.marginMode || 'FLAT',
-                  marginDirection: rate.marginDirection || 'SUBTRACT',
+                  marketName: '—',
+                  lastMarketSync: rate.effectiveFrom || '—',
+                  marginMode: isPercent ? 'PERCENTAGE' : 'FLAT',
+                  marginDirection,
                   marginValue: margin,
                   calculatedCustomerRateRupees: customerRate,
-                  bulkTier1PremiumRupees: Number(rate.bulkTier1PremiumRupees || 0),
-                  bulkTier2PremiumRupees: Number(rate.bulkTier2PremiumRupees || 0),
-                  isActive: prod.isActive ?? true,
-                  historyCount: Number(rate.historyCount || 0),
-                  updatedAt: rate.updatedAt || prod.updatedAt || '—',
+                  bulkTier1PremiumRupees: 0,
+                  bulkTier2PremiumRupees: 0,
+                  isActive: prod.isActive !== false,
+                  categoryActive: cat.isActive !== false,
+                  historyCount: 0,
+                  updatedAt: rate.effectiveFrom
+                    ? new Date(rate.effectiveFrom).toLocaleDateString()
+                    : '—',
                 };
               }),
             )
             .flat();
 
+          setCategoryRows(
+            res.data.map((cat: any) => ({
+              id: String(cat.id),
+              name: cat.name,
+              emoji: cat.emoji || '📦',
+              isActive: cat.isActive !== false,
+              productCount: (cat.products || []).length,
+            })),
+          );
           setRatesList(mapped);
         } else {
           setRatesList([]);
@@ -117,7 +151,7 @@ export const RatesAndMarginScreen: React.FC = () => {
     };
 
     fetchLiveRates();
-  }, []);
+  }, [reloadKey]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -166,6 +200,39 @@ export const RatesAndMarginScreen: React.FC = () => {
         return updated;
       }),
     );
+  };
+
+  // Show / hide a whole scrap category in the customer + employee apps
+  const handleToggleCategory = async (cat: AdminCategoryRow) => {
+    const next = !cat.isActive;
+    const res = await adminApiClient.patch(`/admin/catalog/categories/${cat.id}`, {
+      isActive: next,
+    });
+    if (!res.success) {
+      showToast(`Could not update ${cat.name}: ${res.error || 'Backend rejected update'}`);
+      return;
+    }
+    setCategoryRows((prev) => prev.map((c) => (c.id === cat.id ? { ...c, isActive: next } : c)));
+    setRatesList((prev) =>
+      prev.map((row) => (row.categoryId === cat.id ? { ...row, categoryActive: next } : row)),
+    );
+    showToast(`${cat.name} ${next ? 'is now visible' : 'hidden'} in customer & employee apps.`);
+  };
+
+  // Show / hide a single scrap product in the customer + employee apps
+  const handleToggleProduct = async (row: ScrapProductRateRow) => {
+    const next = !row.isActive;
+    const res = await adminApiClient.patch(`/admin/catalog/products/${row.productId}`, {
+      isActive: next,
+    });
+    if (!res.success) {
+      showToast(`Could not update ${row.name}: ${res.error || 'Backend rejected update'}`);
+      return;
+    }
+    setRatesList((prev) =>
+      prev.map((item) => (item.productId === row.productId ? { ...item, isActive: next } : item)),
+    );
+    showToast(`${row.name} ${next ? 'is now visible' : 'hidden'} in customer & employee apps.`);
   };
 
   // Save product rate to backend API
@@ -257,15 +324,16 @@ export const RatesAndMarginScreen: React.FC = () => {
 
   // Overall Market Health Metrics
   const metrics = useMemo(() => {
-    const totalCount = ratesList.length;
+    const liveRates = ratesList.filter((r) => r.isActive && r.categoryActive);
+    const totalCount = liveRates.length;
     let totalMarginRupees = 0;
-    ratesList.forEach((r) => {
+    liveRates.forEach((r) => {
       const spread = r.marketBenchmarkRateRupees - r.calculatedCustomerRateRupees;
       totalMarginRupees += spread;
     });
     const avgSpread = totalCount > 0 ? totalMarginRupees / totalCount : 0;
     const avgMarginPct = totalCount > 0
-      ? ratesList.reduce((sum, rate) => sum +
+      ? liveRates.reduce((sum, rate) => sum +
         (rate.marketBenchmarkRateRupees > 0
           ? ((rate.marketBenchmarkRateRupees - rate.calculatedCustomerRateRupees) /
             rate.marketBenchmarkRateRupees) * 100 : 0), 0) / totalCount
@@ -349,7 +417,7 @@ export const RatesAndMarginScreen: React.FC = () => {
               <span className="text-xl font-black text-slate-900">{metrics.activeCount}</span>
               <span className="text-[11px] font-extrabold text-emerald-700">All Live</span>
             </div>
-            <span className="text-[10px] text-slate-500 mt-1 block">6 Core Categories Configured</span>
+            <span className="text-[10px] text-slate-500 mt-1 block">{categoryRows.filter((c) => c.isActive).length} Categories Live</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100">
@@ -382,6 +450,124 @@ export const RatesAndMarginScreen: React.FC = () => {
             </div>
             <span className="text-[10px] text-amber-700 mt-1 block">Before Fleet & Yard Costs</span>
           </div>
+        </div>
+      </div>
+
+      {/* Market rates (Vijayawada): search, set benchmark, enable items for the apps */}
+      <MarketRatesPanel
+        onCatalogChanged={() => setReloadKey((k) => k + 1)}
+        onToast={showToast}
+      />
+
+      {/* Catalog Visibility: choose which scrap types customers & employees can see */}
+      <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h3 className="text-sm font-black text-slate-900">Scrap Type Visibility</h3>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              Hidden categories/products disappear from the customer pickup request, the rates list
+              and the employee collection screens. Rates keep their history.
+            </p>
+          </div>
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            {categoryRows.filter((c) => c.isActive).length}/{categoryRows.length} categories live
+          </span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mt-3">
+          {categoryRows.map((cat) => {
+            // Live customer rates (benchmark ± margin) of this category's enabled products
+            const catProducts = ratesList.filter((r) => r.categoryId === cat.id);
+            const livePrices = catProducts
+              .filter((r) => r.isActive && r.calculatedCustomerRateRupees > 0)
+              .map((r) => r.calculatedCustomerRateRupees);
+            const minRate = livePrices.length ? Math.min(...livePrices) : null;
+            const maxRate = livePrices.length ? Math.max(...livePrices) : null;
+            const rateLabel =
+              minRate == null
+                ? 'No live rate'
+                : minRate === maxRate
+                ? `₹${minRate.toFixed(2)}/kg`
+                : `₹${minRate.toFixed(2)} – ₹${(maxRate as number).toFixed(2)}/kg`;
+
+            return (
+              <div
+                key={cat.id}
+                className={`rounded-2xl border p-3 transition-all ${
+                  cat.isActive
+                    ? 'bg-emerald-50/50 border-emerald-200'
+                    : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className={`text-xl ${cat.isActive ? '' : 'grayscale opacity-60'}`}>
+                      {cat.emoji}
+                    </span>
+                    <div className="min-w-0">
+                      <div
+                        className={`text-xs font-black truncate ${
+                          cat.isActive ? 'text-[#0A3D2B]' : 'text-slate-400'
+                        }`}
+                      >
+                        {cat.name}{' '}
+                        <span className="text-[10px] font-bold text-slate-400">
+                          ({cat.productCount})
+                        </span>
+                      </div>
+                      <div
+                        className={`text-[11px] font-black ${
+                          cat.isActive ? 'text-emerald-800' : 'text-slate-400'
+                        }`}
+                      >
+                        {rateLabel}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleCategory(cat)}
+                    title={cat.isActive ? 'Click to hide from apps' : 'Click to show in apps'}
+                    className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] font-black cursor-pointer transition-colors ${
+                      cat.isActive
+                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+                    }`}
+                  >
+                    {cat.isActive ? 'Visible' : 'Hidden'}
+                  </button>
+                </div>
+
+                {catProducts.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2.5">
+                    {catProducts.map((p) => (
+                      <span
+                        key={p.productId}
+                        title={
+                          p.isActive
+                            ? `${p.name}: live customer rate (margin included)`
+                            : `${p.name} is hidden from apps`
+                        }
+                        className={`px-2 py-1 rounded-lg border text-[10px] font-bold ${
+                          p.isActive && cat.isActive
+                            ? 'bg-white border-slate-200 text-slate-700'
+                            : 'bg-slate-100 border-slate-200 text-slate-400 line-through'
+                        }`}
+                      >
+                        {p.name}{' '}
+                        <span className="font-black">
+                          ₹{p.calculatedCustomerRateRupees.toFixed(2)}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          {categoryRows.length === 0 && (
+            <span className="text-xs text-slate-400">No categories loaded.</span>
+          )}
         </div>
       </div>
 
@@ -454,7 +640,12 @@ export const RatesAndMarginScreen: React.FC = () => {
                 const isHealthySpread = spreadPerKg > 0;
 
                 return (
-                  <tr key={row.productId} className="hover:bg-slate-50/80 transition-colors">
+                  <tr
+                    key={row.productId}
+                    className={`hover:bg-slate-50/80 transition-colors ${
+                      !row.isActive || !row.categoryActive ? 'opacity-50' : ''
+                    }`}
+                  >
                     {/* Column 1: Product Identity */}
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2.5">
@@ -624,6 +815,24 @@ export const RatesAndMarginScreen: React.FC = () => {
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
+                          onClick={() => handleToggleProduct(row)}
+                          title={
+                            !row.categoryActive
+                              ? 'Category is hidden — enable the category first'
+                              : row.isActive
+                              ? 'Visible in apps — click to hide'
+                              : 'Hidden from apps — click to show'
+                          }
+                          className={`px-2 py-1.5 rounded-lg text-[10px] font-black border transition-colors cursor-pointer ${
+                            row.isActive
+                              ? 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100'
+                              : 'bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200'
+                          }`}
+                        >
+                          {row.isActive ? 'Visible' : 'Hidden'}
+                        </button>
+
+                        <button
                           onClick={() => openRateHistory(row)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                           title="View Rate Audit History"
@@ -686,7 +895,7 @@ export const RatesAndMarginScreen: React.FC = () => {
               </div>
 
               <div className="space-y-2.5">
-                {filteredProducts.slice(0, 7).map((item) => (
+                {filteredProducts.filter((p) => p.isActive && p.categoryActive).slice(0, 7).map((item) => (
                   <div
                     key={item.productId}
                     className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-between"

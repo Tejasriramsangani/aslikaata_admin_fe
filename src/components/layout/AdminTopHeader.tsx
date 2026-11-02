@@ -11,9 +11,10 @@ import {
   Sparkles,
   Command,
   RefreshCw,
+  LogOut,
 } from 'lucide-react';
 import { useAdminNav } from '../../context/AdminNavContext';
-import { useAdminAuth, AdminRole } from '../../context/AdminAuthContext';
+import { useAdminAuth } from '../../context/AdminAuthContext';
 
 export const AdminTopHeader: React.FC = () => {
   const pathname = usePathname();
@@ -27,7 +28,7 @@ export const AdminTopHeader: React.FC = () => {
     setSearchQuery,
     divisions,
   } = useAdminNav();
-  const { admin, loginWithDemo } = useAdminAuth();
+  const { admin, logout } = useAdminAuth();
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
   // Friendly title for the active section based on route
@@ -52,14 +53,11 @@ export const AdminTopHeader: React.FC = () => {
       ? 'Fraud Sentinel & Anomaly Alert Monitor'
       : pathname === '/users'
       ? 'User Creation & RBAC Role Privileges'
+      : pathname === '/picker-requests'
+      ? 'Freelance Picker Requests'
       : 'Operations Command Center & ERP Dispatch';
 
-  const rolesList: { role: AdminRole; label: string; desc: string }[] = [
-    { role: 'SUPER_ADMIN', label: 'Super Admin', desc: 'Full System & Rate Authority' },
-    { role: 'YARD_MANAGER', label: 'Yard Manager', desc: 'Inward Scales & Inventory' },
-    { role: 'DISPATCHER', label: 'Fleet Dispatcher', desc: 'Vehicle Routes & Float Desk' },
-    { role: 'ACCOUNTANT', label: 'Accountant', desc: 'Disbursements & Invoicing' },
-  ];
+  const roleLabel = (admin?.role || '').replace(/_/g, ' ');
 
   return (
     <header className="h-16 bg-white border-b border-slate-200/90 px-6 flex items-center justify-between sticky top-0 z-20 shadow-xs">
@@ -132,51 +130,36 @@ export const AdminTopHeader: React.FC = () => {
           </span>
         </div>
 
-        {/* Quick Role Switcher (For Pair Development Testing) */}
+        {/* Signed-in staff member */}
         <div className="relative">
           <button
             onClick={() => setIsRoleDropdownOpen((prev) => !prev)}
             className="flex items-center gap-1.5 bg-emerald-50/70 hover:bg-emerald-100 border border-emerald-200 rounded-xl px-2.5 py-1.5 text-xs font-black text-[#0A3D2B] transition-colors cursor-pointer"
           >
             <UserCheck className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">{admin?.role || 'SUPER_ADMIN'}</span>
+            <span className="hidden md:inline">{roleLabel || 'STAFF'}</span>
             <ChevronDown className="w-3 h-3 opacity-60" />
           </button>
 
           {isRoleDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2 z-50 animate-in fade-in duration-150">
+            <div className="absolute right-0 top-full mt-2 w-60 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2 z-50 animate-in fade-in duration-150">
               <div className="px-2 py-1.5 border-b border-slate-100 mb-1">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
-                  Switch Active Role
-                </span>
-                <span className="text-xs font-extrabold text-slate-800">
-                  {admin?.name}
+                <span className="text-xs font-extrabold text-slate-800 block">{admin?.name}</span>
+                <span className="text-[11px] text-slate-500 block truncate">{admin?.email}</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-700">
+                  {roleLabel}
                 </span>
               </div>
-
-              {rolesList.map((r) => (
-                <button
-                  key={r.role}
-                  onClick={() => {
-                    loginWithDemo(r.role);
-                    setIsRoleDropdownOpen(false);
-                  }}
-                  className={`w-full text-left px-2.5 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer flex flex-col ${
-                    admin?.role === r.role
-                      ? 'bg-[#0A3D2B] text-white'
-                      : 'hover:bg-slate-50 text-slate-700'
-                  }`}
-                >
-                  <span className="font-extrabold">{r.label}</span>
-                  <span
-                    className={`text-[10px] ${
-                      admin?.role === r.role ? 'text-emerald-200' : 'text-slate-400'
-                    }`}
-                  >
-                    {r.desc}
-                  </span>
-                </button>
-              ))}
+              <button
+                onClick={() => {
+                  setIsRoleDropdownOpen(false);
+                  logout();
+                }}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs font-bold text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Sign out
+              </button>
             </div>
           )}
         </div>

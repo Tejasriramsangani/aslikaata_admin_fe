@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { adminApiClient } from '../../lib/api-client';
+import { useUrlTab } from '../../lib/use-url-tab';
 import {
   PackagePlus,
   Scale,
@@ -99,6 +100,14 @@ export interface YardReconciliationRecord {
   auditNotes?: string;
 }
 
+// First entry is the default tab (kept out of the URL).
+const INWARD_TABS = {
+  LEDGER: 'ledger',
+  WALK_IN_POS: 'yard-counter-pos',
+  B2B_WEIGHBRIDGE: 'b2b-weighbridge',
+  RECONCILER: 'route-reconciler',
+} as const;
+
 export const DEDUCTION_REASONS = [
   'Moisture / Water Dampness',
   'Dust & Sand Contamination',
@@ -108,7 +117,8 @@ export const DEDUCTION_REASONS = [
 ];
 
 export const MultiChannelInwardScreen: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'LEDGER' | 'WALK_IN_POS' | 'B2B_WEIGHBRIDGE' | 'RECONCILER'>('LEDGER');
+  // Active tab lives in the URL (?tab=walk-in-pos) so reload / Back keep the screen.
+  const [activeTab, setActiveTab] = useUrlTab(INWARD_TABS);
   const [vouchers, setVouchers] = useState<InwardVoucherRecord[]>([]);
   const [reconciliations, setReconciliations] = useState<YardReconciliationRecord[]>([]);
   const [posProducts, setPosProducts] = useState<{ id: string; cat: string; name: string; rate: number; icon: string }[]>([]);
@@ -556,7 +566,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                   Scrap Inward Receiving & Yard Gate Desk
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                  Phase 4 • Multi-Channel Intake
+                  Multi-Channel Intake
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
