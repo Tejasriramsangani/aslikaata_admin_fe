@@ -36,7 +36,18 @@ interface DriverCard {
   id: string;
   name: string;
   code: string;
-  busyCount: number;
+  phone: string;
+  /** Has an active session in the employee app (not logged out, not expired). */
+  loggedIn: boolean;
+  /** The Duty switch in the employee app: only employees on duty are offered new pickups. */
+  onDuty: boolean;
+  /** Pickups already given to this employee per scheduled day ("YYYY-MM-DD" -> count). */
+  jobsByDate: Record<string, number>;
+  /** Most pickups one employee can take in a day (from the server). */
+  dailyLimit: number;
+  /** Jobs they already have on the day being assigned (filled in for the selected order). */
+  jobsThatDay: number;
+  /** Free for that day: logged in AND fewer than dailyLimit jobs on it. */
   available: boolean;
 }
 
@@ -72,9 +83,9 @@ function mapOrder(u: any): PendingOrder {
     customerName: u.customerName || u.addressSnapshot?.name || 'Customer',
     phone: u.customerPhone || u.mobile || '—',
     address:
-      [u.addressSnapshot?.line1, u.addressSnapshot?.line2, u.addressSnapshot?.city]
+      [u.addressSnapshot?.houseNumber, u.addressSnapshot?.line1, u.addressSnapshot?.line2, u.addressSnapshot?.city]
         .filter(Boolean)
-        .join(', ') || '—',
+        .join(', ') + (u.addressSnapshot?.landmark ? ` (near ${u.addressSnapshot.landmark})` : '') || '—',
     pincode: u.addressSnapshot?.pincode || '—',
     scheduledDate: u.scheduledDate || '—',
     preferredSlot: u.timeSlotSnapshot?.displayLabel || '—',
@@ -90,7 +101,7 @@ export const DispatchPickupScreen: React.FC = () => {
   const { setUnassignedBulkCount } = useAdminNav();
 
   const [orders, setOrders] = useState<PendingOrder[]>([]);
-  const [drivers, setDrivers] = useState<DriverCard[]>([]);
+  const [rawDrivers, setDrivers] = useState<DriverCard[]>([]);
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
   const [slots, setSlots] = useState<TimeSlotOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,12 +125,11 @@ export const DispatchPickupScreen: React.FC = () => {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [queueRes, empRes, vehRes, slotRes, activeRes] = await Promise.all([
+      const [queueRes, empRes, vehRes, slotRes] = await Promise.all([
         adminApiClient.get('/admin/pickups/unassigned'),
         adminApiClient.get('/admin/employees?status=APPROVED'),
         adminApiClient.get('/admin/vehicles'),
         adminApiClient.get('/catalog/slots'),
-        adminApiClient.get('/admin/pickups?status=ASSIGNED'),
       ]);
 
       const mappedOrders =
@@ -127,36 +137,21 @@ export const DispatchPickupScreen: React.FC = () => {
       setOrders(mappedOrders);
       setUnassignedBulkCount(mappedOrders.length);
 
-      const activePickups =
-        activeRes.success && Array.isArray(activeRes.data) ? activeRes.data : [];
-      const busyByEmployee = new Map<string, number>();
-      for (const p of activePickups) {
-        const eid = String(p.assignment?.employeeProfileId || '');
-        if (!eid) continue;
-        busyByEmployee.set(eid, (busyByEmployee.get(eid) || 0) + 1);
-      }
-
-      // Also count ON_THE_WAY / ARRIVED if returned in other calls — fetch those lightly
-      const onWayRes = await adminApiClient.get('/admin/pickups?status=ON_THE_WAY');
-      if (onWayRes.success && Array.isArray(onWayRes.data)) {
-        for (const p of onWayRes.data) {
-          const eid = String(p.assignment?.employeeProfileId || '');
-          if (!eid) continue;
-          busyByEmployee.set(eid, (busyByEmployee.get(eid) || 0) + 1);
-        }
-      }
-
       if (empRes.success && Array.isArray(empRes.data)) {
         setDrivers(
           empRes.data.map((e: any) => {
-            const id = String(e._id || e.id);
-            const busyCount = busyByEmployee.get(id) || 0;
+            const loggedIn = Boolean(e.isLoggedIn);
             return {
-              id,
+              id: String(e._id || e.id),
               name: e.fullName || e.name || '—',
               code: e.employeeCode || '—',
-              busyCount,
-              available: busyCount === 0,
+              phone: e.mobile || '',
+              loggedIn,
+              onDuty: Boolean(e.onDuty),
+              jobsByDate: (e.jobsByDate && typeof e.jobsByDate === 'object' ? e.jobsByDate : {}) as Record<string, number>,
+              dailyLimit: Number(e.dailyLimit) > 0 ? Number(e.dailyLimit) : 3,
+              jobsThatDay: 0,
+              available: loggedIn,
             };
           }),
         );
@@ -197,17 +192,37 @@ export const DispatchPickupScreen: React.FC = () => {
     () => orders.find((o) => o.id === selectedOrderId) || null,
     [orders, selectedOrderId],
   );
-  const selectedDriver = useMemo(
-    () => drivers.find((d) => d.id === selectedDriverId) || null,
-    [drivers, selectedDriverId],
-  );
   const selectedVehicle = useMemo(
     () => vehicles.find((v) => v.id === selectedVehicleId) || null,
     [vehicles, selectedVehicleId],
   );
 
+  // Availability is per day: the day of the selected order (or of the first waiting order until one is
+  // picked). Busy = already has the daily limit of jobs on THAT day; other days are unaffected.
+  const viewDate = selectedOrder?.scheduledDate || orders[0]?.scheduledDate || '';
+  const drivers = useMemo(
+    () =>
+      rawDrivers.map((d) => {
+        const jobsThatDay = viewDate ? Number(d.jobsByDate[viewDate] || 0) : 0;
+        return { ...d, jobsThatDay, available: d.loggedIn && d.onDuty && jobsThatDay < d.dailyLimit };
+      }),
+    [rawDrivers, viewDate],
+  );
   const availableDrivers = drivers.filter((d) => d.available);
-  const busyDrivers = drivers.filter((d) => !d.available);
+  const busyDrivers = drivers.filter((d) => d.loggedIn && d.onDuty && !d.available);
+  const offDutyDrivers = drivers.filter((d) => d.loggedIn && !d.onDuty);
+  const offlineDrivers = drivers.filter((d) => !d.loggedIn);
+
+  // Switching to an order on a day the chosen employee is full must not leave them selected.
+  useEffect(() => {
+    if (selectedDriverId && !availableDrivers.some((d) => d.id === selectedDriverId)) {
+      setSelectedDriverId(null);
+    }
+  }, [selectedDriverId, availableDrivers]);
+  const selectedDriver = useMemo(
+    () => drivers.find((d) => d.id === selectedDriverId) || null,
+    [drivers, selectedDriverId],
+  );
 
   const handleAssign = async () => {
     if (!selectedOrder) {
@@ -298,8 +313,9 @@ export const DispatchPickupScreen: React.FC = () => {
             Assign pickups
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            1) Choose a customer order → 2) Choose an available employee → 3) Assign. If nobody is free,
-            reschedule the order.
+            1) Choose a customer order → 2) Choose an available employee → 3) Assign. An employee is busy
+            only on a day they already have {drivers[0]?.dailyLimit ?? 3} pickups; if nobody is free that
+            day, reschedule the order.
           </p>
         </div>
         <button
@@ -321,7 +337,7 @@ export const DispatchPickupScreen: React.FC = () => {
         </div>
         <div className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-xs">
           <span className="font-black text-sky-900">Right — Pickup employees</span>
-          <p className="text-sky-800/80 mt-0.5">Green = free to assign. Grey = already on a job.</p>
+          <p className="text-sky-800/80 mt-0.5">Green = free on the order's day. Grey = already full that day.</p>
         </div>
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs">
           <span className="font-black text-amber-900">No one free?</span>
@@ -434,7 +450,7 @@ export const DispatchPickupScreen: React.FC = () => {
               <h2 className="text-sm font-black">Pickup employees</h2>
             </div>
             <span className="text-[11px] font-bold bg-white/15 px-2 py-0.5 rounded-full">
-              {availableDrivers.length} free
+              {availableDrivers.length} free{viewDate ? ` on ${viewDate}` : ''}
             </span>
           </div>
 
@@ -455,11 +471,14 @@ export const DispatchPickupScreen: React.FC = () => {
               <>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-wider text-emerald-700 mb-2 px-0.5">
-                    Available now
+                    {viewDate ? `Available on ${viewDate}` : 'Available now'}
                   </p>
                   {availableDrivers.length === 0 ? (
                     <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-semibold">
-                      Nobody is free. Reschedule the customer order, or wait until a job finishes.
+                      {busyDrivers.length + offDutyDrivers.length + offlineDrivers.length === 0
+                        ? 'Nobody is free.'
+                        : `Nobody is on duty and free${viewDate ? ` on ${viewDate}` : ''}.`}{' '}
+                      Reschedule the customer order to another day, or wait until someone goes on duty.
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -481,7 +500,9 @@ export const DispatchPickupScreen: React.FC = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-bold text-slate-900">{driver.name}</div>
-                              <div className="text-[10px] font-mono text-slate-500">{driver.code}</div>
+                              <div className="text-[10px] font-mono text-slate-500">
+                                {driver.code} · {driver.jobsThatDay} of {driver.dailyLimit} jobs that day
+                              </div>
                             </div>
                             <span className="text-[10px] font-black uppercase text-emerald-800 bg-white border border-emerald-200 px-2 py-0.5 rounded-full">
                               Free
@@ -496,7 +517,7 @@ export const DispatchPickupScreen: React.FC = () => {
                 {busyDrivers.length > 0 && (
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2 px-0.5">
-                      Busy on other pickups
+                      {viewDate ? `Logged in, full on ${viewDate}` : 'Logged in, busy'}
                     </p>
                     <div className="space-y-2 opacity-70">
                       {busyDrivers.map((driver) => (
@@ -510,11 +531,71 @@ export const DispatchPickupScreen: React.FC = () => {
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-bold text-slate-700">{driver.name}</div>
                             <div className="text-[10px] text-slate-500">
-                              {driver.busyCount} active job{driver.busyCount > 1 ? 's' : ''}
+                              {driver.jobsThatDay} of {driver.dailyLimit} jobs that day
                             </div>
                           </div>
                           <span className="text-[10px] font-black uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
                             Busy
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {offDutyDrivers.length > 0 && (
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2 px-0.5">
+                      Logged in, off duty
+                    </p>
+                    <div className="space-y-2 opacity-70">
+                      {offDutyDrivers.map((driver) => (
+                        <div
+                          key={driver.id}
+                          className="rounded-2xl border border-slate-200 bg-slate-50 p-3 flex items-center gap-3"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-slate-300 text-slate-600 flex items-center justify-center shrink-0">
+                            <User className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-bold text-slate-700">{driver.name}</div>
+                            <div className="text-[10px] font-mono text-slate-500">
+                              {driver.code}
+                              {driver.phone ? ` · ${driver.phone}` : ''}
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-black uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
+                            Off duty
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {offlineDrivers.length > 0 && (
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2 px-0.5">
+                      Not logged in
+                    </p>
+                    <div className="space-y-2 opacity-60">
+                      {offlineDrivers.map((driver) => (
+                        <div
+                          key={driver.id}
+                          className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-3 flex items-center gap-3"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-slate-200 text-slate-500 flex items-center justify-center shrink-0">
+                            <User className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-bold text-slate-600">{driver.name}</div>
+                            <div className="text-[10px] font-mono text-slate-400">
+                              {driver.code}
+                              {driver.phone ? ` · ${driver.phone}` : ''}
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-black uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
+                            Offline
                           </span>
                         </div>
                       ))}
@@ -573,7 +654,7 @@ export const DispatchPickupScreen: React.FC = () => {
         {availableDrivers.length === 0 && orders.length > 0 && (
           <p className="text-[11px] text-amber-800 font-semibold flex items-center gap-1.5">
             <Truck className="w-3.5 h-3.5" />
-            No free employees — open an order and tap Reschedule.
+            No employee is on duty and free{viewDate ? ` on ${viewDate}` : ''} — open an order and tap Reschedule.
           </p>
         )}
       </div>
