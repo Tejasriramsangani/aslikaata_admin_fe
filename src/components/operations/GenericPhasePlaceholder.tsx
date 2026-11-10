@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from '../ui';
 import React from 'react';
 import {
   Truck,
@@ -161,8 +162,8 @@ export const GenericPhasePlaceholder: React.FC = () => {
 
         <div className="relative z-10 max-w-2xl space-y-4">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-[#F59E0B]" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-gold" />
               {meta.badge}
             </span>
             <span className="text-xs font-bold text-slate-400">
@@ -170,7 +171,7 @@ export const GenericPhasePlaceholder: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
             {meta.title}
           </h2>
 
@@ -179,7 +180,7 @@ export const GenericPhasePlaceholder: React.FC = () => {
           </p>
 
           <div className="pt-2">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-3">
+            <h4 className="text-base font-bold uppercase tracking-wider text-slate-400 mb-3">
               Core Capabilities in this Module
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
@@ -196,13 +197,13 @@ export const GenericPhasePlaceholder: React.FC = () => {
           </div>
 
           <div className="pt-4 flex items-center gap-3">
-            <button
+            <Button
               onClick={() => setActiveSection('pricing')}
-              className="px-5 py-3 rounded-2xl bg-[#0A3D2B] hover:bg-[#0E4D36] text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-950/20 cursor-pointer transition-all"
+              className="px-5 py-3 rounded-2xl bg-brand hover:bg-[var(--brand-hover)] text-white font-bold text-xs flex items-center gap-2 shadow-lg  cursor-pointer transition-all"
             >
               <span>Explore Live Scrap Rates Engine (Phase 1)</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>

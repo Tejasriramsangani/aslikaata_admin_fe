@@ -22,7 +22,7 @@ export const AdminAppShell: React.FC<{ children: React.ReactNode }> = ({ childre
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center text-emerald-800 gap-3">
+      <div className="min-h-screen bg-canvas flex flex-col items-center justify-center text-emerald-800 gap-3">
         <RefreshCw className="w-8 h-8 animate-spin" />
         <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
           Loading ASLI KAATA Operations Cockpit...
@@ -36,7 +36,8 @@ export const AdminAppShell: React.FC<{ children: React.ReactNode }> = ({ childre
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex min-h-screen bg-canvas">
+      <a href="#main-content" className="skip-link">Skip to content</a>
       {/* Fixed Operations Sidebar */}
       <AdminSidebar />
 
@@ -46,7 +47,7 @@ export const AdminAppShell: React.FC<{ children: React.ReactNode }> = ({ childre
         <AdminTopHeader />
 
         {/* Section Content */}
-        <main className="flex-1 p-6 max-w-7xl w-full mx-auto">
+        <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 p-4 md:p-6 lg:p-8 max-w-[1440px] w-full mx-auto">
           {canAccessPath(admin?.role, pathname) ? (
             children
           ) : (
@@ -54,7 +55,7 @@ export const AdminAppShell: React.FC<{ children: React.ReactNode }> = ({ childre
               <div className="w-12 h-12 mx-auto rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
                 <Lock className="w-6 h-6" />
               </div>
-              <h2 className="text-lg font-black text-slate-900">This screen is not part of your role</h2>
+              <h2 className="text-lg font-bold text-slate-900">This screen is not part of your role</h2>
               <p className="text-xs text-slate-500 leading-relaxed">
                 You are signed in as <strong>{admin?.role ? ROLE_LABELS[admin.role] : 'staff'}</strong>.
                 This screen is available to {(rolesForPath(pathname) || []).map((r) => ROLE_LABELS[r]).join(', ')}.
@@ -62,7 +63,7 @@ export const AdminAppShell: React.FC<{ children: React.ReactNode }> = ({ childre
               </p>
               <Link
                 href="/"
-                className="inline-block mt-2 px-5 py-2.5 rounded-xl bg-[#0A3D2B] text-white text-xs font-black hover:bg-[#0E4D36]"
+                className="inline-block mt-2 px-5 py-2.5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-[var(--brand-hover)]"
               >
                 Back to Dispatch Cockpit
               </Link>

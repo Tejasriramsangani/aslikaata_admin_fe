@@ -32,6 +32,8 @@ interface AdminNavContextType {
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: (collapsed: boolean) => void;
   toggleSidebar: () => void;
+  isMobileNavOpen: boolean;
+  setIsMobileNavOpen: (open: boolean) => void;
   isBackendConnected: boolean;
   unassignedBulkCount: number;
   setUnassignedBulkCount: React.Dispatch<React.SetStateAction<number>>;
@@ -54,6 +56,7 @@ export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     { id: 'all', code: 'ALL', name: 'All Divisions (Network-Wide)' },
   ]);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [unassignedBulkCount, setUnassignedBulkCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
@@ -161,6 +164,8 @@ export const AdminNavProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         isSidebarCollapsed,
         setIsSidebarCollapsed,
         toggleSidebar,
+        isMobileNavOpen,
+        setIsMobileNavOpen,
         isBackendConnected,
         unassignedBulkCount,
         setUnassignedBulkCount,

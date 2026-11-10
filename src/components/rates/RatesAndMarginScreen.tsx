@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, DialogSurface } from '../ui';
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   TrendingUp,
@@ -351,9 +352,9 @@ export const RatesAndMarginScreen: React.FC = () => {
     <div className="space-y-6 pb-20 animate-in fade-in duration-200">
       {/* Toast Notification Banner */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-[#0A3D2B] text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-in slide-in-from-top-4">
-          <CheckCircle2 className="w-5 h-5 text-[#22C55E] shrink-0" />
-          <span className="text-xs font-black tracking-wide">{toastMessage}</span>
+        <div className="fixed top-20 right-6 z-50 bg-brand text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-in slide-in-from-top-4">
+          <CheckCircle2 className="w-5 h-5 text-brand shrink-0" />
+          <span className="text-xs font-bold tracking-wide">{toastMessage}</span>
         </div>
       )}
 
@@ -362,15 +363,15 @@ export const RatesAndMarginScreen: React.FC = () => {
         <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 pb-6 border-b border-slate-100">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-[#F59E0B]" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-gold" />
                 Dynamic Margin Engine
               </span>
               <span className="text-xs font-semibold text-slate-400">
                 Formula: Market Rate ± Margin = Customer Rate
               </span>
             </div>
-            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl md:text-2xl font-bold text-slate-900 tracking-tight">
               Scrap Rates & Profit Margin Architecture
             </h2>
             <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
@@ -380,75 +381,75 @@ export const RatesAndMarginScreen: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <button
+            <Button
               onClick={() => setIsBulkAdjustOpen(true)}
               className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
               <span>Bulk Margin Adjuster</span>
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={() => setIsSimulatorOpen(true)}
-              className="px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-[#0A3D2B] font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
+              className="px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-brand font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
             >
               <Smartphone className="w-3.5 h-3.5 text-emerald-700" />
               <span>Preview Customer App</span>
-            </button>
+            </Button>
 
-            <button
+            <Button
               onClick={handleBroadcastToApps}
               disabled={isBroadcasting}
-              className="px-4 py-2.5 rounded-xl bg-[#0A3D2B] hover:bg-[#0E4D36] text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-950/20 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-brand hover:bg-[var(--brand-hover)] text-white font-bold text-xs flex items-center gap-2 shadow-lg  transition-all cursor-pointer"
             >
               <Send className={`w-3.5 h-3.5 ${isBroadcasting ? 'animate-spin' : ''}`} />
               <span>{isBroadcasting ? 'Saving...' : 'Confirm Rates Saved'}</span>
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* 4 Operations KPI Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
           <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
               Active Catalog Products
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-slate-900">{metrics.activeCount}</span>
+              <span className="text-xl font-bold text-slate-900">{metrics.activeCount}</span>
               <span className="text-[11px] font-extrabold text-emerald-700">All Live</span>
             </div>
-            <span className="text-[10px] text-slate-500 mt-1 block">{categoryRows.filter((c) => c.isActive).length} Categories Live</span>
+            <span className="text-[11px] text-slate-500 mt-1 block">{categoryRows.filter((c) => c.isActive).length} Categories Live</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100">
-            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider block">
               Avg Gross Margin Spread
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-[#0A3D2B]">₹{metrics.avgGrossMarginRupees}/kg</span>
+              <span className="data-value text-xl font-bold text-brand">₹{metrics.avgGrossMarginRupees}/kg</span>
               <span className="text-[11px] font-extrabold text-emerald-700">{metrics.avgMarginPct}</span>
             </div>
-            <span className="text-[10px] text-emerald-800/80 mt-1 block">Smelter Sale vs Customer Buy</span>
+            <span className="text-[11px] text-emerald-800/80 mt-1 block">Smelter Sale vs Customer Buy</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-100">
-            <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider block">
               Est. Daily Intake Run Rate
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-blue-950">{metrics.estimatedDailyCollectionKg}</span>
+              <span className="text-xl font-bold text-blue-950">{metrics.estimatedDailyCollectionKg}</span>
             </div>
-            <span className="text-[10px] text-blue-700 mt-1 block">Across Doorstep & Gate Walk-ins</span>
+            <span className="text-[11px] text-blue-700 mt-1 block">Across Doorstep & Gate Walk-ins</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-100">
-            <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider block">
               Projected Daily Gross Profit
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-amber-950">{metrics.projectedDailyGrossProfit}</span>
+              <span className="text-xl font-bold text-amber-950">{metrics.projectedDailyGrossProfit}</span>
             </div>
-            <span className="text-[10px] text-amber-700 mt-1 block">Before Fleet & Yard Costs</span>
+            <span className="text-[11px] text-amber-700 mt-1 block">Before Fleet & Yard Costs</span>
           </div>
         </div>
       </div>
@@ -463,13 +464,13 @@ export const RatesAndMarginScreen: React.FC = () => {
       <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <h3 className="text-sm font-black text-slate-900">Scrap Type Visibility</h3>
+            <h3 className="text-lg font-bold text-slate-900">Scrap Type Visibility</h3>
             <p className="text-[11px] text-slate-500 mt-0.5">
               Hidden categories/products disappear from the customer pickup request, the rates list
               and the employee collection screens. Rates keep their history.
             </p>
           </div>
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
             {categoryRows.filter((c) => c.isActive).length}/{categoryRows.length} categories live
           </span>
         </div>
@@ -505,17 +506,17 @@ export const RatesAndMarginScreen: React.FC = () => {
                     </span>
                     <div className="min-w-0">
                       <div
-                        className={`text-xs font-black truncate ${
-                          cat.isActive ? 'text-[#0A3D2B]' : 'text-slate-400'
+                        className={`text-xs font-bold truncate ${
+                          cat.isActive ? 'text-brand' : 'text-slate-400'
                         }`}
                       >
                         {cat.name}{' '}
-                        <span className="text-[10px] font-bold text-slate-400">
+                        <span className="text-[11px] font-bold text-slate-400">
                           ({cat.productCount})
                         </span>
                       </div>
                       <div
-                        className={`text-[11px] font-black ${
+                        className={`text-[11px] font-bold ${
                           cat.isActive ? 'text-emerald-800' : 'text-slate-400'
                         }`}
                       >
@@ -524,18 +525,18 @@ export const RatesAndMarginScreen: React.FC = () => {
                     </div>
                   </div>
 
-                  <button
+                  <Button
                     type="button"
                     onClick={() => handleToggleCategory(cat)}
                     title={cat.isActive ? 'Click to hide from apps' : 'Click to show in apps'}
-                    className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] font-black cursor-pointer transition-colors ${
+                    className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold cursor-pointer transition-colors ${
                       cat.isActive
                         ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                         : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
                     }`}
                   >
                     {cat.isActive ? 'Visible' : 'Hidden'}
-                  </button>
+                  </Button>
                 </div>
 
                 {catProducts.length > 0 && (
@@ -548,14 +549,14 @@ export const RatesAndMarginScreen: React.FC = () => {
                             ? `${p.name}: live customer rate (margin included)`
                             : `${p.name} is hidden from apps`
                         }
-                        className={`px-2 py-1 rounded-lg border text-[10px] font-bold ${
+                        className={`px-2 py-1 rounded-lg border text-[11px] font-bold ${
                           p.isActive && cat.isActive
                             ? 'bg-white border-slate-200 text-slate-700'
                             : 'bg-slate-100 border-slate-200 text-slate-400 line-through'
                         }`}
                       >
                         {p.name}{' '}
-                        <span className="font-black">
+                        <span className="data-value font-bold">
                           ₹{p.calculatedCustomerRateRupees.toFixed(2)}
                         </span>
                       </span>
@@ -594,22 +595,22 @@ export const RatesAndMarginScreen: React.FC = () => {
               ...categoryTabs,
             ];
           })().map((tab) => (
-            <button
+            <Button
               key={tab.id}
               onClick={() => setSelectedCategoryTab(tab.id)}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
                 selectedCategoryTab === tab.id
-                  ? 'bg-[#0A3D2B] text-white shadow-md shadow-emerald-950/20'
+                  ? 'bg-brand text-white shadow-md '
                   : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`ml-1.5 text-[10px] px-1.5 py-0.5 rounded-md ${
+              <span className={`ml-1.5 text-[11px] px-1.5 py-0.5 rounded-md ${
                 selectedCategoryTab === tab.id ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-500'
               }`}>
                 {tab.count}
               </span>
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -619,12 +620,12 @@ export const RatesAndMarginScreen: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+              <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold tracking-wider">
                 <th className="py-3.5 px-4">Scrap Product</th>
                 <th className="py-3.5 px-3">Market Benchmark (Smelter)</th>
                 <th className="py-3.5 px-3">Margin Direction</th>
                 <th className="py-3.5 px-3">Margin Delta</th>
-                <th className="py-3.5 px-4 bg-emerald-50/70 text-[#0A3D2B]">
+                <th className="py-3.5 px-4 bg-emerald-50/70 text-brand">
                   Customer Buying Rate
                 </th>
                 <th className="py-3.5 px-3">Gross Spread</th>
@@ -654,12 +655,12 @@ export const RatesAndMarginScreen: React.FC = () => {
                         </span>
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="font-black text-slate-900 text-xs">{row.name}</span>
-                            <span className="text-[9px] font-black text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded">
+                            <span className="font-bold text-slate-900 text-xs">{row.name}</span>
+                            <span className="text-[11px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded">
                               {row.code}
                             </span>
                           </div>
-                          <span className="text-[10px] text-slate-400 font-semibold block mt-0.5">
+                          <span className="text-[11px] text-slate-400 font-semibold block mt-0.5">
                             {row.categoryName} • Updated {row.updatedAt}
                           </span>
                         </div>
@@ -670,12 +671,12 @@ export const RatesAndMarginScreen: React.FC = () => {
                     <td className="py-3.5 px-3">
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1">
-                          <span className="font-extrabold text-slate-800 text-xs">
+                          <span className="data-value font-extrabold text-slate-800 text-xs">
                             ₹{row.marketBenchmarkRateRupees.toFixed(2)}
                           </span>
-                          <span className="text-[10px] text-slate-400">/kg</span>
+                          <span className="text-[11px] text-slate-400">/kg</span>
                         </div>
-                        <span className="text-[10px] text-slate-400 truncate max-w-[130px]" title={row.marketName}>
+                        <span className="text-[11px] text-slate-400 truncate max-w-[130px]" title={row.marketName}>
                           {row.marketName}
                         </span>
                       </div>
@@ -684,11 +685,11 @@ export const RatesAndMarginScreen: React.FC = () => {
                     {/* Column 3: Margin Direction Toggle (+ or -) */}
                     <td className="py-3.5 px-3">
                       <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 w-fit">
-                        <button
+                        <Button aria-label="Buying discount below market (Standard scrap trading profit)"
                           onClick={() =>
                             updateProductMargin(row.productId, { marginDirection: 'SUBTRACT' })
                           }
-                          className={`px-2 py-1 rounded-lg font-black text-[10px] transition-all cursor-pointer flex items-center gap-1 ${
+                          className={`px-2 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1 ${
                             row.marginDirection === 'SUBTRACT'
                               ? 'bg-rose-600 text-white shadow-xs'
                               : 'text-slate-500 hover:text-slate-800'
@@ -697,13 +698,13 @@ export const RatesAndMarginScreen: React.FC = () => {
                         >
                           <Minus className="w-2.5 h-2.5 stroke-[3]" />
                           <span>Disc (-)</span>
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button aria-label="Premium above market (Acquisition drive)"
                           onClick={() =>
                             updateProductMargin(row.productId, { marginDirection: 'ADD' })
                           }
-                          className={`px-2 py-1 rounded-lg font-black text-[10px] transition-all cursor-pointer flex items-center gap-1 ${
+                          className={`px-2 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1 ${
                             row.marginDirection === 'ADD'
                               ? 'bg-emerald-600 text-white shadow-xs'
                               : 'text-slate-500 hover:text-slate-800'
@@ -712,7 +713,7 @@ export const RatesAndMarginScreen: React.FC = () => {
                         >
                           <Plus className="w-2.5 h-2.5 stroke-[3]" />
                           <span>Prem (+)</span>
-                        </button>
+                        </Button>
                       </div>
                     </td>
 
@@ -730,37 +731,37 @@ export const RatesAndMarginScreen: React.FC = () => {
                                 marginValue: parseFloat(e.target.value) || 0,
                               })
                             }
-                            className="w-full bg-transparent font-black text-xs text-slate-900 outline-none"
+                            className="w-full bg-transparent font-bold text-xs text-slate-900 outline-none"
                           />
-                          <span className="text-[10px] font-bold text-slate-400">
+                          <span className="text-[11px] font-bold text-slate-400">
                             {row.marginMode === 'FLAT' ? '₹' : '%'}
                           </span>
                         </div>
 
                         {/* Quick stepper pills */}
                         <div className="flex items-center gap-1">
-                          <button
+                          <Button
                             onClick={() =>
                               updateProductMargin(row.productId, {
                                 marginValue: Math.max(0, row.marginValue - 1),
                               })
                             }
-                            className="w-5 h-5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-[10px] cursor-pointer"
+                            className="w-5 h-5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-[11px] cursor-pointer"
                             title="Decrease margin by 1"
                           >
                             -1
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={() =>
                               updateProductMargin(row.productId, {
                                 marginValue: row.marginValue + 1,
                               })
                             }
-                            className="w-5 h-5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-[10px] cursor-pointer"
+                            className="w-5 h-5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-[11px] cursor-pointer"
                             title="Increase margin by 1"
                           >
                             +1
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </td>
@@ -768,12 +769,12 @@ export const RatesAndMarginScreen: React.FC = () => {
                     {/* Column 5: Calculated Customer Buying Rate */}
                     <td className="py-3.5 px-4 bg-emerald-50/50">
                       <div className="flex items-baseline gap-1">
-                        <span className="text-sm font-black text-[#0A3D2B]">
+                        <span className="data-value text-sm font-bold text-brand">
                           ₹{row.calculatedCustomerRateRupees.toFixed(2)}
                         </span>
-                        <span className="text-[10px] font-bold text-emerald-800">/kg</span>
+                        <span className="text-[11px] font-bold text-emerald-800">/kg</span>
                       </div>
-                      <span className="text-[9px] font-semibold text-emerald-700/80 block mt-0.5">
+                      <span className="text-[11px] font-semibold text-emerald-700/80 block mt-0.5">
                         Customer App Live Rate
                       </span>
                     </td>
@@ -781,7 +782,7 @@ export const RatesAndMarginScreen: React.FC = () => {
                     {/* Column 6: Gross Spread Bar */}
                     <td className="py-3.5 px-3">
                       <div className="flex flex-col gap-1 w-28">
-                        <div className="flex items-center justify-between text-[10px] font-bold">
+                        <div className="flex items-center justify-between text-[11px] font-bold">
                           <span className={isHealthySpread ? 'text-emerald-700' : 'text-rose-600'}>
                             ₹{spreadPerKg.toFixed(2)}/kg
                           </span>
@@ -801,11 +802,11 @@ export const RatesAndMarginScreen: React.FC = () => {
 
                     {/* Column 7: Bulk Tier Incentives */}
                     <td className="py-3.5 px-3">
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold">
-                        <span className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200" title=">50kg rate">
+                      <div className="flex items-center gap-1.5 text-[11px] font-bold">
+                        <span className="data-value bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200" title=">50kg rate">
                           +₹{row.bulkTier1PremiumRupees}
                         </span>
-                        <span className="bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200" title=">100kg rate">
+                        <span className="data-value bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded border border-purple-200" title=">100kg rate">
                           +₹{row.bulkTier2PremiumRupees}
                         </span>
                       </div>
@@ -814,7 +815,7 @@ export const RatesAndMarginScreen: React.FC = () => {
                     {/* Column 8: Actions */}
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        <button
+                        <Button
                           onClick={() => handleToggleProduct(row)}
                           title={
                             !row.categoryActive
@@ -823,29 +824,29 @@ export const RatesAndMarginScreen: React.FC = () => {
                               ? 'Visible in apps — click to hide'
                               : 'Hidden from apps — click to show'
                           }
-                          className={`px-2 py-1.5 rounded-lg text-[10px] font-black border transition-colors cursor-pointer ${
+                          className={`px-2 py-1.5 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
                             row.isActive
                               ? 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100'
                               : 'bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200'
                           }`}
                         >
                           {row.isActive ? 'Visible' : 'Hidden'}
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button aria-label="View Rate Audit History"
                           onClick={() => openRateHistory(row)}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                           title="View Rate Audit History"
                         >
                           <History className="w-3.5 h-3.5" />
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button
                           onClick={() => handleSaveProductRate(row)}
-                          className="px-2.5 py-1.5 rounded-lg bg-[#0A3D2B] hover:bg-[#0E4D36] text-white font-bold text-[11px] transition-colors cursor-pointer shadow-2xs"
+                          className="px-2.5 py-1.5 rounded-lg bg-brand hover:bg-[var(--brand-hover)] text-white font-bold text-[11px] transition-colors cursor-pointer shadow-2xs"
                         >
                           Save
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -863,33 +864,33 @@ export const RatesAndMarginScreen: React.FC = () => {
 
       {/* Floating / Sliding Customer App Preview Simulator Drawer */}
       {isSimulatorOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-end animate-in fade-in">
-          <div className="bg-white w-full max-w-md h-full shadow-2xl border-l border-slate-200 flex flex-col p-6 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-end animate-in fade-in">
+          <DialogSurface onClose={() => setIsSimulatorOpen(false)} label="Customer App Rate Preview" className="bg-white w-full max-w-md h-full shadow-2xl border-l border-slate-200 flex flex-col p-6 overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Smartphone className="w-5 h-5 text-emerald-800" />
                 <div>
-                  <h3 className="text-sm font-black text-slate-900">Customer App Rate Preview</h3>
+                  <h3 className="text-lg font-bold text-slate-900">Customer App Rate Preview</h3>
                   <p className="text-[11px] text-slate-400">Live reflection of your configured margin delta</p>
                 </div>
               </div>
 
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsSimulatorOpen(false)}
                 className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
             {/* Mobile App Canvas Preview Frame */}
-            <div className="mt-4 p-4 rounded-3xl bg-[#F8FAFC] border-2 border-slate-200 space-y-4">
+            <div className="mt-4 p-4 rounded-3xl bg-canvas border-2 border-slate-200 space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200/60">
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs font-black text-[#0A3D2B]">TODAY'S SCRAP RATES</span>
+                  <span className="text-xs font-bold text-brand">TODAY'S SCRAP RATES</span>
                 </div>
-                <span className="text-[10px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                <span className="text-[11px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">
                   Vijayawada Central
                 </span>
               </div>
@@ -903,16 +904,16 @@ export const RatesAndMarginScreen: React.FC = () => {
                     <div className="flex items-center gap-2.5">
                       <span className="text-xl">{item.emoji}</span>
                       <div>
-                        <h4 className="text-xs font-black text-slate-900">{item.name}</h4>
-                        <span className="text-[10px] font-bold text-slate-400">{item.categoryName}</span>
+                        <h4 className="text-base font-bold text-slate-900">{item.name}</h4>
+                        <span className="text-[11px] font-bold text-slate-400">{item.categoryName}</span>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-xs font-black text-[#0A3D2B]">
+                      <span className="data-value text-xs font-bold text-brand">
                         ₹{item.calculatedCustomerRateRupees.toFixed(2)}
                       </span>
-                      <span className="text-[10px] font-semibold text-slate-400 block">per kg</span>
+                      <span className="text-[11px] font-semibold text-slate-400 block">per kg</span>
                     </div>
                   </div>
                 ))}
@@ -926,43 +927,43 @@ export const RatesAndMarginScreen: React.FC = () => {
             </div>
 
             <div className="mt-auto pt-4 border-t border-slate-100 flex gap-2">
-              <button
+              <Button
                 onClick={() => {
                   handleBroadcastToApps();
                   setIsSimulatorOpen(false);
                 }}
-                className="w-full py-3 rounded-2xl bg-[#0A3D2B] text-white font-black text-xs hover:bg-[#0E4D36] transition-all cursor-pointer"
+                className="w-full py-3 rounded-2xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer"
               >
                 Confirm Rates Saved
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* Rate History Audit Modal */}
       {activeHistoryItem && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 max-h-[85vh] flex flex-col">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-center p-4 animate-in fade-in">
+          <DialogSurface onClose={() => setActiveHistoryItem(null)} label="— Rate Revision History" className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
                 <span className="text-2xl">{activeHistoryItem.emoji}</span>
                 <div>
-                  <h3 className="text-sm font-black text-slate-900">
+                  <h3 className="text-lg font-bold text-slate-900">
                     {activeHistoryItem.name} — Rate Revision History
                   </h3>
-                  <span className="text-[10px] text-slate-400 font-semibold">
+                  <span className="text-[11px] text-slate-400 font-semibold">
                     Code: {activeHistoryItem.code} • Total Revisions: {activeHistoryItem.historyCount}
                   </span>
                 </div>
               </div>
 
-              <button
+              <Button aria-label="Close"
                 onClick={() => setActiveHistoryItem(null)}
                 className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
 
             <div className="my-4 space-y-3 overflow-y-auto flex-1 pr-1">
@@ -970,16 +971,16 @@ export const RatesAndMarginScreen: React.FC = () => {
                 <div key={i} className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-black text-slate-900">₹{Number(
+                      <span className="data-value font-bold text-slate-900">₹{Number(
                         h.ratePerKgRupees ?? (h.ratePerKg != null ? h.ratePerKg / 100 : 0),
                       ).toFixed(2)}/kg</span>
-                      <span className="text-[10px] text-slate-400">{h.marketBenchmarkRateRupees != null ? `(Smelter: ₹${Number(h.marketBenchmarkRateRupees).toFixed(2)})` : ''}</span>
+                      <span className="data-value text-[11px] text-slate-400">{h.marketBenchmarkRateRupees != null ? `(Smelter: ₹${Number(h.marketBenchmarkRateRupees).toFixed(2)})` : ''}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 block mt-0.5">{h.reason || '—'}</span>
-                    <span className="text-[9px] text-slate-400 mt-0.5 block">{h.updatedBy?.name || h.userName || '—'} • {h.createdAt || '—'}</span>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">{h.reason || '—'}</span>
+                    <span className="text-[11px] text-slate-400 mt-0.5 block">{h.updatedBy?.name || h.userName || '—'} • {h.createdAt || '—'}</span>
                   </div>
 
-                  <span className="text-[9px] font-black uppercase text-emerald-800 bg-emerald-100/60 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-bold uppercase text-emerald-800 bg-emerald-100/60 px-2 py-0.5 rounded-full">
                     Effective
                   </span>
                 </div>
@@ -989,31 +990,31 @@ export const RatesAndMarginScreen: React.FC = () => {
               )}
             </div>
 
-            <button
+            <Button
               onClick={() => setActiveHistoryItem(null)}
               className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 cursor-pointer"
             >
               Close Ledger
-            </button>
-          </div>
+            </Button>
+          </DialogSurface>
         </div>
       )}
 
       {/* Bulk Category Margin Adjuster Modal */}
       {isBulkAdjustOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-center p-4 animate-in fade-in">
+          <DialogSurface onClose={() => setIsBulkAdjustOpen(false)} label="Bulk Category Margin Adjuster" className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <SlidersHorizontal className="w-4 h-4 text-emerald-700" />
                 Bulk Category Margin Adjuster
               </h3>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsBulkAdjustOpen(false)}
                 className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3">
@@ -1024,7 +1025,7 @@ export const RatesAndMarginScreen: React.FC = () => {
                 <select
                   value={bulkCategory}
                   onChange={(e) => setBulkCategory(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-black text-slate-900 bg-slate-50 outline-none"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50 outline-none"
                 >
                   <option value="Metal">⚙️ Metals (Copper, Brass, Iron, Aluminium)</option>
                   <option value="Paper">📰 Paper (Newspaper, Cardboard, Books)</option>
@@ -1043,31 +1044,31 @@ export const RatesAndMarginScreen: React.FC = () => {
                     step="0.5"
                     value={bulkDeltaRupees}
                     onChange={(e) => setBulkDeltaRupees(parseFloat(e.target.value) || 0)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-black text-slate-900 bg-slate-50 outline-none"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50 outline-none"
                   />
                   <span className="text-xs font-bold text-slate-500 shrink-0">₹/kg</span>
                 </div>
-                <span className="text-[10px] text-slate-400 mt-1 block">
+                <span className="text-[11px] text-slate-400 mt-1 block">
                   Tip: Negative (-₹3.00) means buying at ₹3 below market; positive (+₹1.50) adds a bonus.
                 </span>
               </div>
             </div>
 
             <div className="pt-2 flex gap-2">
-              <button
+              <Button
                 onClick={() => setIsBulkAdjustOpen(false)}
                 className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleApplyBulkCategoryAdjustment}
-                className="w-1/2 py-2.5 rounded-xl bg-[#0A3D2B] text-white font-black text-xs hover:bg-[#0E4D36] cursor-pointer shadow-md"
+                className="w-1/2 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] cursor-pointer shadow-md"
               >
                 Apply to Category
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>

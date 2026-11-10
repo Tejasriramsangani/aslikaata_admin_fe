@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, StatusBadge, DialogSurface } from '../ui';
 import React, { useState, useMemo } from 'react';
 import {
   Users,
@@ -363,9 +364,9 @@ export const WorkforceHRMScreen: React.FC = () => {
     <div className="space-y-6 pb-20 animate-in fade-in duration-200">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-[#0A3D2B] text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-in slide-in-from-top-4">
-          <CheckCircle2 className="w-5 h-5 text-[#22C55E] shrink-0" />
-          <span className="text-xs font-black tracking-wide">{toastMessage}</span>
+        <div className="fixed top-20 right-6 z-50 bg-brand text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-in slide-in-from-top-4">
+          <CheckCircle2 className="w-5 h-5 text-brand shrink-0" />
+          <span className="text-xs font-bold tracking-wide">{toastMessage}</span>
         </div>
       )}
 
@@ -374,7 +375,7 @@ export const WorkforceHRMScreen: React.FC = () => {
         <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 pb-6 border-b border-slate-100">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1.5">
                 <Users className="w-3 h-3 text-emerald-700" />
                 Workforce HRM & Cash Float Desk
               </span>
@@ -382,7 +383,7 @@ export const WorkforceHRMScreen: React.FC = () => {
                 Drivers, Pickers & Physical Currency Control
               </span>
             </div>
-            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl md:text-2xl font-bold text-slate-900 tracking-tight">
               Workforce Roster & Daily Float Reconciliation Desk
             </h2>
             <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
@@ -392,61 +393,61 @@ export const WorkforceHRMScreen: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <button
+            <Button
               onClick={() => setIsIssueFloatOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-[#0A3D2B] hover:bg-[#0E4D36] text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-950/20 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-brand hover:bg-[var(--brand-hover)] text-white font-bold text-xs flex items-center gap-2 shadow-lg  transition-all cursor-pointer"
             >
               <Banknote className="w-4 h-4 stroke-[2.5]" />
               <span>Issue Morning Cash Float</span>
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* 4 Operations KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
           <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
               Active Duty Personnel
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-slate-900">{metrics.totalStaff} Staff</span>
+              <span className="text-xl font-bold text-slate-900">{metrics.totalStaff} Staff</span>
               <span className="text-[11px] font-extrabold text-emerald-700">
                 {metrics.onRouteCount} On Route
               </span>
             </div>
-            <span className="text-[10px] text-slate-500 mt-1 block">
+            <span className="text-[11px] text-slate-500 mt-1 block">
               {metrics.inYardCount} in Yard • {metrics.pendingKycCount} KYC Pending
             </span>
           </div>
 
           <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-100">
-            <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider block">
               Morning Cash Float Disbursed
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-amber-950">{metrics.totalDisbursedFloat}</span>
+              <span className="text-xl font-bold text-amber-950">{metrics.totalDisbursedFloat}</span>
             </div>
-            <span className="text-[10px] text-amber-800/80 mt-1 block">Carried by pickers for cash payouts</span>
+            <span className="text-[11px] text-amber-800/80 mt-1 block">Carried by pickers for cash payouts</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100">
-            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider block">
               Verified Doorstep Cash Paid
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-[#0A3D2B]">{metrics.totalCustomerPaidToday}</span>
+              <span className="text-xl font-bold text-brand">{metrics.totalCustomerPaidToday}</span>
             </div>
-            <span className="text-[10px] text-emerald-800/80 mt-1 block">Backed by verified OTP scale vouchers</span>
+            <span className="text-[11px] text-emerald-800/80 mt-1 block">Backed by verified OTP scale vouchers</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-100">
-            <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider block">
               Expected Evening Return Cash
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-blue-950">{metrics.expectedReturnFloat}</span>
+              <span className="text-xl font-bold text-blue-950">{metrics.expectedReturnFloat}</span>
             </div>
-            <span className="text-[10px] text-blue-700 mt-1 block">To be physically audited at yard gate</span>
+            <span className="text-[11px] text-blue-700 mt-1 block">To be physically audited at yard gate</span>
           </div>
         </div>
       </div>
@@ -460,22 +461,22 @@ export const WorkforceHRMScreen: React.FC = () => {
             { id: 'ATTENDANCE', label: '📅 Geofenced Attendance', count: metrics.onRouteCount + metrics.inYardCount },
             { id: 'LEADERBOARD', label: '🏆 Collection Leaderboard', count: employees.length },
           ].map((tab) => (
-            <button
+            <Button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
                 activeTab === tab.id
-                  ? 'bg-[#0A3D2B] text-white shadow-md shadow-emerald-950/20'
+                  ? 'bg-brand text-white shadow-md '
                   : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`ml-1.5 text-[10px] px-1.5 py-0.5 rounded-md ${
+              <span className={`ml-1.5 text-[11px] px-1.5 py-0.5 rounded-md ${
                 activeTab === tab.id ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-500'
               }`}>
                 {tab.count}
               </span>
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -501,7 +502,7 @@ export const WorkforceHRMScreen: React.FC = () => {
 
             <div className="relative w-full sm:w-64">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
+              <input aria-label="Search staff by name or code..."
                 type="text"
                 placeholder="Search staff by name or code..."
                 value={searchEmployeeQuery}
@@ -516,7 +517,7 @@ export const WorkforceHRMScreen: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold tracking-wider">
                     <th className="py-3.5 px-4">Employee Identity</th>
                     <th className="py-3.5 px-3">Role & Division</th>
                     <th className="py-3.5 px-3">Assigned Vehicle</th>
@@ -537,16 +538,16 @@ export const WorkforceHRMScreen: React.FC = () => {
                         {/* 1. Identity */}
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-950 font-black flex items-center justify-center shrink-0 border border-emerald-200">
+                            <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-950 font-bold flex items-center justify-center shrink-0 border border-emerald-200">
                               {emp.name.charAt(0)}
                             </div>
                             <div>
-                              <span className="font-black text-slate-900 text-xs block">{emp.name}</span>
+                              <span className="font-bold text-slate-900 text-xs block">{emp.name}</span>
                               <div className="flex items-center gap-1.5 mt-0.5">
-                                <span className="text-[10px] font-black text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                                <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
                                   {emp.employeeCode}
                                 </span>
-                                <span className="text-[10px] text-slate-400">{emp.phone}</span>
+                                <span className="text-[11px] text-slate-400">{emp.phone}</span>
                               </div>
                             </div>
                           </div>
@@ -558,7 +559,7 @@ export const WorkforceHRMScreen: React.FC = () => {
                             <span className="font-extrabold text-slate-800 text-xs">
                               {emp.role.replace('_', ' ')}
                             </span>
-                            <span className="text-[10px] text-emerald-800 font-semibold truncate max-w-[120px]">
+                            <span className="text-[11px] text-emerald-800 font-semibold truncate max-w-[120px]">
                               {emp.assignedDivision}
                             </span>
                           </div>
@@ -567,7 +568,7 @@ export const WorkforceHRMScreen: React.FC = () => {
                         {/* 3. Vehicle */}
                         <td className="py-3.5 px-3">
                           {emp.assignedVehicleReg ? (
-                            <span className="font-black text-slate-800 text-xs bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
+                            <span className="font-bold text-slate-800 text-xs bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
                               {emp.assignedVehicleReg}
                             </span>
                           ) : (
@@ -578,16 +579,10 @@ export const WorkforceHRMScreen: React.FC = () => {
                         {/* 4. KYC Status */}
                         <td className="py-3.5 px-3">
                           <div className="flex flex-col gap-0.5">
-                            <span
-                              className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full w-fit ${
-                                isKycApproved
-                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                                  : 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse'
-                              }`}
-                            >
+                            <StatusBadge status={emp.kyc.status}>
                               {emp.kyc.status}
-                            </span>
-                            <span className="text-[10px] text-slate-400">
+                            </StatusBadge>
+                            <span className="text-[11px] text-slate-400">
                               Aadhaar: {emp.kyc.aadhaarMasked}
                             </span>
                           </div>
@@ -596,14 +591,14 @@ export const WorkforceHRMScreen: React.FC = () => {
                         {/* 5. Compensation */}
                         <td className="py-3.5 px-3">
                           <div className="flex flex-col">
-                            <span className="font-black text-slate-900 text-xs">
+                            <span className="font-bold text-slate-900 text-xs">
                               ₹{emp.compensation.basePayRupees.toLocaleString('en-IN')}
-                              <span className="text-[9px] text-slate-400 font-normal">
+                              <span className="text-[11px] text-slate-400 font-normal">
                                 {emp.compensation.payModel === 'DAILY_WAGE' ? '/day' : '/mo'}
                               </span>
                             </span>
                             {emp.compensation.incentivePerKgPaise > 0 && (
-                              <span className="text-[10px] font-bold text-emerald-700">
+                              <span className="data-value text-[11px] font-bold text-emerald-700">
                                 +₹{(emp.compensation.incentivePerKgPaise / 100).toFixed(2)}/kg bonus
                               </span>
                             )}
@@ -613,10 +608,10 @@ export const WorkforceHRMScreen: React.FC = () => {
                         {/* 6. Today Collection */}
                         <td className="py-3.5 px-3">
                           <div className="flex flex-col">
-                            <span className="font-black text-slate-900 text-xs">
+                            <span className="font-bold text-slate-900 text-xs">
                               {emp.metrics.todayKgCollected} kg
                             </span>
-                            <span className="text-[10px] text-slate-400">
+                            <span className="text-[11px] text-slate-400">
                               {emp.metrics.todayPickupsCompleted} pickups today
                             </span>
                           </div>
@@ -624,7 +619,7 @@ export const WorkforceHRMScreen: React.FC = () => {
 
                         {/* 7. Rating */}
                         <td className="py-3.5 px-3">
-                          <div className="flex items-center gap-1 font-black text-xs text-amber-500">
+                          <div className="flex items-center gap-1 font-bold text-xs text-amber-500">
                             <Star className="w-3.5 h-3.5 fill-amber-400 stroke-none" />
                             <span>{emp.metrics.rating}</span>
                           </div>
@@ -634,19 +629,19 @@ export const WorkforceHRMScreen: React.FC = () => {
                         <td className="py-3.5 px-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
                             {!isKycApproved && (
-                              <button
+                              <Button
                                 onClick={() => handleApproveKyc(emp.id)}
-                                className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] shadow-xs cursor-pointer"
+                                className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-xs cursor-pointer"
                               >
                                 Approve KYC
-                              </button>
+                              </Button>
                             )}
-                            <button
+                            <Button
                               onClick={() => setSelectedEmployeeForModal(emp)}
                               className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs cursor-pointer shadow-2xs"
                             >
                               Profile
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -664,7 +659,7 @@ export const WorkforceHRMScreen: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
             <div>
-              <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">
+              <h3 className="text-lg font-bold text-slate-900 uppercase tracking-wider">
                 Daily Working Capital Reconciliation
               </h3>
               <p className="text-[11px] text-slate-400">
@@ -672,12 +667,12 @@ export const WorkforceHRMScreen: React.FC = () => {
               </p>
             </div>
 
-            <button
+            <Button
               onClick={() => setIsIssueFloatOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-xs"
+              className="px-3.5 py-2 rounded-xl bg-brand text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" /> Issue Float
-            </button>
+            </Button>
           </div>
 
           {/* Floats Table */}
@@ -685,7 +680,7 @@ export const WorkforceHRMScreen: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold tracking-wider">
                     <th className="py-3.5 px-4">Picker & Vehicle</th>
                     <th className="py-3.5 px-3">Opening Float</th>
                     <th className="py-3.5 px-3">Doorstep Cash Paid</th>
@@ -706,45 +701,45 @@ export const WorkforceHRMScreen: React.FC = () => {
                       <tr key={flt.id} className="hover:bg-slate-50/80 transition-colors">
                         {/* 1. Picker */}
                         <td className="py-3.5 px-4">
-                          <span className="font-black text-slate-900 text-xs block">{flt.employeeName}</span>
-                          <span className="text-[10px] text-slate-400 font-semibold">
+                          <span className="font-bold text-slate-900 text-xs block">{flt.employeeName}</span>
+                          <span className="text-[11px] text-slate-400 font-semibold">
                             {flt.employeeCode} • {flt.vehicleReg}
                           </span>
                         </td>
 
                         {/* 2. Opening Float */}
-                        <td className="py-3.5 px-3 font-black text-slate-900 text-xs">
+                        <td className="py-3.5 px-3 font-bold text-slate-900 text-xs">
                           ₹{flt.openingFloatRupees.toLocaleString('en-IN')}
-                          <span className="text-[9px] text-slate-400 block font-normal">{flt.issuedTime}</span>
+                          <span className="text-[11px] text-slate-400 block font-normal">{flt.issuedTime}</span>
                         </td>
 
                         {/* 3. Doorstep Cash Paid */}
-                        <td className="py-3.5 px-3 font-extrabold text-emerald-800 text-xs">
+                        <td className="data-value py-3.5 px-3 font-extrabold text-emerald-800 text-xs">
                           ₹{flt.verifiedCustomerCashPayoutsRupees.toLocaleString('en-IN')}
                         </td>
 
                         {/* 4. Route Expenses */}
-                        <td className="py-3.5 px-3 font-bold text-slate-600">
+                        <td className="data-value py-3.5 px-3 font-bold text-slate-600">
                           ₹{flt.approvedRouteExpensesRupees.toFixed(2)}
                         </td>
 
                         {/* 5. Expected Return */}
-                        <td className="py-3.5 px-3 bg-blue-50/50 font-black text-blue-950 text-xs">
+                        <td className="data-value py-3.5 px-3 bg-blue-50/50 font-bold text-blue-950 text-xs">
                           ₹{Math.round(flt.expectedCashReturnRupees).toLocaleString('en-IN')}
                         </td>
 
                         {/* 6. Actual Return */}
-                        <td className="py-3.5 px-3 font-extrabold text-slate-900 text-xs">
+                        <td className="data-value py-3.5 px-3 font-extrabold text-slate-900 text-xs">
                           {flt.actualPhysicalCashReturnedRupees != null
                             ? `₹${flt.actualPhysicalCashReturnedRupees.toLocaleString('en-IN')}`
                             : <span className="text-amber-600 text-[11px] font-bold">On Route</span>}
                         </td>
 
                         {/* 7. Variance */}
-                        <td className="py-3.5 px-3">
+                        <td className="data-value py-3.5 px-3">
                           {isSettled ? (
                             <span
-                              className={`text-xs font-black ${
+                              className={`text-xs font-bold ${
                                 flt.varianceRupees === 0
                                   ? 'text-emerald-700'
                                   : flt.varianceRupees < 0
@@ -761,30 +756,22 @@ export const WorkforceHRMScreen: React.FC = () => {
 
                         {/* 8. Status */}
                         <td className="py-3.5 px-3">
-                          <span
-                            className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
-                              flt.status === 'BALANCED'
-                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                                : flt.status === 'SHORTAGE_FLAGGED'
-                                ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                                : 'bg-amber-100 text-amber-900 border border-amber-300 animate-pulse'
-                            }`}
-                          >
+                          <StatusBadge status={flt.status}>
                             {flt.status}
-                          </span>
+                          </StatusBadge>
                         </td>
 
                         {/* 9. Actions */}
                         <td className="py-3.5 px-4 text-right">
                           {!isSettled ? (
-                            <button
+                            <Button
                               onClick={() => openSettlementModal(flt)}
-                              className="px-3 py-1.5 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-colors cursor-pointer shadow-xs"
+                              className="px-3 py-1.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-colors cursor-pointer shadow-xs"
                             >
                               Audit & Settle
-                            </button>
+                            </Button>
                           ) : (
-                            <span className="text-[10px] text-slate-400 font-semibold">
+                            <span className="text-[11px] text-slate-400 font-semibold">
                               Settled {flt.reconciledTime}
                             </span>
                           )}
@@ -809,7 +796,7 @@ export const WorkforceHRMScreen: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-black text-slate-900">Today's Shift Attendance Log (Oct 12, 2026)</h3>
+              <h3 className="text-lg font-bold text-slate-900">Today's Shift Attendance Log (Oct 12, 2026)</h3>
               <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
                 Vijayawada Central Hub Geofence Active (Radius 100m)
               </span>
@@ -819,20 +806,20 @@ export const WorkforceHRMScreen: React.FC = () => {
               {employees.map((emp) => (
                 <div key={emp.id} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-black flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shrink-0">
                       {emp.name.charAt(0)}
                     </div>
                     <div>
-                      <span className="font-black text-slate-900 block">{emp.name}</span>
-                      <span className="text-[10px] text-slate-400 font-semibold">{emp.employeeCode} • {emp.role}</span>
+                      <span className="font-bold text-slate-900 block">{emp.name}</span>
+                      <span className="text-[11px] text-slate-400 font-semibold">{emp.employeeCode} • {emp.role}</span>
                     </div>
                   </div>
 
                   <div className="text-right">
-                    <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
+                    <span className="text-[11px] font-bold uppercase text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
                       {emp.todayAttendance.replace('_', ' ')}
                     </span>
-                    <span className="text-[10px] text-slate-500 font-bold block mt-1">
+                    <span className="text-[11px] text-slate-500 font-bold block mt-1">
                       Check-in: {emp.checkInTime}
                     </span>
                   </div>
@@ -859,24 +846,24 @@ export const WorkforceHRMScreen: React.FC = () => {
                 <div key={top.id} className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm relative overflow-hidden flex flex-col justify-between">
                   <div className="flex items-center justify-between">
                     <span className="text-2xl">{idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}</span>
-                    <span className="text-xs font-black text-amber-500 flex items-center gap-1">
+                    <span className="text-xs font-bold text-amber-500 flex items-center gap-1">
                       <Star className="w-3.5 h-3.5 fill-amber-400 stroke-none" /> {top.metrics.rating}
                     </span>
                   </div>
 
                   <div className="my-3">
-                    <h4 className="text-base font-black text-slate-900">{top.name}</h4>
-                    <span className="text-[10px] text-slate-400 font-bold">{top.employeeCode} • {top.assignedDivision}</span>
+                    <h4 className="text-base font-bold text-slate-900">{top.name}</h4>
+                    <span className="text-[11px] text-slate-400 font-bold">{top.employeeCode} • {top.assignedDivision}</span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase block">Today Collected</span>
-                      <span className="font-black text-slate-900 text-sm">{top.metrics.todayKgCollected} kg</span>
+                      <span className="text-[11px] font-bold text-slate-400 uppercase block">Today Collected</span>
+                      <span className="font-bold text-slate-900 text-sm">{top.metrics.todayKgCollected} kg</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase block">Pickups Done</span>
-                      <span className="font-black text-emerald-800 text-sm">{top.metrics.todayPickupsCompleted} jobs</span>
+                      <span className="text-[11px] font-bold text-slate-400 uppercase block">Pickups Done</span>
+                      <span className="font-bold text-emerald-800 text-sm">{top.metrics.todayPickupsCompleted} jobs</span>
                     </div>
                   </div>
                 </div>
@@ -887,19 +874,19 @@ export const WorkforceHRMScreen: React.FC = () => {
 
       {/* MODAL: ISSUE MORNING CASH FLOAT */}
       {isIssueFloatOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-center p-4 animate-in fade-in">
+          <DialogSurface onClose={() => setIsIssueFloatOpen(false)} label="Issue Morning Cash Float" className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Banknote className="w-4 h-4 text-emerald-800" />
                 Issue Morning Cash Float
               </h3>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsIssueFloatOpen(false)}
                 className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3 text-xs">
@@ -928,19 +915,19 @@ export const WorkforceHRMScreen: React.FC = () => {
                     step="1000"
                     value={issueAmount}
                     onChange={(e) => setIssueAmount(parseInt(e.target.value) || 0)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 font-black text-slate-900 bg-slate-50 outline-none text-base"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 font-bold text-slate-900 bg-slate-50 outline-none text-base"
                   />
                   <span className="text-xs font-bold text-slate-500">INR</span>
                 </div>
                 <div className="flex gap-1.5 mt-2">
                   {[10000, 15000, 20000, 25000].map((preset) => (
-                    <button
+                    <Button
                       key={preset}
                       onClick={() => setIssueAmount(preset)}
-                      className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-[10px] text-slate-700 cursor-pointer"
+                      className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 font-bold text-[11px] text-slate-700 cursor-pointer"
                     >
                       ₹{preset.toLocaleString('en-IN')}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -951,65 +938,65 @@ export const WorkforceHRMScreen: React.FC = () => {
             </div>
 
             <div className="pt-2 flex gap-2">
-              <button
+              <Button
                 onClick={() => setIsIssueFloatOpen(false)}
                 className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleIssueFloatSubmit}
-                className="w-1/2 py-2.5 rounded-xl bg-[#0A3D2B] text-white font-black text-xs hover:bg-[#0E4D36] cursor-pointer shadow-md"
+                className="w-1/2 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] cursor-pointer shadow-md"
               >
                 Disburse Float
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* MODAL: SETTLE EVENING CASH FLOAT AUDIT */}
       {isSettleFloatOpen && activeFloatToSettle && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-center p-4 animate-in fade-in">
+          <DialogSurface onClose={() => setIsSettleFloatOpen(false)} label="Evening Shift Float Audit" className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="text-sm font-black text-slate-900">Evening Shift Float Audit</h3>
-                <span className="text-[10px] text-slate-400 font-semibold">
+                <h3 className="text-lg font-bold text-slate-900">Evening Shift Float Audit</h3>
+                <span className="text-[11px] text-slate-400 font-semibold">
                   {activeFloatToSettle.employeeName} ({activeFloatToSettle.employeeCode})
                 </span>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsSettleFloatOpen(false)}
                 className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
 
             {/* Reconciliation Breakdown */}
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">1. Issued Morning Float:</span>
-                <span className="font-black text-slate-900">
+                <span className="data-value font-bold text-slate-900">
                   ₹{activeFloatToSettle.openingFloatRupees.toLocaleString('en-IN')}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">2. Customer Cash Paid (OTP Vouchers):</span>
-                <span className="font-extrabold text-emerald-800">
+                <span className="data-value font-extrabold text-emerald-800">
                   - ₹{activeFloatToSettle.verifiedCustomerCashPayoutsRupees.toLocaleString('en-IN')}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">3. Approved Route Expenses:</span>
-                <span className="font-bold text-slate-700">
+                <span className="data-value font-bold text-slate-700">
                   - ₹{activeFloatToSettle.approvedRouteExpensesRupees.toFixed(2)}
                 </span>
               </div>
               <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-sm">
-                <span className="font-black text-slate-900">Expected Cash Return:</span>
-                <span className="font-black text-blue-900">
+                <span className="font-bold text-slate-900">Expected Cash Return:</span>
+                <span className="data-value font-bold text-blue-900">
                   ₹{Math.round(activeFloatToSettle.expectedCashReturnRupees).toLocaleString('en-IN')}
                 </span>
               </div>
@@ -1022,7 +1009,7 @@ export const WorkforceHRMScreen: React.FC = () => {
                 type="number"
                 value={actualCashInput}
                 onChange={(e) => setActualCashInput(parseFloat(e.target.value) || 0)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 font-black text-slate-900 bg-slate-50 outline-none text-base"
+                className="w-full p-2.5 rounded-xl border border-slate-200 font-bold text-slate-900 bg-slate-50 outline-none text-base"
               />
 
               {/* Variance Indicator */}
@@ -1040,7 +1027,7 @@ export const WorkforceHRMScreen: React.FC = () => {
 
               <div>
                 <label className="font-bold text-slate-700 block mb-1">Cashier Audit Notes</label>
-                <textarea
+                <textarea aria-label="Optional audit notes or voucher breakdown..."
                   placeholder="Optional audit notes or voucher breakdown..."
                   value={settleNotes}
                   onChange={(e) => setSettleNotes(e.target.value)}
@@ -1051,52 +1038,52 @@ export const WorkforceHRMScreen: React.FC = () => {
             </div>
 
             <div className="pt-2 flex gap-2">
-              <button
+              <Button
                 onClick={() => setIsSettleFloatOpen(false)}
                 className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSettleFloatSubmit}
-                className="w-1/2 py-2.5 rounded-xl bg-[#0A3D2B] text-white font-black text-xs hover:bg-[#0E4D36] cursor-pointer shadow-md"
+                className="w-1/2 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] cursor-pointer shadow-md"
               >
                 Confirm Settlement
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* MODAL: EMPLOYEE PROFILE DETAILS */}
       {selectedEmployeeForModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-center p-4 animate-in fade-in">
+          <DialogSurface onClose={() => setSelectedEmployeeForModal(null)} label="Workforce HRM" className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-700 text-white font-black flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center">
                   {selectedEmployeeForModal.name.charAt(0)}
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-slate-900">{selectedEmployeeForModal.name}</h3>
-                  <span className="text-[10px] text-slate-400 font-bold">
+                  <h3 className="text-lg font-bold text-slate-900">{selectedEmployeeForModal.name}</h3>
+                  <span className="text-[11px] text-slate-400 font-bold">
                     {selectedEmployeeForModal.employeeCode} • {selectedEmployeeForModal.role}
                   </span>
                 </div>
               </div>
 
-              <button
+              <Button aria-label="Close"
                 onClick={() => setSelectedEmployeeForModal(null)}
                 className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
 
             {/* Profile Data */}
             <div className="space-y-2.5 text-xs">
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">KYC & Compliance</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">KYC & Compliance</span>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Aadhaar Card:</span>
                   <span className="font-bold text-slate-800">{selectedEmployeeForModal.kyc.aadhaarMasked}</span>
@@ -1114,7 +1101,7 @@ export const WorkforceHRMScreen: React.FC = () => {
               </div>
 
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Payout & Banking</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase block">Payout & Banking</span>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Bank Account:</span>
                   <span className="font-bold text-slate-800">{selectedEmployeeForModal.compensation.bankAccountMasked}</span>
@@ -1126,13 +1113,13 @@ export const WorkforceHRMScreen: React.FC = () => {
               </div>
             </div>
 
-            <button
+            <Button
               onClick={() => setSelectedEmployeeForModal(null)}
-              className="w-full py-2.5 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] cursor-pointer"
             >
               Close Profile
-            </button>
-          </div>
+            </Button>
+          </DialogSurface>
         </div>
       )}
     </div>

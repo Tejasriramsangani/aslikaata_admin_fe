@@ -1,14 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { MotionPreferences } from "../components/ui/MotionPreferences";
 import { AdminAuthProvider } from "../context/AdminAuthContext";
 import { AdminNavProvider } from "../context/AdminNavContext";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 export const metadata: Metadata = {
   title: "ASLI KAATA - Operations Cockpit & ERP",
@@ -21,7 +16,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0A3D2B",
+  themeColor: "#1B5E3A",
 };
 
 export default function RootLayout({
@@ -30,11 +25,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${plusJakartaSans.variable} h-full`}>
-      <body className="min-h-full bg-[#F8FAFC] text-slate-900 antialiased selection:bg-emerald-600 selection:text-white">
+    <html lang="en" className="h-full">
+      <body className="min-h-full bg-canvas text-slate-900 antialiased selection:bg-emerald-600 selection:text-white">
+        <MotionPreferences>
         <AdminAuthProvider>
           <AdminNavProvider>{children}</AdminNavProvider>
         </AdminAuthProvider>
+              </MotionPreferences>
       </body>
     </html>
   );

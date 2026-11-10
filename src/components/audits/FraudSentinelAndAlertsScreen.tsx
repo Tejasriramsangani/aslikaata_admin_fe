@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, StatusBadge, DialogSurface } from '../ui';
 import React, { useState, useMemo, useEffect } from 'react';
 import { adminApiClient } from '../../lib/api-client';
 import {
@@ -174,10 +175,10 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">
+                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
                   Fraud Sentinel & Anomaly Alert Monitor
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
                   Live Sentinel
                 </span>
               </div>
@@ -203,8 +204,8 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Open Anomalies</span>
             <AlertTriangle className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl font-black text-amber-600">{metrics.openCount} Alerts</div>
-          <div className="text-[10px] text-slate-400 mt-1">Requires supervisor action</div>
+          <div className="text-2xl font-bold text-amber-600">{metrics.openCount} Alerts</div>
+          <div className="text-[11px] text-slate-400 mt-1">Requires supervisor action</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -212,8 +213,8 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Critical Violations</span>
             <ShieldAlert className="w-4 h-4 text-rose-600" />
           </div>
-          <div className="text-2xl font-black text-rose-700">{metrics.criticalCount} Critical</div>
-          <div className="text-[10px] text-rose-600/80 mt-1">Weight shortages &gt; 2.5%</div>
+          <div className="text-2xl font-bold text-rose-700">{metrics.criticalCount} Critical</div>
+          <div className="text-[11px] text-rose-600/80 mt-1">Weight shortages &gt; 2.5%</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -221,8 +222,8 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Potential Leakage Risk</span>
             <Banknote className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-slate-900">{metrics.totalRisk}</div>
-          <div className="text-[10px] text-slate-400 mt-1">Quantified cash/material exposure</div>
+          <div className="text-2xl font-bold text-slate-900">{metrics.totalRisk}</div>
+          <div className="text-[11px] text-slate-400 mt-1">Quantified cash/material exposure</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -230,8 +231,8 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Audit Resolution Rate</span>
             <ShieldCheck className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-2xl font-black text-blue-700">{metrics.resolutionRate}%</div>
-          <div className="text-[10px] text-slate-400 mt-1">Resolved within 24h</div>
+          <div className="text-2xl font-bold text-blue-700">{metrics.resolutionRate}%</div>
+          <div className="text-[11px] text-slate-400 mt-1">Resolved within 24h</div>
         </div>
       </div>
 
@@ -243,7 +244,7 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
             Severity:
           </span>
           {(['ALL', 'CRITICAL', 'WARNING', 'INFO'] as const).map((sev) => (
-            <button
+            <Button
               key={sev}
               onClick={() => setSeverityFilter(sev)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
@@ -251,13 +252,13 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
               }`}
             >
               {sev === 'ALL' ? 'All Severities' : sev}
-            </button>
+            </Button>
           ))}
         </div>
 
         <div className="relative min-w-[280px]">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
+          <input aria-label="Search anomalies by employee, vehicle or title..."
             type="text"
             placeholder="Search anomalies by employee, vehicle or title..."
             value={searchQuery}
@@ -287,7 +288,7 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-1.5">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-black ${
+                        className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                           alt.severity === 'CRITICAL'
                             ? 'bg-rose-100 text-rose-800 border border-rose-300'
                             : alt.severity === 'WARNING'
@@ -298,7 +299,7 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
                         {alt.severity}
                       </span>
                     </div>
-                    <div className="text-[10px] text-slate-400 mt-1">{alt.detectedAt}</div>
+                    <div className="text-[11px] text-slate-400 mt-1">{alt.detectedAt}</div>
                   </td>
 
                   <td className="py-3.5 px-4 max-w-sm">
@@ -308,35 +309,27 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
 
                   <td className="py-3.5 px-4">
                     <div className="font-bold text-slate-800">{alt.subjectName}</div>
-                    <div className="text-[10px] font-mono text-emerald-800 font-semibold">{alt.subjectCode}</div>
+                    <div className="text-[11px] font-mono text-emerald-800 font-semibold">{alt.subjectCode}</div>
                   </td>
 
-                  <td className="py-3.5 px-4 text-right font-mono font-black text-rose-700 text-sm">
+                  <td className="data-value py-3.5 px-4 text-right font-mono font-bold text-rose-700 text-sm">
                     {alt.financialRiskRupees ? `₹${alt.financialRiskRupees}` : 'N/A'}
                   </td>
 
                   <td className="py-3.5 px-4 text-center">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold ${
-                        alt.status === 'OPEN_PENDING_ACTION'
-                          ? 'bg-rose-100 text-rose-800'
-                          : alt.status === 'ACKNOWLEDGED_INVESTIGATING'
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-emerald-100 text-emerald-800'
-                      }`}
-                    >
+                    <StatusBadge status={alt.status}>
                       {alt.status.replace(/_/g, ' ')}
-                    </span>
+                    </StatusBadge>
                   </td>
 
                   <td className="py-3.5 px-4 text-center">
-                    <button
+                    <Button
                       onClick={() => setActiveModalAlert(alt)}
                       className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-900 hover:text-white font-bold text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
                     >
                       <Eye className="w-3 h-3" />
                       Investigate
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -352,19 +345,19 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
 
       {/* MODAL: INVESTIGATE ANOMALY */}
       {activeModalAlert && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setActiveModalAlert(null)} label="Investigate Anomaly Record" className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-rose-400" />
-                <h3 className="font-black text-sm">Investigate Anomaly Record</h3>
+                <h3 className="font-bold text-lg">Investigate Anomaly Record</h3>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setActiveModalAlert(null)}
                 className="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-5 space-y-4 text-xs">
@@ -400,30 +393,30 @@ export const FraudSentinelAndAlertsScreen: React.FC = () => {
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-between gap-2">
-              <button
+              <Button
                 onClick={() => handleResolveAlert(activeModalAlert.id)}
                 className="px-3.5 py-2 rounded-xl bg-emerald-700 text-white font-bold text-xs hover:bg-emerald-800 transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <Check className="w-3.5 h-3.5" />
                 Resolve / Clear
-              </button>
+              </Button>
 
               <div className="flex gap-2">
-                <button
+                <Button
                   onClick={() => setActiveModalAlert(null)}
                   className="px-3 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-200 cursor-pointer"
                 >
                   Close
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => handleAcknowledgeAlert(activeModalAlert.id)}
                   className="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-all cursor-pointer shadow-md"
                 >
                   Mark Investigating
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, DialogSurface } from '../ui';
 import React, { useState, useMemo, useEffect } from 'react';
 import { adminApiClient } from '../../lib/api-client';
 import { useUrlTab } from '../../lib/use-url-tab';
@@ -282,15 +283,15 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-[#0A3D2B]">
+            <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-brand">
               <SendHorizontal className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">
+                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
                   Yard Stock Inventory & Outward Mill Dispatches
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                   B2B Sales & Baling
                 </span>
               </div>
@@ -303,13 +304,13 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
 
         {/* Global Action Buttons */}
         <div className="flex items-center gap-2.5">
-          <button
+          <Button
             onClick={() => setIsNewDispatchOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0A3D2B] text-white text-xs font-bold hover:bg-[#0E4D36] transition-all shadow-md cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:bg-[var(--brand-hover)] transition-all shadow-md cursor-pointer"
           >
             <Plus className="w-4 h-4 text-emerald-400" />
             + New Outward Mill Dispatch
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -320,8 +321,8 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Total Yard Stock</span>
             <Boxes className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-lg font-black text-slate-900">{metrics.totalYardStockTons} <span className="text-xs text-slate-500 font-semibold">Tons</span></div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Across all yard bays</div>
+          <div className="text-lg font-bold text-slate-900">{metrics.totalYardStockTons} <span className="text-xs text-slate-500 font-semibold">Tons</span></div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Across all yard bays</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -329,8 +330,8 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Baled & Ready</span>
             <Package className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-lg font-black text-blue-700">{metrics.baledReadyTons} <span className="text-xs text-slate-500 font-semibold">Tons</span></div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Ready for mill dispatch</div>
+          <div className="text-lg font-bold text-blue-700">{metrics.baledReadyTons} <span className="text-xs text-slate-500 font-semibold">Tons</span></div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Ready for mill dispatch</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -338,8 +339,8 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Raw Unsorted</span>
             <Clock className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-lg font-black text-amber-700">{metrics.rawUnsortedTons} <span className="text-xs text-slate-500 font-semibold">Tons</span></div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Sorting in queue</div>
+          <div className="text-lg font-bold text-amber-700">{metrics.rawUnsortedTons} <span className="text-xs text-slate-500 font-semibold">Tons</span></div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Sorting in queue</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -347,8 +348,8 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Unrealized Margin</span>
             <TrendingUp className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-lg font-black text-emerald-700">{metrics.totalUnrealizedMargin}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Current inventory upside</div>
+          <div className="text-lg font-bold text-emerald-700">{metrics.totalUnrealizedMargin}</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Current inventory upside</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -356,8 +357,8 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Dispatched Revenue</span>
             <DollarSign className="w-4 h-4 text-purple-600" />
           </div>
-          <div className="text-lg font-black text-purple-700">{metrics.totalDispatchesRevenue}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">{dispatches.length} Mill Shipments</div>
+          <div className="text-lg font-bold text-purple-700">{metrics.totalDispatchesRevenue}</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">{dispatches.length} Mill Shipments</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -365,37 +366,37 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Realized Net Spread</span>
             <ArrowUpRight className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-lg font-black text-emerald-700">{metrics.totalRealizedMargin}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Pure trading spread</div>
+          <div className="text-lg font-bold text-emerald-700">{metrics.totalRealizedMargin}</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Pure trading spread</div>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex items-center justify-between border-b border-slate-200 pb-1">
         <div className="flex items-center gap-1.5 overflow-x-auto">
-          <button
+          <Button
             onClick={() => setActiveTab('YARD_INVENTORY')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'YARD_INVENTORY'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Boxes className="w-3.5 h-3.5" />
             Yard Stock Inventory Ledger ({stockItems.length})
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setActiveTab('OUTWARD_DISPATCHES')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'OUTWARD_DISPATCHES'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <SendHorizontal className="w-3.5 h-3.5" />
             Outward Mill Dispatches & Gate Passes ({dispatches.length})
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -424,12 +425,12 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                       <tr key={stk.id} className="hover:bg-slate-50/60 transition-colors">
                         <td className="py-3.5 px-4">
                           <div className="font-bold text-slate-900">{stk.productName}</div>
-                          <div className="text-[10px] text-slate-400 mt-0.5">{stk.categoryName} • {stk.lastUpdated}</div>
+                          <div className="text-[11px] text-slate-400 mt-0.5">{stk.categoryName} • {stk.lastUpdated}</div>
                         </td>
 
                         <td className="py-3.5 px-4">
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-extrabold ${
+                            className={`px-2 py-0.5 rounded text-[11px] font-extrabold ${
                               stk.stage === 'BALED_READY_FOR_SALE'
                                 ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                                 : stk.stage === 'SORTING_IN_PROGRESS'
@@ -445,26 +446,26 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                           {stk.yardLocation}
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono font-black text-slate-900">
+                        <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-900">
                           {stk.currentTonnageKg.toLocaleString('en-IN')} kg
-                          <span className="text-[10px] text-slate-400 font-normal block">
+                          <span className="data-value text-[11px] text-slate-400 font-normal block">
                             ({(stk.currentTonnageKg / 1000).toFixed(2)} T)
                           </span>
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono text-slate-600 font-semibold">
+                        <td className="data-value py-3.5 px-4 text-right font-mono text-slate-600 font-semibold">
                           ₹{stk.averageInwardCostPerKgRupees.toFixed(1)}/kg
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono text-emerald-700 font-bold">
+                        <td className="data-value py-3.5 px-4 text-right font-mono text-emerald-700 font-bold">
                           ₹{stk.marketWholesaleRatePerKgRupees.toFixed(1)}/kg
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono font-black text-emerald-800">
+                        <td className="data-value py-3.5 px-4 text-right font-mono font-bold text-emerald-800">
                           +₹{spreadPerKg.toFixed(1)}
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono font-black text-emerald-700 text-sm">
+                        <td className="data-value py-3.5 px-4 text-right font-mono font-bold text-emerald-700 text-sm">
                           ₹{Math.round(stk.unrealizedGrossMarginRupees).toLocaleString('en-IN')}
                         </td>
                       </tr>
@@ -506,38 +507,38 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                     <tr key={disp.id} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3.5 px-4">
                         <div className="font-bold text-slate-900 font-mono">{disp.gatePassNumber}</div>
-                        <div className="text-[10px] text-slate-400">{disp.dispatchTimestamp}</div>
+                        <div className="text-[11px] text-slate-400">{disp.dispatchTimestamp}</div>
                       </td>
 
                       <td className="py-3.5 px-4">
                         <div className="font-bold text-slate-900">{disp.destinationMillName}</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">{disp.destinationCity} • {disp.productName}</div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">{disp.destinationCity} • {disp.productName}</div>
                       </td>
 
                       <td className="py-3.5 px-4">
                         <div className="font-bold text-slate-800">{disp.vehicleReg}</div>
-                        <div className="text-[10px] text-slate-400 font-mono">e-Way: {disp.eWayBillNumber}</div>
+                        <div className="text-[11px] text-slate-400 font-mono">e-Way: {disp.eWayBillNumber}</div>
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-900">
+                      <td className="data-value py-3.5 px-4 text-right font-mono font-bold text-slate-900">
                         {disp.dispatchedWeightKg.toLocaleString('en-IN')} kg
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono text-slate-700">
+                      <td className="data-value py-3.5 px-4 text-right font-mono text-slate-700">
                         ₹{disp.agreedMillRatePerKgRupees}/kg
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono font-black text-slate-900">
+                      <td className="data-value py-3.5 px-4 text-right font-mono font-bold text-slate-900">
                         ₹{Math.round(disp.totalInvoiceValueRupees).toLocaleString('en-IN')}
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono font-black text-emerald-700 text-sm">
+                      <td className="data-value py-3.5 px-4 text-right font-mono font-bold text-emerald-700 text-sm">
                         +₹{Math.round(disp.grossRealizedMarginRupees).toLocaleString('en-IN')}
                       </td>
 
                       <td className="py-3.5 px-4 text-center">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                          className={`px-2 py-0.5 rounded-full text-[11px] font-extrabold ${
                             disp.paymentStatus === 'PAID_FULL'
                               ? 'bg-emerald-100 text-emerald-800'
                               : 'bg-amber-100 text-amber-800'
@@ -548,13 +549,13 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                       </td>
 
                       <td className="py-3.5 px-4 text-center">
-                        <button
+                        <Button
                           onClick={() => setPrintableGatePass(disp)}
-                          className="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-[#0A3D2B] hover:text-white font-bold text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
+                          className="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-brand hover:text-white font-bold text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
                         >
                           <Printer className="w-3 h-3" />
                           Gate Pass
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -572,25 +573,25 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
 
       {/* --- MODAL 1: NEW OUTWARD DISPATCH PASS --- */}
       {isNewDispatchOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 bg-[#0A3D2B] text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setIsNewDispatchOpen(false)} label="Create Outward Mill Dispatch Order" className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 bg-brand text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <SendHorizontal className="w-5 h-5 text-emerald-400" />
-                <h3 className="font-black text-sm">Create Outward Mill Dispatch Order</h3>
+                <h3 className="font-bold text-lg">Create Outward Mill Dispatch Order</h3>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsNewDispatchOpen(false)}
                 className="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Destination Mill *</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Destination Mill *</label>
                   <input
                     type="text"
                     value={formMillName}
@@ -599,7 +600,7 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Destination City</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Destination City</label>
                   <input
                     type="text"
                     value={formDestination}
@@ -611,7 +612,7 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Scrap Commodity</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Scrap Commodity</label>
                   <select
                     value={formProduct}
                     onChange={(e) => {
@@ -632,12 +633,12 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Dispatched Weight (kg) *</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Dispatched Weight (kg) *</label>
                   <input
                     type="number"
                     value={formWeightKg}
                     onChange={(e) => setFormWeightKg(parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-black text-slate-900"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-sans font-bold text-slate-900"
                   />
                 </div>
               </div>
@@ -645,30 +646,30 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
               {/* Rates & Spread */}
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Agreed Mill Rate (₹/kg)</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Agreed Mill Rate (₹/kg)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={formAgreedRate}
                     onChange={(e) => setFormAgreedRate(parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-bold text-emerald-800"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-sans font-bold text-emerald-800"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Avg Inward Cost (₹/kg)</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Avg Inward Cost (₹/kg)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={formInwardCost}
                     onChange={(e) => setFormInwardCost(parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-bold text-slate-700"
+                    className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-sans font-bold text-slate-700"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Truck Reg Number</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Truck Reg Number</label>
                   <input
                     type="text"
                     value={formVehicleReg}
@@ -677,12 +678,12 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">GST e-Way Bill #</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">GST e-Way Bill #</label>
                   <input
                     type="text"
                     value={formEWayBill}
                     onChange={(e) => setFormEWayBill(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-mono text-slate-800"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-sans text-slate-800"
                   />
                 </div>
               </div>
@@ -690,53 +691,53 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
               {/* Calculated Realized Margin Banner */}
               <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex justify-between items-center">
                 <div>
-                  <span className="text-[10px] font-bold text-emerald-900 uppercase block">Expected Realized Margin</span>
-                  <span className="text-xs text-emerald-700 font-semibold">
+                  <span className="text-[11px] font-bold text-emerald-900 uppercase block">Expected Realized Margin</span>
+                  <span className="data-value text-xs text-emerald-700 font-semibold">
                     Spread: +₹{(formAgreedRate - formInwardCost).toFixed(1)}/kg
                   </span>
                 </div>
-                <span className="font-mono font-black text-base text-emerald-800">
+                <span className="data-value font-mono font-bold text-base text-emerald-800">
                   ₹{Math.round(Math.max(0, formAgreedRate - formInwardCost) * formWeightKg).toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
+              <Button
                 onClick={() => setIsNewDispatchOpen(false)}
                 className="px-4 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleCreateDispatch}
-                className="px-5 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md"
+                className="px-5 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer shadow-md"
               >
                 Generate Gate Pass & Outward Invoice
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* --- MODAL 2: PRINTABLE GATE PASS SLIP --- */}
       {printableGatePass && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setPrintableGatePass(null)} label="Outward And Yard Inventory" className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col">
             <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
               <span className="font-bold text-xs">Official Outward Mill Gate Pass</span>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setPrintableGatePass(null)}
                 className="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-6 bg-white space-y-4 font-sans text-xs text-slate-800">
               <div className="text-center border-b border-dashed border-slate-300 pb-3">
-                <div className="font-black text-base tracking-wider uppercase text-slate-900">ASLI KAATA RECYCLING ERP</div>
-                <div className="text-[10px] text-slate-500">Official Mill Dispatch & Security Gate Pass</div>
+                <div className="font-bold text-base tracking-wider uppercase text-slate-900">ASLI KAATA RECYCLING ERP</div>
+                <div className="text-[11px] text-slate-500">Official Mill Dispatch & Security Gate Pass</div>
                 <div className="text-xs font-mono font-bold text-emerald-800 mt-1">{printableGatePass.gatePassNumber}</div>
               </div>
 
@@ -755,15 +756,15 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Dispatched Weight:</span>
-                  <span className="font-mono font-black">{printableGatePass.dispatchedWeightKg} kg</span>
+                  <span className="data-value font-mono font-bold">{printableGatePass.dispatchedWeightKg} kg</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Agreed Selling Rate:</span>
-                  <span className="font-mono">₹{printableGatePass.agreedMillRatePerKgRupees}/kg</span>
+                  <span className="data-value font-mono">₹{printableGatePass.agreedMillRatePerKgRupees}/kg</span>
                 </div>
-                <div className="flex justify-between font-black text-sm border-t border-slate-200 pt-1.5">
+                <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1.5">
                   <span>Total Invoice Value:</span>
-                  <span className="font-mono text-emerald-800">
+                  <span className="data-value font-mono text-emerald-800">
                     ₹{Math.round(printableGatePass.totalInvoiceValueRupees).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -779,31 +780,31 @@ export const OutwardAndYardInventoryScreen: React.FC = () => {
 
               <div className="text-center pt-2 border-t border-dashed border-slate-300">
                 <QrCode className="w-14 h-14 mx-auto text-slate-800 p-1 border border-slate-200 rounded" />
-                <div className="text-[9px] text-slate-400 mt-1 uppercase">
+                <div className="text-[11px] text-slate-400 mt-1 uppercase">
                   Authorized Signatory: {printableGatePass.authorizedBy}
                 </div>
               </div>
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
+              <Button
                 onClick={() => setPrintableGatePass(null)}
                 className="px-4 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer"
               >
                 Close
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => {
                   window.print();
                   showToast('Sent Gate Pass to printer.');
                 }}
-                className="px-5 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                className="px-5 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
                 <Printer className="w-4 h-4" />
                 Print Gate Pass
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, StatusBadge, DialogSurface } from '../ui';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   UserPlus,
@@ -61,11 +62,6 @@ const AVAIL_LABEL: Record<PickerRequest['availability'], string> = {
   PART_TIME: 'Part time',
   WEEKENDS: 'Weekends only',
 };
-const STATUS_STYLE: Record<RequestStatus, string> = {
-  PENDING: 'bg-amber-50 text-amber-800 border-amber-200',
-  APPROVED: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-  REJECTED: 'bg-rose-50 text-rose-800 border-rose-200',
-};
 
 const fmtDate = (iso?: string | null) =>
   iso
@@ -74,7 +70,7 @@ const fmtDate = (iso?: string | null) =>
 
 const Detail: React.FC<{ icon?: React.ReactNode; label: string; children: React.ReactNode }> = ({ icon, label, children }) => (
   <div>
-    <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-slate-400 mb-0.5">
+    <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
       {icon}
       {label}
     </div>
@@ -198,55 +194,55 @@ export const PickerRequestsScreen: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-[#0A3D2B]">
+          <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-brand">
             <UserPlus className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">Picker Requests</h1>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Picker Requests</h1>
             <p className="text-xs text-slate-500 mt-0.5">
               People who asked to become freelance pickers from the Field Ops app. Approving creates their login
               account and notifies them.
             </p>
           </div>
         </div>
-        <button
+        <Button
           type="button"
           onClick={() => void load()}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 text-xs font-bold cursor-pointer self-start md:self-auto"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
-        </button>
+        </Button>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {tabs.map((t) => (
-            <button
+            <Button
               key={t.key}
               type="button"
               onClick={() => setFilter(t.key)}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center gap-2 ${
                 filter === t.key
-                  ? 'bg-[#0A3D2B] text-white border-[#0A3D2B] shadow'
+                  ? 'bg-brand text-white border-brand shadow'
                   : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
               }`}
             >
               {t.label}
               <span
-                className={`px-1.5 py-0.5 rounded-md text-[10px] font-black ${
+                className={`px-1.5 py-0.5 rounded-md text-[11px] font-bold ${
                   filter === t.key ? 'bg-white/20' : t.key === 'PENDING' && t.count > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'
                 }`}
               >
                 {t.count}
               </span>
-            </button>
+            </Button>
           ))}
         </div>
         <div className="relative w-full lg:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
+          <input aria-label="Search name, mobile, area, pincode, PR-code…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search name, mobile, area, pincode, PR-code…"
@@ -270,7 +266,7 @@ export const PickerRequestsScreen: React.FC = () => {
           </div>
         ) : items.length === 0 ? (
           <div className="py-16 text-center space-y-1">
-            <p className="text-sm font-bold text-slate-700">
+            <p className="text-sm font-medium text-slate-700">
               {filter === 'PENDING' && !debouncedSearch ? 'No requests waiting' : 'No requests match'}
             </p>
             <p className="text-xs text-slate-500">New requests from the Field Ops app appear here instantly.</p>
@@ -278,7 +274,7 @@ export const PickerRequestsScreen: React.FC = () => {
         ) : (
           <div className="divide-y divide-slate-100">
             {items.map((r) => (
-              <button
+              <Button
                 key={r.id}
                 type="button"
                 onClick={() => setSelected(r)}
@@ -286,10 +282,10 @@ export const PickerRequestsScreen: React.FC = () => {
               >
                 <div className="md:w-56 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] font-black text-slate-500">{r.requestCode}</span>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black border ${STATUS_STYLE[r.status]}`}>{r.status}</span>
+                    <span className="font-mono text-[11px] font-bold text-slate-500">{r.requestCode}</span>
+                    <StatusBadge status={r.status}>{r.status}</StatusBadge>
                   </div>
-                  <div className="text-sm font-black text-slate-900 truncate mt-0.5">{r.fullName}</div>
+                  <div className="text-sm font-bold text-slate-900 truncate mt-0.5">{r.fullName}</div>
                   <div className="text-xs text-slate-500 font-mono">+91 {r.mobile}</div>
                 </div>
                 <div className="flex-1 min-w-0 text-xs text-slate-600">
@@ -310,7 +306,7 @@ export const PickerRequestsScreen: React.FC = () => {
                   <Clock className="w-3.5 h-3.5" />
                   {fmtDate(r.createdAt)}
                 </div>
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -319,24 +315,24 @@ export const PickerRequestsScreen: React.FC = () => {
       {/* Detail drawer */}
       {selected && (
         <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/40" onClick={closeDetail}>
-          <div
+          <DialogSurface onClose={closeDetail} label="Picker Requests"
             className="w-full max-w-lg h-full bg-white shadow-2xl overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-start justify-between z-10">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[11px] font-black text-slate-500">{selected.requestCode}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black border ${STATUS_STYLE[selected.status]}`}>
+                  <span className="font-mono text-[11px] font-bold text-slate-500">{selected.requestCode}</span>
+                  <StatusBadge status={selected.status}>
                     {selected.status}
-                  </span>
+                  </StatusBadge>
                 </div>
-                <h2 className="text-lg font-black text-slate-900 mt-0.5">{selected.fullName}</h2>
+                <h2 className="text-lg font-bold text-slate-900 mt-0.5">{selected.fullName}</h2>
                 <p className="text-[11px] text-slate-400 font-semibold">Submitted {fmtDate(selected.createdAt)}</p>
               </div>
-              <button type="button" onClick={closeDetail} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 cursor-pointer" aria-label="Close">
+              <Button type="button" onClick={closeDetail} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 cursor-pointer" aria-label="Close">
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-6 space-y-6">
@@ -347,7 +343,7 @@ export const PickerRequestsScreen: React.FC = () => {
               </section>
 
               <section className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-                <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                   <MapPin className="w-3 h-3" /> Home address
                 </div>
                 <p className="text-sm font-semibold text-slate-900">{selected.address.line1}</p>
@@ -371,7 +367,7 @@ export const PickerRequestsScreen: React.FC = () => {
 
               {selected.about && (
                 <section>
-                  <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Note from applicant</div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Note from applicant</div>
                   <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">{selected.about}</p>
                 </section>
               )}
@@ -382,7 +378,7 @@ export const PickerRequestsScreen: React.FC = () => {
                     selected.status === 'APPROVED' ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5 text-xs font-black">
+                  <div className="flex items-center gap-1.5 text-xs font-bold">
                     {selected.status === 'APPROVED' ? (
                       <>
                         <BadgeCheck className="w-4 h-4 text-emerald-600" />
@@ -401,7 +397,7 @@ export const PickerRequestsScreen: React.FC = () => {
                   </p>
                   {selected.employeeCode && (
                     <p className="text-xs text-slate-700">
-                      Employee ID: <span className="font-mono font-black">{selected.employeeCode}</span>
+                      Employee ID: <span className="font-mono font-bold">{selected.employeeCode}</span>
                     </p>
                   )}
                   {selected.rejectionReason && <p className="text-xs text-slate-700">Reason: {selected.rejectionReason}</p>}
@@ -419,10 +415,10 @@ export const PickerRequestsScreen: React.FC = () => {
                 <section className="space-y-3 pt-2 border-t border-slate-100">
                   {rejecting ? (
                     <div className="space-y-2">
-                      <label className="block text-[11px] font-black uppercase tracking-wider text-slate-500">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
                         Reason for rejecting (sent to the applicant)
                       </label>
-                      <textarea
+                      <textarea aria-label="e.g. Outside our current service area"
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
                         rows={3}
@@ -432,15 +428,15 @@ export const PickerRequestsScreen: React.FC = () => {
                         autoFocus
                       />
                       <div className="flex gap-2">
-                        <button
+                        <Button
                           type="button"
                           onClick={() => void reject(selected)}
                           disabled={busy}
-                          className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-black cursor-pointer disabled:opacity-50"
+                          className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer disabled:opacity-50"
                         >
                           {busy ? 'Rejecting…' : 'Confirm reject'}
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           type="button"
                           onClick={() => {
                             setRejecting(false);
@@ -449,28 +445,28 @@ export const PickerRequestsScreen: React.FC = () => {
                           className="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold cursor-pointer"
                         >
                           Cancel
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ) : (
                     <div className="flex gap-2">
-                      <button
+                      <Button
                         type="button"
                         onClick={() => void approve(selected)}
                         disabled={busy}
-                        className="flex-1 py-3 rounded-xl bg-[#0A3D2B] hover:bg-[#0E4D36] text-white text-xs font-black flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                        className="flex-1 py-3 rounded-xl bg-brand hover:bg-[var(--brand-hover)] text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         {busy ? 'Creating account…' : 'Approve & create account'}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
                         onClick={() => setRejecting(true)}
                         disabled={busy}
-                        className="px-5 py-3 rounded-xl bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-black cursor-pointer disabled:opacity-50"
+                        className="px-5 py-3 rounded-xl bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-bold cursor-pointer disabled:opacity-50"
                       >
                         Reject
-                      </button>
+                      </Button>
                     </div>
                   )}
                   <p className="text-[11px] text-slate-400 leading-relaxed">
@@ -480,7 +476,7 @@ export const PickerRequestsScreen: React.FC = () => {
                 </section>
               )}
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>

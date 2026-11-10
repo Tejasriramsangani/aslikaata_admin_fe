@@ -1,6 +1,7 @@
 "use client";
 
-import React from 'react';
+import { Button } from '../ui';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -24,6 +25,7 @@ import {
   LayoutDashboard,
   ClipboardList,
   UserPlus,
+  X,
 } from 'lucide-react';
 import { useAdminNav, AdminNavSection } from '../../context/AdminNavContext';
 import { useAdminAuth } from '../../context/AdminAuthContext';
@@ -167,19 +169,42 @@ const NAV_GROUPS: NavGroup[] = [
 
 export const AdminSidebar: React.FC = () => {
   const pathname = usePathname();
-  const { isSidebarCollapsed, toggleSidebar, unassignedBulkCount, setActiveSection, pendingPickerRequests } =
+  const { isSidebarCollapsed, toggleSidebar, unassignedBulkCount, setActiveSection, pendingPickerRequests, isMobileNavOpen, setIsMobileNavOpen } =
     useAdminNav();
   const { admin, logout } = useAdminAuth();
+  const sidebarRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!isMobileNavOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const controls = () => Array.from(sidebarRef.current?.querySelectorAll<HTMLElement>('a[href], button:not(:disabled)') ?? []).filter(element => element.getClientRects().length > 0);
+    controls()[0]?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsMobileNavOpen(false);
+      if (event.key === 'Tab') {
+        const items = controls();
+        const first = items[0], last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => { document.removeEventListener('keydown', onKeyDown); document.body.style.overflow = previousOverflow; previous?.focus(); };
+  }, [isMobileNavOpen, setIsMobileNavOpen]);
 
   return (
-    <aside
-      className={`h-screen sticky top-0 bg-[#0A3D2B] text-white flex flex-col justify-between transition-all duration-300 z-30 select-none border-r border-emerald-900/60 shadow-2xl ${
+    <>
+    {isMobileNavOpen && <Button aria-label="Close navigation" onClick={() => setIsMobileNavOpen(false)} className="fixed inset-0 z-30 bg-black/40 lg:hidden" />}
+    <aside ref={sidebarRef} id="admin-navigation" role={isMobileNavOpen ? 'dialog' : undefined} aria-modal={isMobileNavOpen || undefined} aria-label="Main navigation" data-mobile-open={isMobileNavOpen}
+      className={`admin-sidebar h-dvh fixed left-0 lg:sticky shrink-0 top-0 bg-brand text-white flex flex-col justify-between transition-all duration-300 z-40 select-none border-r border-emerald-900/60 shadow-md ${
         isSidebarCollapsed ? 'w-[76px]' : 'w-[268px]'
       }`}
     >
       {/* Top Branding & Workspace Identity */}
       <div>
-        <div className="h-16 flex items-center justify-between px-4 border-b border-emerald-800/60 bg-[#062418]">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-emerald-800/60 bg-[var(--brand-dark)]">
           <Link href="/" className="flex items-center gap-3 overflow-hidden group">
             <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
               <Image
@@ -193,19 +218,20 @@ export const AdminSidebar: React.FC = () => {
             </div>
             {!isSidebarCollapsed && (
               <div className="flex flex-col min-w-0">
-                <span className="text-xs font-black tracking-widest text-[#F59E0B] uppercase truncate leading-tight">
+                <span className="text-xs font-bold tracking-widest text-gold uppercase truncate leading-tight">
                   ASLI KAATA
                 </span>
-                <span className="text-[10px] font-bold text-emerald-300 tracking-wider uppercase opacity-90 truncate">
+                <span className="text-[11px] font-bold text-emerald-300 tracking-wider uppercase opacity-90 truncate">
                   OPERATIONS ERP
                 </span>
               </div>
             )}
           </Link>
 
-          <button
+          <Button aria-label="Close navigation" onClick={() => setIsMobileNavOpen(false)} className="lg:hidden text-white p-2"><X className="size-5" /></Button>
+          <Button
             onClick={toggleSidebar}
-            className="w-7 h-7 rounded-lg bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 flex items-center justify-center transition-colors cursor-pointer"
+            className="hidden lg:flex w-7 h-7 rounded-lg bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 items-center justify-center transition-colors cursor-pointer"
             title={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
             {isSidebarCollapsed ? (
@@ -213,7 +239,7 @@ export const AdminSidebar: React.FC = () => {
             ) : (
               <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
             )}
-          </button>
+          </Button>
         </div>
 
         {/* Unassigned Quick Notification Pill */}
@@ -226,7 +252,7 @@ export const AdminSidebar: React.FC = () => {
               <span className="w-2 h-2 rounded-full bg-amber-400" />
               <span>{unassignedBulkCount} Pickups Awaiting Assign</span>
             </div>
-            <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded-md">
+            <span className="text-[11px] bg-amber-400 text-slate-950 font-bold px-1.5 py-0.5 rounded-md">
               ACT
             </span>
           </Link>
@@ -242,7 +268,7 @@ export const AdminSidebar: React.FC = () => {
             .map((group, gIdx) => (
             <div key={gIdx} className="space-y-1">
               {!isSidebarCollapsed && (
-                <p className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-emerald-400/70 mb-1">
+                <p className="px-3 text-[11px] font-medium uppercase tracking-wider text-emerald-400/70 mb-1">
                   {group.groupTitle}
                 </p>
               )}
@@ -265,14 +291,16 @@ export const AdminSidebar: React.FC = () => {
                   <Link
                     key={item.id}
                     href={item.href}
+                    aria-current={isActive ? 'page' : undefined}
                     onClick={() => {
+                      setIsMobileNavOpen(false);
                       if (item.id !== 'dashboard' && item.id !== 'picker-requests') {
                         setActiveSection(item.id as AdminNavSection);
                       }
                     }}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-xs transition-all relative group cursor-pointer ${
                       isActive
-                        ? 'bg-[#10B981] text-slate-950 shadow-md shadow-emerald-950/40 font-black'
+                        ? 'bg-gold text-ink shadow-sm font-bold'
                         : 'text-emerald-100/90 hover:bg-emerald-900/60 hover:text-white'
                     }`}
                     title={isSidebarCollapsed ? item.label : undefined}
@@ -288,7 +316,7 @@ export const AdminSidebar: React.FC = () => {
                         <span className="truncate">{item.label}</span>
                         {badgeText && (
                           <span
-                            className={`text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0 ml-1.5 ${
+                            className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider shrink-0 ml-1.5 ${
                               isActive
                                 ? 'bg-slate-950 text-emerald-300'
                                 : item.badgeVariant === 'emerald'
@@ -314,19 +342,19 @@ export const AdminSidebar: React.FC = () => {
       </div>
 
       {/* Bottom User Profile & Status */}
-      <div className="p-3 border-t border-emerald-800/60 bg-[#062418]">
+      <div className="p-3 border-t border-emerald-800/60 bg-[var(--brand-dark)]">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            <div className="w-8 h-8 rounded-full bg-emerald-700 border border-emerald-500 flex items-center justify-center font-black text-xs text-white shrink-0">
+            <div className="w-8 h-8 rounded-full bg-emerald-700 border border-emerald-500 flex items-center justify-center font-bold text-xs text-white shrink-0">
               {admin?.name?.charAt(0) || 'A'}
             </div>
 
             {!isSidebarCollapsed && (
               <div className="flex flex-col min-w-0">
-                <span className="text-xs font-black text-white truncate leading-tight">
+                <span className="text-xs font-bold text-white truncate leading-tight">
                   {admin?.name || 'Administrator'}
                 </span>
-                <span className="text-[10px] text-emerald-300 font-bold truncate">
+                <span className="text-[11px] text-emerald-300 font-bold truncate">
                   {(admin?.role && ROLE_LABELS[admin.role]) || 'Staff'}
                 </span>
               </div>
@@ -334,16 +362,17 @@ export const AdminSidebar: React.FC = () => {
           </div>
 
           {!isSidebarCollapsed && (
-            <button
+            <Button aria-label="Sign Out"
               onClick={logout}
               className="p-1.5 rounded-lg text-emerald-300 hover:text-white hover:bg-emerald-900/80 transition-colors cursor-pointer"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
-            </button>
+            </Button>
           )}
         </div>
       </div>
     </aside>
+    </>
   );
 };

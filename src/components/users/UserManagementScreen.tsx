@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, DialogSurface } from '../ui';
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Users,
@@ -252,10 +253,10 @@ export const UserManagementScreen: React.FC = () => {
       <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-emerald-50 text-[#0A3D2B] border border-emerald-200">
+            <span className="p-2 rounded-xl bg-emerald-50 text-brand border border-emerald-200">
               <Users className="w-5 h-5" />
             </span>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
               User & RBAC Role Management
             </h1>
           </div>
@@ -265,22 +266,22 @@ export const UserManagementScreen: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
+          <Button aria-label="Refresh Users"
             onClick={loadUsers}
             disabled={loading}
             className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
             title="Refresh Users"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-[#0A3D2B] hover:bg-[#0E4D36] text-white text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-md shadow-emerald-950/20 transition-all cursor-pointer"
+            className="px-4 py-2.5 rounded-xl bg-brand hover:bg-[var(--brand-hover)] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md  transition-all cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>Create New User</span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -301,12 +302,12 @@ export const UserManagementScreen: React.FC = () => {
             )}
             <span>{actionNotice.message}</span>
           </div>
-          <button
+          <Button aria-label="Close"
             onClick={() => setActionNotice(null)}
             className="text-slate-400 hover:text-slate-600 cursor-pointer"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       )}
 
@@ -318,7 +319,7 @@ export const UserManagementScreen: React.FC = () => {
           const isSelected = selectedRoleFilter === rKey;
 
           return (
-            <button
+            <Button
               key={rKey}
               onClick={() => setSelectedRoleFilter(isSelected ? 'ALL' : rKey)}
               className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
@@ -329,24 +330,24 @@ export const UserManagementScreen: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-1">
                 <span
-                  className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
+                  className={`text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
                     isSelected ? 'bg-emerald-800 text-emerald-200' : `${info.badgeBg} ${info.badgeText}`
                   }`}
                 >
                   {info.label}
                 </span>
-                <span className={`text-sm font-black ${isSelected ? 'text-white' : 'text-slate-900'}`}>
+                <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-slate-900'}`}>
                   {count}
                 </span>
               </div>
               <p
-                className={`text-[10px] line-clamp-1 font-medium ${
+                className={`text-[11px] line-clamp-1 font-medium ${
                   isSelected ? 'text-emerald-200' : 'text-slate-400'
                 }`}
               >
                 {info.description}
               </p>
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -355,7 +356,7 @@ export const UserManagementScreen: React.FC = () => {
       <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
+          <input aria-label="Search by name, email, or mobile..."
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -367,12 +368,12 @@ export const UserManagementScreen: React.FC = () => {
         <div className="flex items-center gap-2 self-end sm:self-auto text-xs text-slate-500 font-bold">
           <span>Showing {filteredUsers.length} of {users.length} Users</span>
           {selectedRoleFilter !== 'ALL' && (
-            <button
+            <Button
               onClick={() => setSelectedRoleFilter('ALL')}
               className="text-emerald-800 bg-emerald-50 px-2 py-1 rounded-lg hover:bg-emerald-100 cursor-pointer"
             >
               Clear Filter
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -414,7 +415,7 @@ export const UserManagementScreen: React.FC = () => {
                     <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-emerald-800 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm">
+                          <div className="w-8 h-8 rounded-full bg-emerald-800 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
                             {u.name.charAt(0)}
                           </div>
                           <div>
@@ -426,7 +427,7 @@ export const UserManagementScreen: React.FC = () => {
 
                       <td className="py-3.5 px-4">
                         <span
-                          className={`inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${roleMeta.badgeBg} ${roleMeta.badgeText}`}
+                          className={`inline-block text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${roleMeta.badgeBg} ${roleMeta.badgeText}`}
                         >
                           {roleMeta.label}
                         </span>
@@ -444,7 +445,7 @@ export const UserManagementScreen: React.FC = () => {
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
                           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                           {u.status}
                         </span>
@@ -452,15 +453,15 @@ export const UserManagementScreen: React.FC = () => {
 
                       <td className="py-3.5 px-4 text-right">
                         {u.email !== 'admin@aslikaata.com' ? (
-                          <button
+                          <Button aria-label="Remove User"
                             onClick={() => handleDeleteUser(u.id, u.name)}
                             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                             title="Remove User"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </Button>
                         ) : (
-                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                          <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
                             Protected Root
                           </span>
                         )}
@@ -476,26 +477,26 @@ export const UserManagementScreen: React.FC = () => {
 
       {/* 5. Create User Modal Dialog */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-center p-4 overflow-y-auto">
+          <DialogSurface onClose={() => setIsModalOpen(false)} label="Create Staff User" className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-emerald-50 text-[#0A3D2B] border border-emerald-200">
+                <div className="p-2 rounded-xl bg-emerald-50 text-brand border border-emerald-200">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-slate-900">Create Staff User</h3>
+                  <h3 className="text-lg font-bold text-slate-900">Create Staff User</h3>
                   <p className="text-xs text-slate-500 font-medium">
                     Issue role-based credentials for ASLI KAATA operations
                   </p>
                 </div>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsModalOpen(false)}
                 className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <form onSubmit={handleCreateUser} className="space-y-4">
@@ -507,7 +508,7 @@ export const UserManagementScreen: React.FC = () => {
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
+                    <input aria-label="e.g. M. Nagaraju"
                       type="text"
                       required
                       value={formData.name}
@@ -525,7 +526,7 @@ export const UserManagementScreen: React.FC = () => {
                   </label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
+                    <input aria-label="10-digit mobile"
                       type="tel"
                       required
                       pattern="[0-9]{10}"
@@ -544,7 +545,7 @@ export const UserManagementScreen: React.FC = () => {
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
+                    <input aria-label="user@aslikaata.com"
                       type="email"
                       required
                       value={formData.email}
@@ -562,7 +563,7 @@ export const UserManagementScreen: React.FC = () => {
                   </label>
                   <div className="relative">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
+                    <input aria-label="Min. 8 characters"
                       type="text"
                       required
                       minLength={8}
@@ -570,7 +571,7 @@ export const UserManagementScreen: React.FC = () => {
                       autoComplete="new-password"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                      className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 font-sans"
                     />
                   </div>
                 </div>
@@ -614,11 +615,11 @@ export const UserManagementScreen: React.FC = () => {
               {/* Dynamic Role Permissions Matrix Preview */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-emerald-800" />
                     Role Privileges: {ROLE_DEFINITIONS[formData.role].label}
                   </span>
-                  <span className="text-[10px] text-slate-500 font-semibold">
+                  <span className="text-[11px] text-slate-500 font-semibold">
                     {ROLE_DEFINITIONS[formData.role].permissions.length} modules granted
                   </span>
                 </div>
@@ -636,17 +637,17 @@ export const UserManagementScreen: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                <button
+                <Button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 cursor-pointer"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-xl bg-[#0A3D2B] hover:bg-[#0E4D36] text-white text-xs font-black uppercase tracking-wider shadow-md shadow-emerald-950/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-brand hover:bg-[var(--brand-hover)] text-white text-xs font-bold uppercase tracking-wider shadow-md  flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
@@ -659,10 +660,10 @@ export const UserManagementScreen: React.FC = () => {
                       <span>Confirm & Create</span>
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </form>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>

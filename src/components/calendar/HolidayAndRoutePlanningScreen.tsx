@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, StatusBadge, DialogSurface } from '../ui';
 import React, { useState, useMemo } from 'react';
 import {
   Calendar as CalendarIcon,
@@ -628,15 +629,15 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-[#0A3D2B]">
+            <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-brand">
               <CalendarIcon className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">
+                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
                   Operations Holiday Calendar & Route Planning
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                   Smart Scheduling
                 </span>
               </div>
@@ -649,17 +650,17 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
         {/* Global Action Buttons */}
         <div className="flex items-center gap-2.5">
-          <button
+          <Button
             onClick={() => {
               setFormDate(today.toISOString().split('T')[0]);
               setFormName('');
               setIsHolidayModalOpen(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0A3D2B] text-white text-xs font-bold hover:bg-[#0E4D36] transition-all shadow-md cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:bg-[var(--brand-hover)] transition-all shadow-md cursor-pointer"
           >
             <Plus className="w-4 h-4 text-emerald-400" />
             + Add Operations Holiday
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -670,8 +671,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Upcoming Holidays</span>
             <CalendarIcon className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-lg font-black text-slate-900">{metrics.upcomingHolidaysCount} Days</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Rules configured</div>
+          <div className="text-lg font-bold text-slate-900">{metrics.upcomingHolidaysCount} Days</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Rules configured</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -679,8 +680,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Active Route Runs</span>
             <Truck className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-lg font-black text-blue-700">{metrics.activeRunningRuns} Live</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Out of {metrics.totalWeeklyRuns} planned runs</div>
+          <div className="text-lg font-bold text-blue-700">{metrics.activeRunningRuns} Live</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Out of {metrics.totalWeeklyRuns} planned runs</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -688,8 +689,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Fleet Capacity Load</span>
             <Scale className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-lg font-black text-emerald-700">{metrics.avgCapacityLoad}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Weekly volume: {metrics.totalWeeklyBookedKg}</div>
+          <div className="text-lg font-bold text-emerald-700">{metrics.avgCapacityLoad}</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Weekly volume: {metrics.totalWeeklyBookedKg}</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -697,11 +698,11 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Unassigned Exceptions</span>
             <AlertTriangle className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-lg font-black text-amber-600">{metrics.unassignedCount} Orders</div>
-          <div className="text-[10px] text-amber-600/80 mt-0.5">Requires vehicle assign</div>
+          <div className="text-lg font-bold text-amber-600">{metrics.unassignedCount} Orders</div>
+          <div className="text-[11px] text-amber-600/80 mt-0.5">Requires vehicle assign</div>
         </div>
 
-        <button
+        <Button aria-label="Open Settings to edit weight ranges & bulk limit"
           type="button"
           onClick={() => setActiveTab('SETTINGS')}
           className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-left hover:border-amber-400 hover:shadow-md transition-all cursor-pointer w-full"
@@ -711,74 +712,74 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Bulk Weight Limit</span>
             <Zap className="w-4 h-4 text-purple-600" />
           </div>
-          <div className="text-lg font-black text-purple-700">{bulkLimitKg} kg</div>
-          <div className="text-[10px] text-amber-700 mt-0.5 font-bold">Open Settings → edit weight ranges</div>
-        </button>
+          <div className="text-lg font-bold text-purple-700">{bulkLimitKg} kg</div>
+          <div className="text-[11px] text-amber-700 mt-0.5 font-bold">Open Settings → edit weight ranges</div>
+        </Button>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider">Lock-in Window</span>
             <Clock className="w-4 h-4 text-slate-600" />
           </div>
-          <div className="text-lg font-black text-slate-900">{routeFinalizeHours} hrs</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Before route start</div>
+          <div className="text-lg font-bold text-slate-900">{routeFinalizeHours} hrs</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Before route start</div>
         </div>
       </div>
 
       {/* Navigation Sub-Tabs — Settings pinned on the right so it never scrolls away */}
       <div className="flex items-center justify-between gap-3 border-b border-slate-200 pb-1">
         <div className="flex items-center gap-1.5 overflow-x-auto min-w-0">
-          <button
+          <Button
             onClick={() => setActiveTab('CALENDAR')}
             className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
               activeTab === 'CALENDAR'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <CalendarIcon className="w-3.5 h-3.5" />
             Holiday Calendar
-            <span className="text-[10px] opacity-80">({holidays.length})</span>
-          </button>
+            <span className="text-[11px] opacity-80">({holidays.length})</span>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setActiveTab('MATRIX')}
             className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
               activeTab === 'MATRIX'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
             Route Matrix
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setActiveTab('UNASSIGNED_QUEUE')}
             className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
               activeTab === 'UNASSIGNED_QUEUE'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />
             Unassigned Queue
-            <span className="text-[10px] opacity-80">({unassignedQueue.length})</span>
-          </button>
+            <span className="text-[11px] opacity-80">({unassignedQueue.length})</span>
+          </Button>
         </div>
 
-        <button
+        <Button
           onClick={() => setActiveTab('SETTINGS')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 border ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 border ${
             activeTab === 'SETTINGS'
-              ? 'bg-[#0A3D2B] text-white border-[#0A3D2B] shadow-sm'
+              ? 'bg-brand text-white border-brand shadow-sm'
               : 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
           }`}
           title="Weight ranges, bulk limits & routing rules"
         >
           <Sliders className="w-3.5 h-3.5" />
           Settings
-        </button>
+        </Button>
       </div>
 
       {/* TAB 1: OPERATIONS HOLIDAY CALENDAR */}
@@ -787,7 +788,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
           {/* Calendar Header */}
           <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="font-black text-slate-900 text-base">{currentMonth}</span>
+              <span className="font-bold text-slate-900 text-base">{currentMonth}</span>
               <span className="text-xs text-slate-500 font-semibold">• Andhra Pradesh Scrap Operations</span>
             </div>
             <div className="flex items-center gap-2">
@@ -796,7 +797,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500 ml-2"></span> State / Regional
                 <span className="w-2.5 h-2.5 rounded-full bg-blue-500 ml-2"></span> Municipal Diversion
               </span>
-              <button
+              <Button
                 onClick={() => {
                   setFormDate(today.toISOString().split('T')[0]);
                   setFormName('');
@@ -806,7 +807,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
               >
                 <Plus className="w-3.5 h-3.5 text-emerald-400" />
                 Define Holiday
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -856,7 +857,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                   >
                     <div className="flex items-center justify-between">
                       <span
-                        className={`text-xs font-black ${
+                        className={`text-xs font-bold ${
                           day.isToday
                             ? 'text-emerald-800 bg-emerald-200/80 px-1.5 py-0.5 rounded-full'
                             : 'text-slate-700'
@@ -865,14 +866,14 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                         {day.dayNum}
                       </span>
                       {day.isToday && (
-                        <span className="text-[9px] font-extrabold text-emerald-700 uppercase">Today</span>
+                        <span className="text-[11px] font-extrabold text-emerald-700 uppercase">Today</span>
                       )}
                     </div>
 
                     {hasHoliday && day.holidayMatch && (
                       <div className="space-y-1">
                         <div
-                          className={`p-1.5 rounded-lg text-[10px] font-bold leading-tight ${
+                          className={`p-1.5 rounded-lg text-[11px] font-bold leading-tight ${
                             day.holidayMatch.type === 'NATIONAL'
                               ? 'bg-rose-100 text-rose-900 border border-rose-200'
                               : day.holidayMatch.type === 'STATE_REGIONAL'
@@ -881,7 +882,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                           }`}
                         >
                           <div className="truncate">{day.holidayMatch.name}</div>
-                          <div className="text-[8px] font-semibold opacity-80 mt-0.5">
+                          <div className="text-[11px] font-semibold opacity-80 mt-0.5">
                             Shifts to {day.holidayMatch.shiftedToDate}
                           </div>
                         </div>
@@ -889,7 +890,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                     )}
 
                     {!hasHoliday && (
-                      <div className="text-[10px] text-slate-300 opacity-0 hover:opacity-100 flex items-center justify-center gap-1">
+                      <div className="text-[11px] text-slate-300 opacity-0 hover:opacity-100 flex items-center justify-center gap-1">
                         <Plus className="w-3 h-3" />
                         <span>Add</span>
                       </div>
@@ -903,7 +904,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
           {/* Configured Holidays List Table */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 text-sm">Configured Operations Holiday Master List</h3>
+              <h3 className="font-bold text-slate-900 text-lg">Configured Operations Holiday Master List</h3>
               <span className="text-xs text-slate-400">Total {holidays.length} rules</span>
             </div>
 
@@ -931,7 +932,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
                       <td className="py-3 px-4">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-extrabold ${
+                          className={`px-2 py-0.5 rounded text-[11px] font-extrabold ${
                             h.type === 'NATIONAL'
                               ? 'bg-rose-100 text-rose-800 border border-rose-200'
                               : h.type === 'STATE_REGIONAL'
@@ -945,7 +946,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
                       <td className="py-3 px-4">
                         <div className="font-medium text-slate-800">{h.scopeDescription}</div>
-                        <div className="text-[10px] text-slate-400 uppercase font-semibold">Scope: {h.scope}</div>
+                        <div className="text-[11px] text-slate-400 uppercase font-semibold">Scope: {h.scope}</div>
                       </td>
 
                       <td className="py-3 px-4">
@@ -958,7 +959,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                         {h.affectedRunsCount} runs
                       </td>
 
-                      <td className="py-3 px-4 text-center font-black text-rose-700">
+                      <td className="py-3 px-4 text-center font-bold text-rose-700">
                         {h.affectedPickupsCount} stops
                       </td>
 
@@ -967,7 +968,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                       </td>
 
                       <td className="py-3 px-4 text-center">
-                        <button
+                        <Button
                           onClick={() => {
                             setFormDate(h.date);
                             setFormName(h.name);
@@ -976,17 +977,17 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                             setFormHandling(h.handling);
                             handleSimulateImpact(h);
                           }}
-                          className="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-[#0A3D2B] hover:text-white font-bold text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
+                          className="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-brand hover:text-white font-bold text-[11px] transition-all cursor-pointer inline-flex items-center gap-1"
                         >
                           <Eye className="w-3 h-3" />
                           Simulate
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                           onClick={() => handleDeleteHoliday(h.id)}
                           className="ml-1 px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-700 hover:text-white font-bold text-[11px]"
                         >
                           Delete
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -1002,7 +1003,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
         <div className="space-y-4">
           <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
-              <h3 className="font-bold text-slate-900 text-sm">Weekly Route Run Master Matrix</h3>
+              <h3 className="font-bold text-slate-900 text-lg">Weekly Route Run Master Matrix</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Vehicles × Weekdays operational grid with capacity saturation, crew rosters, and stop sequencing
               </p>
@@ -1032,23 +1033,15 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white font-black text-[10px]">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white font-bold text-[11px]">
                         {cell.dayOfWeek}
                       </span>
                       <span className="font-bold text-slate-900 text-xs">{cell.vehicleReg}</span>
                     </div>
 
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-                        cell.status === 'RUNNING'
-                          ? 'bg-blue-100 text-blue-800'
-                          : cell.status === 'SCHEDULED'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-slate-100 text-slate-600'
-                      }`}
-                    >
+                    <StatusBadge status={cell.status}>
                       {cell.status}
-                    </span>
+                    </StatusBadge>
                   </div>
 
                   <div>
@@ -1085,14 +1078,14 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
                   {/* Action */}
                   <div className="pt-1 flex items-center justify-between border-t border-slate-100">
-                    <span className="text-[10px] text-slate-400 font-mono">{cell.vehicleName}</span>
-                    <button
+                    <span className="text-[11px] text-slate-400 font-mono">{cell.vehicleName}</span>
+                    <Button aria-label="Next"
                       onClick={() => setInspectingRouteCell(cell)}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-[#0A3D2B] hover:text-white font-bold text-[10px] transition-all cursor-pointer flex items-center gap-1"
+                      className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-brand hover:text-white font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1"
                     >
                       <span>Inspect Stops ({cell.stops.length})</span>
                       <ChevronRight className="w-3 h-3" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
@@ -1108,7 +1101,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
-                <h3 className="font-bold text-slate-900 text-sm">Pending Customer Pickups (Manual Assign)</h3>
+                <h3 className="font-bold text-slate-900 text-lg">Pending Customer Pickups (Manual Assign)</h3>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 Customer-booked slots awaiting admin accept + employee assignment. Prefer{' '}
@@ -1150,8 +1143,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                       <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
                         <td className="py-3.5 px-4">
                           <div className="font-bold text-slate-900">{item.customerName}</div>
-                          <div className="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
-                            <span className="font-mono font-semibold text-emerald-800">{item.pickupCode}</span>
+                          <div className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                            <span className="data-value font-mono font-semibold text-emerald-800">{item.pickupCode}</span>
                             <span>•</span>
                             <span>{item.phone}</span>
                           </div>
@@ -1159,11 +1152,11 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
                         <td className="py-3.5 px-4">
                           <div className="font-medium text-slate-800">{item.divisionName}</div>
-                          <div className="text-[10px] text-slate-400 truncate max-w-xs">{item.address}</div>
+                          <div className="text-[11px] text-slate-400 truncate max-w-xs">{item.address}</div>
                         </td>
 
                         <td className="py-3.5 px-4 text-right">
-                          <span className="font-mono font-black text-sm text-slate-900">
+                          <span className="data-value font-mono font-bold text-sm text-slate-900">
                             {item.estimatedWeightKg} kg
                           </span>
                         </td>
@@ -1173,7 +1166,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                             {item.scrapCategories.map((c, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700"
+                                className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700"
                               >
                                 {c}
                               </span>
@@ -1183,26 +1176,26 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
                         <td className="py-3.5 px-4">
                           <div className="font-medium text-slate-700">{item.requestedDate}</div>
-                          <div className="text-[10px] text-slate-400 font-semibold">{item.preferredSlot}</div>
+                          <div className="text-[11px] text-slate-400 font-semibold">{item.preferredSlot}</div>
                         </td>
 
                         <td className="py-3.5 px-4">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
                             {item.reason.replace(/_/g, ' ')}
                           </span>
                         </td>
 
                         <td className="py-3.5 px-4 text-center">
-                          <button
+                          <Button
                             onClick={() => {
                               setSelectedUnassignedItem(item);
                               setIsAssignModalOpen(true);
                             }}
-                            className="px-3 py-1.5 rounded-xl bg-[#0A3D2B] text-white hover:bg-[#0E4D36] font-bold text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1.5 mx-auto"
+                            className="px-3 py-1.5 rounded-xl bg-brand text-white hover:bg-[var(--brand-hover)] font-bold text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1.5 mx-auto"
                           >
                             <Truck className="w-3.5 h-3.5 text-amber-400" />
                             Assign Vehicle
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))
@@ -1223,14 +1216,14 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2">
                   <Scale className="w-4 h-4 text-emerald-700" />
-                  <h3 className="font-bold text-slate-900 text-sm">Customer Estimated Weight Ranges</h3>
+                  <h3 className="font-bold text-slate-900 text-lg">Customer Estimated Weight Ranges</h3>
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
                   These options appear on Customer App → Request Pickup → Step 2 (estimated weight).
                   Edit labels and kg bounds here; changes apply after customers refresh the app.
                 </p>
               </div>
-              <button
+              <Button
                 type="button"
                 onClick={loadWeightRanges}
                 disabled={weightRangesLoading}
@@ -1238,7 +1231,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${weightRangesLoading ? 'animate-spin' : ''}`} />
                 Refresh
-              </button>
+              </Button>
             </div>
 
             <div className="overflow-x-auto rounded-xl border border-slate-200">
@@ -1258,7 +1251,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {weightRanges.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="py-8 px-3 text-center text-slate-400 font-semibold">
+                      <td colSpan={8} className="data-value py-8 px-3 text-center text-slate-400 font-semibold">
                         {weightRangesLoading
                           ? 'Loading weight ranges…'
                           : 'No weight ranges found. Add one below or restart backend to auto-seed.'}
@@ -1278,7 +1271,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                                 onChange={(e) =>
                                   setEditWeightForm((f) => ({ ...f, displayOrder: Number(e.target.value) || 0 }))
                                 }
-                                className="w-16 px-2 py-1 rounded-lg border border-slate-200 font-mono"
+                                className="w-16 px-2 py-1 rounded-lg border border-slate-200 font-sans"
                               />
                             ) : (
                               <span className="font-mono font-bold text-slate-700">{range.displayOrder}</span>
@@ -1289,7 +1282,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                               <input
                                 value={editWeightForm.name}
                                 onChange={(e) => setEditWeightForm((f) => ({ ...f, name: e.target.value }))}
-                                className="w-28 px-2 py-1 rounded-lg border border-slate-200 font-mono uppercase"
+                                className="w-28 px-2 py-1 rounded-lg border border-slate-200 font-sans uppercase"
                               />
                             ) : (
                               <span className="font-mono text-slate-800">{range.name}</span>
@@ -1318,7 +1311,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                                 onChange={(e) =>
                                   setEditWeightForm((f) => ({ ...f, minKg: Number(e.target.value) || 0 }))
                                 }
-                                className="w-20 px-2 py-1 rounded-lg border border-slate-200 font-mono"
+                                className="w-20 px-2 py-1 rounded-lg border border-slate-200 font-sans"
                               />
                             ) : (
                               <span className="font-mono">{range.minKg}</span>
@@ -1334,7 +1327,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                                 onChange={(e) =>
                                   setEditWeightForm((f) => ({ ...f, maxKg: Number(e.target.value) || 0 }))
                                 }
-                                className="w-20 px-2 py-1 rounded-lg border border-slate-200 font-mono"
+                                className="w-20 px-2 py-1 rounded-lg border border-slate-200 font-sans"
                               />
                             ) : (
                               <span className="font-mono">{range.maxKg}</span>
@@ -1342,73 +1335,73 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                           </td>
                           <td className="py-2.5 px-3">
                             {isBulkRange ? (
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-50 text-amber-800 border border-amber-200">
+                              <span className="px-2 py-0.5 rounded-full text-[11px] font-bold uppercase bg-amber-50 text-amber-800 border border-amber-200">
                                 Bulk+
                               </span>
                             ) : (
-                              <button
+                              <Button
                                 type="button"
                                 onClick={() => handleSetBulkFromRange(range)}
-                                className="px-2 py-0.5 rounded-full text-[10px] font-bold border border-slate-200 text-slate-600 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-800 cursor-pointer"
+                                className="px-2 py-0.5 rounded-full text-[11px] font-bold border border-slate-200 text-slate-600 hover:bg-amber-50 hover:border-amber-200 hover:text-amber-800 cursor-pointer"
                                 title={`Set bulk minimum to ${range.minKg} kg (this range and above)`}
                               >
                                 Set as bulk min
-                              </button>
+                              </Button>
                             )}
                           </td>
                           <td className="py-2.5 px-3">
-                            <button
+                            <Button
                               type="button"
                               onClick={() => handleToggleWeightActive(range)}
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase border cursor-pointer ${
+                              className={`px-2 py-0.5 rounded-full text-[11px] font-bold uppercase border cursor-pointer ${
                                 range.isActive
                                   ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                                   : 'bg-slate-100 text-slate-500 border-slate-200'
                               }`}
                             >
                               {range.isActive ? 'Active' : 'Inactive'}
-                            </button>
+                            </Button>
                           </td>
                           <td className="py-2.5 px-3">
                             <div className="flex items-center justify-end gap-1.5">
                               {isEditing ? (
                                 <>
-                                  <button
+                                  <Button aria-label="Save"
                                     type="button"
                                     disabled={isSavingWeight}
                                     onClick={handleSaveWeightEdit}
-                                    className="p-1.5 rounded-lg bg-[#0A3D2B] text-white hover:bg-[#0E4D36] cursor-pointer"
+                                    className="p-1.5 rounded-lg bg-brand text-white hover:bg-[var(--brand-hover)] cursor-pointer"
                                     title="Save"
                                   >
                                     <Save className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button aria-label="Cancel"
                                     type="button"
                                     onClick={() => setEditingWeightId(null)}
                                     className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer"
                                     title="Cancel"
                                   >
                                     <X className="w-3.5 h-3.5" />
-                                  </button>
+                                  </Button>
                                 </>
                               ) : (
                                 <>
-                                  <button
+                                  <Button aria-label="Edit"
                                     type="button"
                                     onClick={() => startEditWeight(range)}
                                     className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer"
                                     title="Edit"
                                   >
                                     <Pencil className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
+                                  </Button>
+                                  <Button aria-label="Deactivate"
                                     type="button"
                                     onClick={() => handleDeleteWeightRange(range)}
                                     className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 cursor-pointer"
                                     title="Deactivate"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
+                                  </Button>
                                 </>
                               )}
                             </div>
@@ -1423,40 +1416,40 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
             {/* Add new weight range */}
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+              <h4 className="text-base font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                 <Plus className="w-3.5 h-3.5" />
                 Add Weight Range
               </h4>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                <input
+                <input aria-label="Code (e.g. SMALL)"
                   placeholder="Code (e.g. SMALL)"
                   value={newWeightForm.name}
                   onChange={(e) => setNewWeightForm((f) => ({ ...f, name: e.target.value }))}
-                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono uppercase"
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-sans uppercase"
                 />
-                <input
+                <input aria-label="Label (e.g. 10 – 20 kg)"
                   placeholder="Label (e.g. 10 – 20 kg)"
                   value={newWeightForm.displayLabel}
                   onChange={(e) => setNewWeightForm((f) => ({ ...f, displayLabel: e.target.value }))}
                   className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold"
                 />
-                <input
+                <input aria-label="Min kg"
                   type="number"
                   min={0}
                   placeholder="Min kg"
                   value={newWeightForm.minKg}
                   onChange={(e) => setNewWeightForm((f) => ({ ...f, minKg: Number(e.target.value) || 0 }))}
-                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono"
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-sans"
                 />
-                <input
+                <input aria-label="Max kg"
                   type="number"
                   min={1}
                   placeholder="Max kg"
                   value={newWeightForm.maxKg}
                   onChange={(e) => setNewWeightForm((f) => ({ ...f, maxKg: Number(e.target.value) || 0 }))}
-                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono"
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-sans"
                 />
-                <input
+                <input aria-label="Order"
                   type="number"
                   min={0}
                   placeholder="Order"
@@ -1464,25 +1457,25 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                   onChange={(e) =>
                     setNewWeightForm((f) => ({ ...f, displayOrder: Number(e.target.value) || 0 }))
                   }
-                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono"
+                  className="px-3 py-2 rounded-xl border border-slate-200 text-xs font-sans"
                 />
               </div>
               <div className="flex justify-end">
-                <button
+                <Button
                   type="button"
                   disabled={isSavingWeight}
                   onClick={handleCreateWeightRange}
-                  className="px-4 py-2 rounded-xl bg-[#0A3D2B] text-white text-xs font-bold hover:bg-[#0E4D36] cursor-pointer disabled:opacity-60"
+                  className="px-4 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:bg-[var(--brand-hover)] cursor-pointer disabled:opacity-60"
                 >
                   Add Weight Range
-                </button>
+                </Button>
               </div>
             </div>
           </div>
 
           {/* Section B: Order / routing rules */}
           <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm">Order Rules & Bulk Commercial Limits</h3>
+            <h3 className="font-bold text-slate-900 text-lg">Order Rules & Bulk Commercial Limits</h3>
             <p className="text-xs text-slate-500">
               Configure parameters controlling when orders bypass normal 3-wheeler auto-routing and trigger heavy trucks.
             </p>
@@ -1490,7 +1483,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             <div className="space-y-4 pt-2">
               <div>
                 <div className="flex justify-between text-xs font-bold text-slate-800 mb-1">
-                  <span>Bulk Order Weight Threshold (kg)</span>
+                  <span className="data-value">Bulk Order Weight Threshold (kg)</span>
                   <span className="font-mono text-emerald-700">{bulkLimitKg} kg</span>
                 </div>
                 <input
@@ -1500,9 +1493,9 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                   step="5"
                   value={bulkLimitKg}
                   onChange={(e) => setBulkLimitKg(parseInt(e.target.value))}
-                  className="w-full accent-[#0A3D2B] cursor-pointer"
+                  className="w-full accent-brand cursor-pointer"
                 />
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[11px] text-slate-400">
                   Any weight range whose minimum is ≥ this value is marked Bulk on the customer app
                   and routed to the heavy-vehicle queue. Tip: use “Set as bulk min” on a range above.
                 </span>
@@ -1520,9 +1513,9 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                   step="2"
                   value={routeFinalizeHours}
                   onChange={(e) => setRouteFinalizeHours(parseInt(e.target.value))}
-                  className="w-full accent-[#0A3D2B] cursor-pointer"
+                  className="w-full accent-brand cursor-pointer"
                 />
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[11px] text-slate-400">
                   Hours prior to 8:00 AM shift start when stops are locked and sequence notifications fire.
                 </span>
               </div>
@@ -1539,21 +1532,21 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                   step="10"
                   value={autoRetryMinutes}
                   onChange={(e) => setAutoRetryMinutes(parseInt(e.target.value))}
-                  className="w-full accent-[#0A3D2B] cursor-pointer"
+                  className="w-full accent-brand cursor-pointer"
                 />
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[11px] text-slate-400">
                   Background cron re-evaluates unassigned queue against newly freed vehicle capacity.
                 </span>
               </div>
             </div>
 
             <div className="pt-3 border-t border-slate-100 flex justify-end">
-              <button
+              <Button
                 onClick={handleSaveOrderRules}
-                className="px-5 py-2.5 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md"
+                className="px-5 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer shadow-md"
               >
                 Save Routing Parameters
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -1561,25 +1554,25 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
       {/* --- MODAL 1: DEFINE OPERATIONS HOLIDAY MODAL --- */}
       {isHolidayModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 bg-[#0A3D2B] text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setIsHolidayModalOpen(false)} label="Define Operations Holiday" className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 bg-brand text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CalendarIcon className="w-5 h-5 text-emerald-400" />
-                <h3 className="font-black text-sm">Define Operations Holiday</h3>
+                <h3 className="font-bold text-lg">Define Operations Holiday</h3>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsHolidayModalOpen(false)}
                 className="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Holiday Date *</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Holiday Date *</label>
                   <input
                     type="date"
                     value={formDate}
@@ -1588,7 +1581,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Holiday Category</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Holiday Category</label>
                   <select
                     value={formType}
                     onChange={(e) => setFormType(e.target.value as any)}
@@ -1603,8 +1596,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Holiday Name / Reason *</label>
-                <input
+                <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Holiday Name / Reason *</label>
+                <input aria-label="e.g. Sankranti Festival / Kanaka Durga Utsavam"
                   type="text"
                   placeholder="e.g. Sankranti Festival / Kanaka Durga Utsavam"
                   value={formName}
@@ -1615,10 +1608,10 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
 
               {/* Scope Selection */}
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1.5">Operational Scope</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">Operational Scope</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['ALL', 'DIVISIONS', 'VEHICLES'] as const).map((sc) => (
-                    <button
+                    <Button
                       key={sc}
                       type="button"
                       onClick={() => setFormScope(sc)}
@@ -1629,18 +1622,18 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                       }`}
                     >
                       {sc === 'ALL' ? 'Entire Network' : sc === 'DIVISIONS' ? 'Specific Yard' : 'Specific Vehicles'}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
 
               {/* Reschedule Handling Rule */}
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1.5">
+                <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">
                   Pickups Rescheduling Shift Rule
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setFormHandling('NEXT_WORKING_DAY')}
                     className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
@@ -1650,10 +1643,10 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                     }`}
                   >
                     <div className="font-bold text-xs">Next Working Day</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">Shift all runs to tomorrow (+1 day)</div>
-                  </button>
+                    <div className="text-[11px] text-slate-400 mt-0.5">Shift all runs to tomorrow (+1 day)</div>
+                  </Button>
 
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setFormHandling('NEXT_WEEK_SAME_DAY')}
                     className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
@@ -1663,66 +1656,66 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                     }`}
                   >
                     <div className="font-bold text-xs">Next Week Same Day</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">Shift runs to next week (+7 days)</div>
-                  </button>
+                    <div className="text-[11px] text-slate-400 mt-0.5">Shift runs to next week (+7 days)</div>
+                  </Button>
                 </div>
               </div>
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
+              <Button
                 onClick={() => setIsHolidayModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleSimulateImpact()}
-                className="px-5 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                className="px-5 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
                 <Sparkles className="w-4 h-4 text-emerald-400" />
                 Simulate Holiday Impact
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* --- MODAL 2: HOLIDAY IMPACT SIMULATION & CONFIRMATION --- */}
       {isSimulationModalOpen && simulationData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 space-y-0">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setIsSimulationModalOpen(false)} label="Holiday Impact Simulation" className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 space-y-0">
             <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-amber-400" />
                 <div>
-                  <h3 className="font-black text-sm">Holiday Impact Simulation</h3>
+                  <h3 className="font-bold text-lg">Holiday Impact Simulation</h3>
                   <p className="text-[11px] text-slate-400 mt-0.5">{formName}</p>
                 </div>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsSimulationModalOpen(false)}
                 className="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Closure Date</span>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase block">Closure Date</span>
                   <span className="font-bold text-slate-900 text-xs mt-0.5 block">{formDate}</span>
                 </div>
                 <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200">
-                  <span className="text-[10px] font-bold text-rose-500 uppercase block">Affected Pickups</span>
-                  <span className="font-black text-rose-700 text-base mt-0.5 block">
+                  <span className="text-[11px] font-bold text-rose-500 uppercase block">Affected Pickups</span>
+                  <span className="font-bold text-rose-700 text-base mt-0.5 block">
                     {simulationData.affectedPickupsCount} Stops
                   </span>
                 </div>
                 <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200">
-                  <span className="text-[10px] font-bold text-emerald-600 uppercase block">Shifted To</span>
-                  <span className="font-black text-emerald-800 text-xs mt-0.5 block">
+                  <span className="text-[11px] font-bold text-emerald-600 uppercase block">Shifted To</span>
+                  <span className="font-bold text-emerald-800 text-xs mt-0.5 block">
                     {simulationData.shiftsToDate}
                   </span>
                 </div>
@@ -1731,11 +1724,11 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
               {/* Customer WhatsApp Notification Preview */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase flex items-center gap-1.5">
                     <Smartphone className="w-3.5 h-3.5 text-emerald-600" />
                     Automated Customer WhatsApp / SMS Broadcast Queue
                   </span>
-                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">
+                  <span className="text-[11px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">
                     Ready to Dispatch
                   </span>
                 </div>
@@ -1755,55 +1748,55 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
+              <Button
                 onClick={() => setIsSimulationModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer"
               >
                 Back to Edit
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleConfirmHoliday}
-                className="px-5 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                className="px-5 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
                 <Check className="w-4 h-4 text-emerald-400" />
                 Confirm & Propagate Reschedule
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* --- MODAL 3: ONE-CLICK BULK VEHICLE ASSIGNMENT --- */}
       {isAssignModalOpen && selectedUnassignedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 bg-[#0A3D2B] text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setIsAssignModalOpen(false)} label="Assign Heavy Capacity Vehicle" className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 bg-brand text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Truck className="w-5 h-5 text-amber-400" />
-                <h3 className="font-black text-sm">Assign Heavy Capacity Vehicle</h3>
+                <h3 className="font-bold text-lg">Assign Heavy Capacity Vehicle</h3>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsAssignModalOpen(false)}
                 className="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-5 space-y-4 text-xs">
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
                 <div className="flex justify-between font-bold text-slate-900">
                   <span>{selectedUnassignedItem.customerName}</span>
-                  <span className="font-mono text-emerald-800">{selectedUnassignedItem.estimatedWeightKg} kg</span>
+                  <span className="data-value font-mono text-emerald-800">{selectedUnassignedItem.estimatedWeightKg} kg</span>
                 </div>
                 <div className="text-[11px] text-slate-500">{selectedUnassignedItem.address}</div>
-                <div className="text-[10px] text-slate-400 font-mono">
+                <div className="text-[11px] text-slate-400 font-mono">
                   Requested: {selectedUnassignedItem.requestedDate} ({selectedUnassignedItem.preferredSlot})
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1.5">
+                <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">
                   Select Heavy Commercial Vehicle
                 </label>
                 <div className="space-y-2">
@@ -1813,7 +1806,7 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                     driver: vehicle.defaultDriver?.name || '—',
                     avail: `${Number(vehicle.capacityKg || 0).toLocaleString('en-IN')} kg capacity`,
                   })).map((v) => (
-                    <button
+                    <Button
                       key={v.reg}
                       type="button"
                       onClick={() => setAssignTargetVehicle(v.reg)}
@@ -1827,51 +1820,51 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                         <span>{v.reg}</span>
                         <span className="text-emerald-700 font-semibold text-[11px]">{v.avail}</span>
                       </div>
-                      <div className="text-[10px] text-slate-400 mt-0.5">
+                      <div className="text-[11px] text-slate-400 mt-0.5">
                         {v.name} • Driver: {v.driver}
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
+              <Button
                 onClick={() => setIsAssignModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleAssignBulkPickup}
-                className="px-5 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md flex items-center gap-2"
+                className="px-5 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer shadow-md flex items-center gap-2"
               >
                 <Check className="w-4 h-4 text-emerald-400" />
                 Confirm Assignment
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* --- MODAL 4: INSPECT ROUTE STOPS SEQUENCE --- */}
       {inspectingRouteCell && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setInspectingRouteCell(null)} label="• Route Sequence" className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
               <div>
-                <h3 className="font-black text-sm">
+                <h3 className="font-bold text-lg">
                   {inspectingRouteCell.vehicleReg} • {inspectingRouteCell.dayOfWeek} Route Sequence
                 </h3>
                 <p className="text-[11px] text-slate-400 mt-0.5">{inspectingRouteCell.divisionName}</p>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setInspectingRouteCell(null)}
                 className="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-5 max-h-[60vh] overflow-y-auto space-y-2.5 text-xs">
@@ -1886,13 +1879,13 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                     className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-[#0A3D2B] text-white font-black text-xs flex items-center justify-center shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-brand text-white font-bold text-xs flex items-center justify-center shrink-0">
                         {stop.stopNumber}
                       </span>
                       <div>
                         <div className="font-bold text-slate-900">{stop.customerName}</div>
-                        <div className="text-[10px] text-slate-400 flex items-center gap-1.5 mt-0.5">
-                          <span className="font-mono text-emerald-800 font-semibold">{stop.pickupCode}</span>
+                        <div className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                          <span className="data-value font-mono text-emerald-800 font-semibold">{stop.pickupCode}</span>
                           <span>•</span>
                           <span>{stop.area}</span>
                         </div>
@@ -1900,8 +1893,8 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
                     </div>
 
                     <div className="text-right">
-                      <span className="font-mono font-black text-slate-900">{stop.weightKg} kg</span>
-                      <div className="text-[9px] text-slate-400">{stop.timeSlot}</div>
+                      <span className="data-value font-mono font-bold text-slate-900">{stop.weightKg} kg</span>
+                      <div className="text-[11px] text-slate-400">{stop.timeSlot}</div>
                     </div>
                   </div>
                 ))
@@ -1909,14 +1902,14 @@ export const HolidayAndRoutePlanningScreen: React.FC = () => {
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
-              <button
+              <Button
                 onClick={() => setInspectingRouteCell(null)}
-                className="px-4 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer"
               >
                 Close Inspector
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>

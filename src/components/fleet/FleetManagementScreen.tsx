@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, StatusBadge, DialogSurface } from '../ui';
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   Truck,
@@ -442,9 +443,9 @@ export const FleetManagementScreen: React.FC = () => {
     <div className="space-y-6 pb-20 animate-in fade-in duration-200">
       {/* Toast Banner */}
       {toastMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-[#0A3D2B] text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-in slide-in-from-top-4">
-          <CheckCircle2 className="w-5 h-5 text-[#22C55E] shrink-0" />
-          <span className="text-xs font-black tracking-wide">{toastMessage}</span>
+        <div className="fixed top-20 right-6 z-50 bg-brand text-white px-5 py-3 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-in slide-in-from-top-4">
+          <CheckCircle2 className="w-5 h-5 text-brand shrink-0" />
+          <span className="text-xs font-bold tracking-wide">{toastMessage}</span>
         </div>
       )}
 
@@ -453,7 +454,7 @@ export const FleetManagementScreen: React.FC = () => {
         <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6 pb-6 border-b border-slate-100">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1.5">
                 <Truck className="w-3 h-3 text-emerald-700" />
                 Fleet Logistics & Vehicle ERP
               </span>
@@ -461,7 +462,7 @@ export const FleetManagementScreen: React.FC = () => {
                 Rented vs Owned Fleet & Daily Fuel Control
               </span>
             </div>
-            <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl md:text-2xl font-bold text-slate-900 tracking-tight">
               Vehicle Registry, Rental Contracts & Fuel Desk
             </h2>
             <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
@@ -471,69 +472,69 @@ export const FleetManagementScreen: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <button
+            <Button
               onClick={() => setIsLogFuelOpen(true)}
               className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
             >
               <Fuel className="w-3.5 h-3.5 text-blue-600" />
               <span>Log Fuel / EV Power</span>
-            </button>
+            </Button>
 
-            <button
+            <Button aria-label="Add"
               onClick={() => setIsAddVehicleOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-[#0A3D2B] hover:bg-[#0E4D36] text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-950/20 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-brand hover:bg-[var(--brand-hover)] text-white font-bold text-xs flex items-center gap-2 shadow-lg  transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>Register New Vehicle</span>
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* 4 Fleet Logistics KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
           <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
               Active Fleet Assets
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-slate-900">{metrics.totalVehicles}</span>
+              <span className="text-xl font-bold text-slate-900">{metrics.totalVehicles}</span>
               <span className="text-[11px] font-extrabold text-emerald-700">
                 {metrics.totalVehicles - metrics.inMaintCount} On Route
               </span>
             </div>
-            <span className="text-[10px] text-slate-500 mt-1 block">
+            <span className="text-[11px] text-slate-500 mt-1 block">
               {metrics.ownedCount} Owned • {metrics.rentedCount} Rented
             </span>
           </div>
 
           <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-100">
-            <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider block">
               Monthly Rental Contracts
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-amber-950">{metrics.monthlyRentObligation}</span>
+              <span className="text-xl font-bold text-amber-950">{metrics.monthlyRentObligation}</span>
             </div>
-            <span className="text-[10px] text-amber-800/80 mt-1 block">Accrued vehicle rent obligations</span>
+            <span className="text-[11px] text-amber-800/80 mt-1 block">Accrued vehicle rent obligations</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-100">
-            <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider block">
               Fuel & Charging Cost
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-blue-950">{metrics.totalFuelCost}</span>
+              <span className="text-xl font-bold text-blue-950">{metrics.totalFuelCost}</span>
             </div>
-            <span className="text-[10px] text-blue-700 mt-1 block">Avg ~₹1.80 per kg scrap transported</span>
+            <span className="text-[11px] text-blue-700 mt-1 block">Avg ~₹1.80 per kg scrap transported</span>
           </div>
 
           <div className="p-4 rounded-2xl bg-rose-50/60 border border-rose-100">
-            <span className="text-[10px] font-bold text-rose-700 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-rose-700 uppercase tracking-wider block">
               Repairs & Maintenance
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-xl font-black text-rose-950">{metrics.totalMaintCost}</span>
+              <span className="text-xl font-bold text-rose-950">{metrics.totalMaintCost}</span>
             </div>
-            <span className="text-[10px] text-rose-700 mt-1 block">
+            <span className="text-[11px] text-rose-700 mt-1 block">
               {metrics.inMaintCount} vehicle currently in garage
             </span>
           </div>
@@ -550,22 +551,22 @@ export const FleetManagementScreen: React.FC = () => {
             { id: 'MAINTENANCE', label: '🔧 Maintenance & Repairs', count: maintenanceLogs.length },
             { id: 'INCIDENTALS', label: '🧾 Route Incidentals (Tolls/Puncture)', count: incidentals.length },
           ].map((tab) => (
-            <button
+            <Button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer shrink-0 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
                 activeTab === tab.id
-                  ? 'bg-[#0A3D2B] text-white shadow-md shadow-emerald-950/20'
+                  ? 'bg-brand text-white shadow-md '
                   : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/90'
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`ml-1.5 text-[10px] px-1.5 py-0.5 rounded-md ${
+              <span className={`ml-1.5 text-[11px] px-1.5 py-0.5 rounded-md ${
                 activeTab === tab.id ? 'bg-emerald-800 text-white' : 'bg-slate-100 text-slate-500'
               }`}>
                 {tab.count}
               </span>
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -579,17 +580,17 @@ export const FleetManagementScreen: React.FC = () => {
               <span className="text-xs font-bold text-slate-500">Ownership Filter:</span>
               <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200">
                 {(['ALL', 'OWNED', 'RENTED'] as const).map((mode) => (
-                  <button
+                  <Button
                     key={mode}
                     onClick={() => setOwnershipFilter(mode)}
-                    className={`px-3 py-1 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       ownershipFilter === mode
-                        ? 'bg-[#0A3D2B] text-white shadow-xs'
+                        ? 'bg-brand text-white shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     {mode === 'ALL' ? 'All Assets' : mode === 'OWNED' ? '🟢 Owned' : '🟡 Rented'}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -604,7 +605,7 @@ export const FleetManagementScreen: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold tracking-wider">
                     <th className="py-3.5 px-4">Vehicle Identity</th>
                     <th className="py-3.5 px-3">Ownership & Contract</th>
                     <th className="py-3.5 px-3">Type & Capacity</th>
@@ -619,23 +620,22 @@ export const FleetManagementScreen: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {filteredVehicles.map((veh) => {
                     const isRented = veh.ownership === 'RENTED';
-                    const isMaint = veh.status === 'IN_MAINTENANCE';
 
                     return (
                       <tr key={veh.id} className="hover:bg-slate-50/80 transition-colors">
                         {/* 1. Identity */}
                         <td className="py-3.5 px-4">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-800 shrink-0 border border-slate-200">
+                            <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-800 shrink-0 border border-slate-200">
                               {veh.vehicleType === 'EV_AUTO' ? '⚡' : '🚚'}
                             </div>
                             <div>
                               <div className="flex items-center gap-1.5">
-                                <span className="font-black text-slate-900 text-xs">
+                                <span className="font-bold text-slate-900 text-xs">
                                   {veh.registrationNumber}
                                 </span>
                               </div>
-                              <span className="text-[10px] text-slate-400 font-semibold block truncate max-w-[140px]">
+                              <span className="text-[11px] text-slate-400 font-semibold block truncate max-w-[140px]">
                                 {veh.name}
                               </span>
                             </div>
@@ -646,7 +646,7 @@ export const FleetManagementScreen: React.FC = () => {
                         <td className="py-3.5 px-3">
                           <div className="flex flex-col">
                             <span
-                              className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full w-fit ${
+                              className={`text-[11px] font-bold uppercase px-2 py-0.5 rounded-full w-fit ${
                                 isRented
                                   ? 'bg-amber-100/70 text-amber-900 border border-amber-300'
                                   : 'bg-emerald-100/70 text-emerald-900 border border-emerald-300'
@@ -654,7 +654,7 @@ export const FleetManagementScreen: React.FC = () => {
                             >
                               {veh.ownership}
                             </span>
-                            <span className="text-[11px] font-bold text-slate-700 mt-1">
+                            <span className="data-value text-[11px] font-bold text-slate-700 mt-1">
                               {isRented
                                 ? `₹${veh.ownershipDetails.rentalChargeRupees}/${
                                     veh.ownershipDetails.rentBillingModel === 'DAILY_FLAT' ? 'day' : 'mo'
@@ -664,7 +664,7 @@ export const FleetManagementScreen: React.FC = () => {
                                   ).toFixed(1)}L`}
                             </span>
                             {isRented && veh.ownershipDetails.vendorName && (
-                              <span className="text-[9px] text-slate-400 truncate max-w-[120px]">
+                              <span className="text-[11px] text-slate-400 truncate max-w-[120px]">
                                 {veh.ownershipDetails.vendorName}
                               </span>
                             )}
@@ -677,10 +677,10 @@ export const FleetManagementScreen: React.FC = () => {
                             <span className="font-extrabold text-slate-800 text-xs">
                               {veh.capacityKg} kg
                             </span>
-                            <span className="text-[10px] text-slate-400">
+                            <span className="text-[11px] text-slate-400">
                               Max {veh.maxStops} stops / run
                             </span>
-                            <span className="text-[9px] font-semibold text-slate-500 mt-0.5">
+                            <span className="text-[11px] font-semibold text-slate-500 mt-0.5">
                               Odo: {veh.currentOdometer.toLocaleString()} km
                             </span>
                           </div>
@@ -688,16 +688,16 @@ export const FleetManagementScreen: React.FC = () => {
 
                         {/* 4. Compliance Counters */}
                         <td className="py-3.5 px-3">
-                          <div className="space-y-0.5 text-[10px]">
+                          <div className="space-y-0.5 text-[11px]">
                             <div className="flex items-center gap-1 font-bold">
                               <span className="text-slate-400">FC:</span>
-                              <span className={veh.compliance.fitnessValidUntil !== '—' && veh.compliance.fitnessValidUntil <= complianceWarningDate ? 'text-rose-600 font-black' : 'text-slate-700'}>
+                              <span className={veh.compliance.fitnessValidUntil !== '—' && veh.compliance.fitnessValidUntil <= complianceWarningDate ? 'text-rose-600 font-bold' : 'text-slate-700'}>
                                 {veh.compliance.fitnessValidUntil}
                               </span>
                             </div>
                             <div className="flex items-center gap-1 font-bold">
                               <span className="text-slate-400">Ins:</span>
-                              <span className={veh.compliance.insuranceValidUntil !== '—' && veh.compliance.insuranceValidUntil <= complianceWarningDate ? 'text-amber-600 font-black' : 'text-slate-700'}>
+                              <span className={veh.compliance.insuranceValidUntil !== '—' && veh.compliance.insuranceValidUntil <= complianceWarningDate ? 'text-amber-600 font-bold' : 'text-slate-700'}>
                                 {veh.compliance.insuranceValidUntil}
                               </span>
                             </div>
@@ -710,10 +710,10 @@ export const FleetManagementScreen: React.FC = () => {
                             <span className="font-bold text-slate-800 text-xs">
                               {veh.defaultDriver.name}
                             </span>
-                            <span className="text-[10px] text-slate-400">
+                            <span className="text-[11px] text-slate-400">
                               {veh.defaultDriver.phone}
                             </span>
-                            <span className="text-[9px] text-emerald-800 font-semibold truncate max-w-[110px]">
+                            <span className="text-[11px] text-emerald-800 font-semibold truncate max-w-[110px]">
                               {veh.assignedDivision}
                             </span>
                           </div>
@@ -722,10 +722,10 @@ export const FleetManagementScreen: React.FC = () => {
                         {/* 6. Today Activity */}
                         <td className="py-3.5 px-3">
                           <div className="flex flex-col">
-                            <span className="font-black text-slate-900 text-xs">
+                            <span className="font-bold text-slate-900 text-xs">
                               {veh.todayCollectedKg} kg
                             </span>
-                            <span className="text-[10px] text-slate-400">
+                            <span className="text-[11px] text-slate-400">
                               {veh.todayTrips} trips today
                             </span>
                           </div>
@@ -733,25 +733,19 @@ export const FleetManagementScreen: React.FC = () => {
 
                         {/* 7. Status */}
                         <td className="py-3.5 px-3">
-                          <span
-                            className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
-                              isMaint
-                                ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                                : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                            }`}
-                          >
+                          <StatusBadge status={veh.status}>
                             {veh.status}
-                          </span>
+                          </StatusBadge>
                         </td>
 
                         {/* 8. Actions */}
                         <td className="py-3.5 px-4 text-right">
-                          <button
+                          <Button
                             onClick={() => setSelectedVehicleForDrawer(veh)}
                             className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer shadow-2xs"
                           >
                             Details
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     );
@@ -775,14 +769,14 @@ export const FleetManagementScreen: React.FC = () => {
             <div className="flex items-center gap-3">
               <span className="text-2xl">📋</span>
               <div>
-                <h4 className="font-black text-amber-950">Active Rented Vehicle Contracts</h4>
+                <h4 className="font-bold text-amber-950">Active Rented Vehicle Contracts</h4>
                 <p className="text-[11px] text-amber-800">
                   Third-party fleet agreements for seasonal scrap collection demand spikes in Vijayawada & Guntur.
                 </p>
               </div>
             </div>
 
-            <div className="text-right font-black text-amber-950">
+            <div className="text-right font-bold text-amber-950">
               <span className="text-xs text-amber-800 block">Total Monthly Accrual</span>
               <span className="text-base">{metrics.monthlyRentObligation}</span>
             </div>
@@ -795,18 +789,18 @@ export const FleetManagementScreen: React.FC = () => {
                 <div key={veh.id} className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div>
-                      <span className="text-[10px] font-black uppercase text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                      <span className="text-[11px] font-bold uppercase text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
                         RENTED ASSET
                       </span>
-                      <h3 className="text-sm font-black text-slate-900 mt-1">{veh.registrationNumber}</h3>
+                      <h3 className="text-lg font-bold text-slate-900 mt-1">{veh.registrationNumber}</h3>
                       <p className="text-xs text-slate-500">{veh.name}</p>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-base font-black text-slate-900">
+                      <span className="data-value text-base font-bold text-slate-900">
                         ₹{veh.ownershipDetails.rentalChargeRupees}
                       </span>
-                      <span className="text-[10px] text-slate-400 block">
+                      <span className="text-[11px] text-slate-400 block">
                         {veh.ownershipDetails.rentBillingModel === 'DAILY_FLAT' ? 'per working day' : 'per month'}
                       </span>
                     </div>
@@ -814,7 +808,7 @@ export const FleetManagementScreen: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase block">Fleet Vendor</span>
+                      <span className="text-[11px] font-bold text-slate-400 uppercase block">Fleet Vendor</span>
                       <span className="font-extrabold text-slate-800 mt-0.5 block">{veh.ownershipDetails.vendorName}</span>
                       <span className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
                         <Phone className="w-3 h-3" /> {veh.ownershipDetails.vendorPhone}
@@ -822,9 +816,9 @@ export const FleetManagementScreen: React.FC = () => {
                     </div>
 
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase block">Contract Validity</span>
+                      <span className="text-[11px] font-bold text-slate-400 uppercase block">Contract Validity</span>
                       <span className="font-extrabold text-slate-800 mt-0.5 block">Until {veh.ownershipDetails.contractValidUntil}</span>
-                      <span className="text-[10px] text-emerald-700 font-bold mt-0.5 block">Auto-Renewing Active</span>
+                      <span className="text-[11px] text-emerald-700 font-bold mt-0.5 block">Auto-Renewing Active</span>
                     </div>
                   </div>
                 </div>
@@ -838,19 +832,19 @@ export const FleetManagementScreen: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200/90">
             <span className="text-xs font-bold text-slate-700">Recent Fuel & EV Charging Slips:</span>
-            <button
+            <Button
               onClick={() => setIsLogFuelOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3 py-1.5 rounded-xl bg-brand text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" /> Log Fuel Slip
-            </button>
+            </Button>
           </div>
 
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold tracking-wider">
                     <th className="py-3.5 px-4">Vehicle & Date</th>
                     <th className="py-3.5 px-3">Energy / Fuel Type</th>
                     <th className="py-3.5 px-3">Volume & Rate</th>
@@ -865,12 +859,12 @@ export const FleetManagementScreen: React.FC = () => {
                   {fuelLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-4">
-                        <span className="font-black text-slate-900 text-xs block">{log.vehicleReg}</span>
-                        <span className="text-[10px] text-slate-400">{log.driverName} • {log.incurredAt}</span>
+                        <span className="font-bold text-slate-900 text-xs block">{log.vehicleReg}</span>
+                        <span className="text-[11px] text-slate-400">{log.driverName} • {log.incurredAt}</span>
                       </td>
 
                       <td className="py-3.5 px-3">
-                        <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                        <span className={`text-[11px] font-bold uppercase px-2 py-0.5 rounded-full ${
                           log.fuelType === 'ELECTRICITY'
                             ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                             : 'bg-blue-100 text-blue-800 border border-blue-300'
@@ -883,7 +877,7 @@ export const FleetManagementScreen: React.FC = () => {
                         {log.quantity} {log.fuelType === 'ELECTRICITY' ? 'kWh' : 'L'} @ ₹{log.ratePerUnit}
                       </td>
 
-                      <td className="py-3.5 px-3 font-black text-slate-900 text-xs">
+                      <td className="data-value py-3.5 px-3 font-bold text-slate-900 text-xs">
                         ₹{log.totalCostRupees.toFixed(2)}
                       </td>
 
@@ -891,7 +885,7 @@ export const FleetManagementScreen: React.FC = () => {
                         {log.odometerReading} km (+{log.kmSinceLastRefuel} km)
                       </td>
 
-                      <td className="py-3.5 px-3 font-black text-emerald-700">
+                      <td className="py-3.5 px-3 font-bold text-emerald-700">
                         {log.calculatedMileage}
                       </td>
 
@@ -914,7 +908,7 @@ export const FleetManagementScreen: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold tracking-wider">
                     <th className="py-3.5 px-4">Vehicle & Garage</th>
                     <th className="py-3.5 px-3">Service Type</th>
                     <th className="py-3.5 px-3">Description of Work</th>
@@ -929,12 +923,12 @@ export const FleetManagementScreen: React.FC = () => {
                   {maintenanceLogs.map((m) => (
                     <tr key={m.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-4">
-                        <span className="font-black text-slate-900 text-xs block">{m.vehicleReg}</span>
-                        <span className="text-[10px] text-slate-400 font-semibold">{m.garageName}</span>
+                        <span className="font-bold text-slate-900 text-xs block">{m.vehicleReg}</span>
+                        <span className="text-[11px] text-slate-400 font-semibold">{m.garageName}</span>
                       </td>
 
                       <td className="py-3.5 px-3">
-                        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200">
+                        <span className="text-[11px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200">
                           {m.maintenanceType.replace('_', ' ')}
                         </span>
                       </td>
@@ -951,7 +945,7 @@ export const FleetManagementScreen: React.FC = () => {
                         {m.downtimeHours} hrs off-route
                       </td>
 
-                      <td className="py-3.5 px-3 font-black text-rose-700 text-xs">
+                      <td className="data-value py-3.5 px-3 font-bold text-rose-700 text-xs">
                         ₹{m.costRupees.toLocaleString('en-IN')}
                       </td>
 
@@ -974,7 +968,7 @@ export const FleetManagementScreen: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[10px] font-black tracking-wider">
+                  <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-400 uppercase text-[11px] font-bold tracking-wider">
                     <th className="py-3.5 px-4">Vehicle & Driver</th>
                     <th className="py-3.5 px-3">Expense Category</th>
                     <th className="py-3.5 px-3">Notes & Reason</th>
@@ -987,12 +981,12 @@ export const FleetManagementScreen: React.FC = () => {
                   {incidentals.map((inc) => (
                     <tr key={inc.id} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-4">
-                        <span className="font-black text-slate-900 text-xs block">{inc.vehicleReg}</span>
-                        <span className="text-[10px] text-slate-400 font-semibold">{inc.driverName}</span>
+                        <span className="font-bold text-slate-900 text-xs block">{inc.vehicleReg}</span>
+                        <span className="text-[11px] text-slate-400 font-semibold">{inc.driverName}</span>
                       </td>
 
                       <td className="py-3.5 px-3">
-                        <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200">
+                        <span className="text-[11px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200">
                           {inc.expenseType.replace('_', ' ')}
                         </span>
                       </td>
@@ -1001,7 +995,7 @@ export const FleetManagementScreen: React.FC = () => {
                         {inc.notes}
                       </td>
 
-                      <td className="py-3.5 px-3 font-black text-slate-900 text-xs">
+                      <td className="data-value py-3.5 px-3 font-bold text-slate-900 text-xs">
                         ₹{inc.amountRupees.toFixed(2)}
                       </td>
 
@@ -1019,49 +1013,49 @@ export const FleetManagementScreen: React.FC = () => {
 
       {/* DETAILS DRAWER FOR A VEHICLE */}
       {selectedVehicleForDrawer && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-end animate-in fade-in">
-          <div className="bg-white w-full max-w-md h-full shadow-2xl border-l border-slate-200 flex flex-col p-6 overflow-y-auto space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-end animate-in fade-in">
+          <DialogSurface onClose={() => setSelectedVehicleForDrawer(null)} label="Statutory Compliance Expirations" className="bg-white w-full max-w-md h-full shadow-2xl border-l border-slate-200 flex flex-col p-6 overflow-y-auto space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <span className="text-[10px] font-black uppercase text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-[11px] font-bold uppercase text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   {selectedVehicleForDrawer.ownership} ASSET
                 </span>
-                <h3 className="text-base font-black text-slate-900 mt-1">
+                <h3 className="text-base font-bold text-slate-900 mt-1">
                   {selectedVehicleForDrawer.registrationNumber}
                 </h3>
                 <p className="text-xs text-slate-500">{selectedVehicleForDrawer.name}</p>
               </div>
 
-              <button
+              <Button aria-label="Close"
                 onClick={() => setSelectedVehicleForDrawer(null)}
                 className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
             {/* Compliance Expiry Cards */}
             <div className="space-y-2">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-400">
+              <h4 className="text-base font-bold uppercase tracking-wider text-slate-400">
                 Statutory Compliance Expirations
               </h4>
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
                 <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Fitness (FC)</span>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase block">Fitness (FC)</span>
                   <span className="font-extrabold text-slate-800 text-[11px] block mt-0.5">
                     {selectedVehicleForDrawer.compliance.fitnessValidUntil}
                   </span>
                 </div>
 
                 <div className="p-2.5 rounded-2xl bg-amber-50 border border-amber-200">
-                  <span className="text-[10px] font-bold text-amber-700 uppercase block">Insurance</span>
+                  <span className="text-[11px] font-bold text-amber-700 uppercase block">Insurance</span>
                   <span className="font-extrabold text-amber-950 text-[11px] block mt-0.5">
                     {selectedVehicleForDrawer.compliance.insuranceValidUntil}
                   </span>
                 </div>
 
                 <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">PUC Emission</span>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase block">PUC Emission</span>
                   <span className="font-extrabold text-slate-800 text-[11px] block mt-0.5">
                     {selectedVehicleForDrawer.compliance.pucValidUntil}
                   </span>
@@ -1071,10 +1065,10 @@ export const FleetManagementScreen: React.FC = () => {
 
             {/* Driver & Division */}
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-              <span className="text-[10px] font-bold text-slate-400 uppercase block">Assigned Operations</span>
+              <span className="text-[11px] font-bold text-slate-400 uppercase block">Assigned Operations</span>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Default Driver:</span>
-                <span className="font-black text-slate-900">{selectedVehicleForDrawer.defaultDriver.name} ({selectedVehicleForDrawer.defaultDriver.phone})</span>
+                <span className="font-bold text-slate-900">{selectedVehicleForDrawer.defaultDriver.name} ({selectedVehicleForDrawer.defaultDriver.phone})</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Assigned Division:</span>
@@ -1082,41 +1076,41 @@ export const FleetManagementScreen: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Payload Capacity:</span>
-                <span className="font-black text-slate-900">{selectedVehicleForDrawer.capacityKg} kg (Max {selectedVehicleForDrawer.maxStops} stops)</span>
+                <span className="font-bold text-slate-900">{selectedVehicleForDrawer.capacityKg} kg (Max {selectedVehicleForDrawer.maxStops} stops)</span>
               </div>
             </div>
 
-            <button
+            <Button
               onClick={() => setSelectedVehicleForDrawer(null)}
-              className="mt-auto w-full py-3 rounded-2xl bg-[#0A3D2B] text-white font-black text-xs hover:bg-[#0E4D36] cursor-pointer"
+              className="mt-auto w-full py-3 rounded-2xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] cursor-pointer"
             >
               Close Asset Details
-            </button>
-          </div>
+            </Button>
+          </DialogSurface>
         </div>
       )}
 
       {/* MODAL: REGISTER NEW VEHICLE */}
       {isAddVehicleOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-center p-4 animate-in fade-in">
+          <DialogSurface onClose={() => setIsAddVehicleOpen(false)} label="Register New Collection Vehicle" className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Truck className="w-4 h-4 text-emerald-800" />
                 Register New Collection Vehicle
               </h3>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsAddVehicleOpen(false)}
                 className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3 text-xs">
               <div>
                 <label className="font-bold text-slate-700 block mb-1">Registration Number</label>
-                <input
+                <input aria-label="e.g. AP 16 TE 9942"
                   type="text"
                   placeholder="e.g. AP 16 TE 9942"
                   value={newRegNo}
@@ -1127,7 +1121,7 @@ export const FleetManagementScreen: React.FC = () => {
 
               <div>
                 <label className="font-bold text-slate-700 block mb-1">Display Asset Name</label>
-                <input
+                <input aria-label="e.g. Ape Auto Electric Cargo - East 03"
                   type="text"
                   placeholder="e.g. Ape Auto Electric Cargo - East 03"
                   value={newName}
@@ -1166,12 +1160,12 @@ export const FleetManagementScreen: React.FC = () => {
 
               {newOwnership === 'RENTED' && (
                 <div className="p-3 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
-                  <span className="text-[10px] font-black uppercase text-amber-900 block">
+                  <span className="text-[11px] font-bold uppercase text-amber-900 block">
                     Rental Contract Terms
                   </span>
                   <div>
                     <label className="text-[11px] font-bold text-slate-700 block mb-1">Fleet Vendor Name</label>
-                    <input
+                    <input aria-label="e.g. Sri Balaji Logistics"
                       type="text"
                       placeholder="e.g. Sri Balaji Logistics"
                       value={newVendorName}
@@ -1203,17 +1197,17 @@ export const FleetManagementScreen: React.FC = () => {
             </div>
 
             <div className="pt-2 flex gap-2">
-              <button
+              <Button
                 onClick={() => setIsAddVehicleOpen(false)}
                 className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 id="btn-register-vehicle-submit"
                 onClick={handleAddVehicleSubmit}
                 disabled={isSubmittingVehicle}
-                className="w-1/2 py-2.5 rounded-xl bg-[#0A3D2B] text-white font-black text-xs hover:bg-[#0E4D36] cursor-pointer shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-1/2 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] cursor-pointer shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isSubmittingVehicle ? (
                   <>
@@ -1223,27 +1217,27 @@ export const FleetManagementScreen: React.FC = () => {
                 ) : (
                   <span>Register Asset</span>
                 )}
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* MODAL: LOG FUEL ENTRY */}
       {isLogFuelOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
+        <div className="fixed inset-0 z-50 bg-slate-950/60  flex items-center justify-center p-4 animate-in fade-in">
+          <DialogSurface onClose={() => setIsLogFuelOpen(false)} label="Log Daily Fuel / EV Charging Slip" className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Fuel className="w-4 h-4 text-blue-600" />
                 Log Daily Fuel / EV Charging Slip
               </h3>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsLogFuelOpen(false)}
                 className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3 text-xs">
@@ -1286,7 +1280,7 @@ export const FleetManagementScreen: React.FC = () => {
                 </div>
                 <div>
                   <label className="font-bold text-slate-700 block mb-1">Station</label>
-                  <input
+                  <input aria-label="Fuel / charging station"
                     type="text"
                     value={fuelStation}
                     onChange={(e) => setFuelStation(e.target.value)}
@@ -1332,27 +1326,27 @@ export const FleetManagementScreen: React.FC = () => {
 
               <div className="p-3 rounded-2xl bg-blue-50/70 border border-blue-200 flex items-center justify-between">
                 <span className="font-bold text-blue-900">Calculated Slip Total:</span>
-                <span className="font-black text-blue-950 text-sm">
+                <span className="data-value font-bold text-blue-950 text-sm">
                   ₹{(fuelLitres * fuelRate).toFixed(2)}
                 </span>
               </div>
             </div>
 
             <div className="pt-2 flex gap-2">
-              <button
+              <Button
                 onClick={() => setIsLogFuelOpen(false)}
                 className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleFuelEntrySubmit}
-                className="w-1/2 py-2.5 rounded-xl bg-[#0A3D2B] text-white font-black text-xs hover:bg-[#0E4D36] cursor-pointer shadow-md"
+                className="w-1/2 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] cursor-pointer shadow-md"
               >
                 Save Fuel Slip
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, DialogSurface } from '../ui';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CalendarClock,
@@ -308,7 +309,7 @@ export const DispatchPickupScreen: React.FC = () => {
       {/* Simple header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-black text-slate-900 flex items-center gap-2">
+          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <ClipboardList className="w-5 h-5 text-emerald-700" />
             Assign pickups
           </h1>
@@ -318,7 +319,7 @@ export const DispatchPickupScreen: React.FC = () => {
             day, reschedule the order.
           </p>
         </div>
-        <button
+        <Button
           type="button"
           onClick={load}
           disabled={loading}
@@ -326,21 +327,21 @@ export const DispatchPickupScreen: React.FC = () => {
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           Refresh
-        </button>
+        </Button>
       </div>
 
       {/* How it works strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs">
-          <span className="font-black text-emerald-900">Left — Customer orders</span>
+          <span className="font-bold text-emerald-900">Left — Customer orders</span>
           <p className="text-emerald-800/80 mt-0.5">Requests the customer placed with date & slot.</p>
         </div>
         <div className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-xs">
-          <span className="font-black text-sky-900">Right — Pickup employees</span>
+          <span className="font-bold text-sky-900">Right — Pickup employees</span>
           <p className="text-sky-800/80 mt-0.5">Green = free on the order's day. Grey = already full that day.</p>
         </div>
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs">
-          <span className="font-black text-amber-900">No one free?</span>
+          <span className="font-bold text-amber-900">No one free?</span>
           <p className="text-amber-800/80 mt-0.5">Use Reschedule on the order to pick another slot.</p>
         </div>
       </div>
@@ -352,7 +353,7 @@ export const DispatchPickupScreen: React.FC = () => {
           <div className="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Package className="w-4 h-4 text-amber-400" />
-              <h2 className="text-sm font-black">Customer orders</h2>
+              <h2 className="text-lg font-bold">Customer orders</h2>
             </div>
             <span className="text-[11px] font-bold bg-white/15 px-2 py-0.5 rounded-full">
               {orders.length} waiting
@@ -368,7 +369,7 @@ export const DispatchPickupScreen: React.FC = () => {
             ) : orders.length === 0 ? (
               <div className="py-16 text-center text-slate-400">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                <p className="text-sm font-bold text-slate-600">No waiting orders</p>
+                <p className="text-sm font-medium text-slate-600">No waiting orders</p>
                 <p className="text-xs mt-1">New customer requests will show here.</p>
               </div>
             ) : (
@@ -389,15 +390,15 @@ export const DispatchPickupScreen: React.FC = () => {
                         setSelectedOrderId(order.id);
                       }
                     }}
-                    className={`w-full text-left rounded-2xl border-2 p-3.5 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A3D2B]/40 ${
+                    className={`w-full text-left rounded-2xl border-2 p-3.5 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 ${
                       selected
-                        ? 'border-[#0A3D2B] bg-emerald-50 ring-2 ring-[#0A3D2B]/15'
+                        ? 'border-brand bg-emerald-50 ring-2 ring-brand/15'
                         : 'border-slate-200 bg-white hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <div className="font-mono text-xs font-black text-emerald-800">
+                        <div className="font-mono text-xs font-bold text-emerald-800">
                           {order.pickupCode}
                         </div>
                         <div className="text-sm font-bold text-slate-900 mt-0.5">
@@ -405,7 +406,7 @@ export const DispatchPickupScreen: React.FC = () => {
                         </div>
                       </div>
                       {selected && (
-                        <span className="text-[10px] font-black uppercase bg-[#0A3D2B] text-white px-2 py-0.5 rounded-full">
+                        <span className="text-[11px] font-bold uppercase bg-brand text-white px-2 py-0.5 rounded-full">
                           Selected
                         </span>
                       )}
@@ -427,13 +428,13 @@ export const DispatchPickupScreen: React.FC = () => {
                     </div>
 
                     <div className="mt-3 flex gap-2" onClick={(e) => e.stopPropagation()}>
-                      <button
+                      <Button
                         type="button"
                         onClick={() => openReschedule(order)}
                         className="px-2.5 py-1.5 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 text-[11px] font-bold hover:bg-amber-100 cursor-pointer"
                       >
                         Reschedule
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 );
@@ -444,10 +445,10 @@ export const DispatchPickupScreen: React.FC = () => {
 
         {/* AVAILABLE EMPLOYEES */}
         <section className="rounded-3xl border-2 border-slate-200 bg-white overflow-hidden flex flex-col">
-          <div className="px-4 py-3 bg-[#0A3D2B] text-white flex items-center justify-between">
+          <div className="px-4 py-3 bg-brand text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-amber-400" />
-              <h2 className="text-sm font-black">Pickup employees</h2>
+              <h2 className="text-lg font-bold">Pickup employees</h2>
             </div>
             <span className="text-[11px] font-bold bg-white/15 px-2 py-0.5 rounded-full">
               {availableDrivers.length} free{viewDate ? ` on ${viewDate}` : ''}
@@ -462,7 +463,7 @@ export const DispatchPickupScreen: React.FC = () => {
               </div>
             ) : drivers.length === 0 ? (
               <div className="py-12 px-4 text-center rounded-2xl bg-amber-50 border border-amber-200">
-                <p className="text-sm font-bold text-amber-900">No approved pickup employees</p>
+                <p className="text-sm font-medium text-amber-900">No approved pickup employees</p>
                 <p className="text-xs text-amber-800 mt-1">
                   Go to <strong>Workforce</strong>, approve an employee, then come back here.
                 </p>
@@ -470,7 +471,7 @@ export const DispatchPickupScreen: React.FC = () => {
             ) : (
               <>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-wider text-emerald-700 mb-2 px-0.5">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-emerald-700 mb-2 px-0.5">
                     {viewDate ? `Available on ${viewDate}` : 'Available now'}
                   </p>
                   {availableDrivers.length === 0 ? (
@@ -485,13 +486,13 @@ export const DispatchPickupScreen: React.FC = () => {
                       {availableDrivers.map((driver) => {
                         const selected = selectedDriverId === driver.id;
                         return (
-                          <button
+                          <Button
                             key={driver.id}
                             type="button"
                             onClick={() => setSelectedDriverId(driver.id)}
                             className={`w-full text-left rounded-2xl border-2 p-3 transition-all cursor-pointer flex items-center gap-3 ${
                               selected
-                                ? 'border-[#0A3D2B] bg-emerald-50 ring-2 ring-[#0A3D2B]/15'
+                                ? 'border-brand bg-emerald-50 ring-2 ring-brand/15'
                                 : 'border-emerald-200 bg-emerald-50/40 hover:border-emerald-400'
                             }`}
                           >
@@ -500,14 +501,14 @@ export const DispatchPickupScreen: React.FC = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-bold text-slate-900">{driver.name}</div>
-                              <div className="text-[10px] font-mono text-slate-500">
+                              <div className="text-[11px] font-mono text-slate-500">
                                 {driver.code} · {driver.jobsThatDay} of {driver.dailyLimit} jobs that day
                               </div>
                             </div>
-                            <span className="text-[10px] font-black uppercase text-emerald-800 bg-white border border-emerald-200 px-2 py-0.5 rounded-full">
+                            <span className="text-[11px] font-bold uppercase text-emerald-800 bg-white border border-emerald-200 px-2 py-0.5 rounded-full">
                               Free
                             </span>
-                          </button>
+                          </Button>
                         );
                       })}
                     </div>
@@ -516,7 +517,7 @@ export const DispatchPickupScreen: React.FC = () => {
 
                 {busyDrivers.length > 0 && (
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2 px-0.5">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-400 mb-2 px-0.5">
                       {viewDate ? `Logged in, full on ${viewDate}` : 'Logged in, busy'}
                     </p>
                     <div className="space-y-2 opacity-70">
@@ -530,11 +531,11 @@ export const DispatchPickupScreen: React.FC = () => {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-bold text-slate-700">{driver.name}</div>
-                            <div className="text-[10px] text-slate-500">
+                            <div className="text-[11px] text-slate-500">
                               {driver.jobsThatDay} of {driver.dailyLimit} jobs that day
                             </div>
                           </div>
-                          <span className="text-[10px] font-black uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
+                          <span className="text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
                             Busy
                           </span>
                         </div>
@@ -545,7 +546,7 @@ export const DispatchPickupScreen: React.FC = () => {
 
                 {offDutyDrivers.length > 0 && (
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2 px-0.5">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-400 mb-2 px-0.5">
                       Logged in, off duty
                     </p>
                     <div className="space-y-2 opacity-70">
@@ -559,12 +560,12 @@ export const DispatchPickupScreen: React.FC = () => {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-bold text-slate-700">{driver.name}</div>
-                            <div className="text-[10px] font-mono text-slate-500">
+                            <div className="text-[11px] font-mono text-slate-500">
                               {driver.code}
                               {driver.phone ? ` · ${driver.phone}` : ''}
                             </div>
                           </div>
-                          <span className="text-[10px] font-black uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
+                          <span className="text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
                             Off duty
                           </span>
                         </div>
@@ -575,7 +576,7 @@ export const DispatchPickupScreen: React.FC = () => {
 
                 {offlineDrivers.length > 0 && (
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2 px-0.5">
+                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-400 mb-2 px-0.5">
                       Not logged in
                     </p>
                     <div className="space-y-2 opacity-60">
@@ -589,12 +590,12 @@ export const DispatchPickupScreen: React.FC = () => {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-bold text-slate-600">{driver.name}</div>
-                            <div className="text-[10px] font-mono text-slate-400">
+                            <div className="text-[11px] font-mono text-slate-400">
                               {driver.code}
                               {driver.phone ? ` · ${driver.phone}` : ''}
                             </div>
                           </div>
-                          <span className="text-[10px] font-black uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
+                          <span className="text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-full">
                             Offline
                           </span>
                         </div>
@@ -613,19 +614,19 @@ export const DispatchPickupScreen: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end gap-3">
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
             <div className="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2">
-              <div className="text-[10px] font-bold uppercase text-slate-400">Order</div>
+              <div className="text-[11px] font-bold uppercase text-slate-400">Order</div>
               <div className="font-bold text-slate-900 mt-0.5 truncate">
                 {selectedOrder ? selectedOrder.pickupCode : '— select left'}
               </div>
             </div>
             <div className="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2">
-              <div className="text-[10px] font-bold uppercase text-slate-400">Employee</div>
+              <div className="text-[11px] font-bold uppercase text-slate-400">Employee</div>
               <div className="font-bold text-slate-900 mt-0.5 truncate">
                 {selectedDriver ? selectedDriver.name : '— select right'}
               </div>
             </div>
             <div className="rounded-xl bg-slate-50 border border-slate-200 px-3 py-2">
-              <label className="text-[10px] font-bold uppercase text-slate-400 block">Vehicle</label>
+              <label className="text-[11px] font-bold uppercase text-slate-400 block">Vehicle</label>
               <select
                 value={selectedVehicleId}
                 onChange={(e) => setSelectedVehicleId(e.target.value)}
@@ -641,15 +642,15 @@ export const DispatchPickupScreen: React.FC = () => {
             </div>
           </div>
 
-          <button
+          <Button
             type="button"
             disabled={busy || !selectedOrder || !selectedDriver || !selectedVehicle}
             onClick={handleAssign}
-            className="w-full md:w-auto px-6 py-3 rounded-xl bg-[#0A3D2B] text-white text-sm font-black hover:bg-[#0E4D36] disabled:bg-slate-200 disabled:text-slate-400 cursor-pointer inline-flex items-center justify-center gap-2 shadow-md"
+            className="w-full md:w-auto px-6 py-3 rounded-xl bg-brand text-white text-sm font-bold hover:bg-[var(--brand-hover)] disabled:bg-slate-200 disabled:text-slate-400 cursor-pointer inline-flex items-center justify-center gap-2 shadow-md"
           >
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 text-amber-400" />}
             Assign to employee
-          </button>
+          </Button>
         </div>
         {availableDrivers.length === 0 && orders.length > 0 && (
           <p className="text-[11px] text-amber-800 font-semibold flex items-center gap-1.5">
@@ -662,26 +663,26 @@ export const DispatchPickupScreen: React.FC = () => {
       {/* Reschedule modal */}
       {rescheduleOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+          <DialogSurface onClose={() => setRescheduleOrder(null)} label="Reschedule order" className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
             <div className="p-4 bg-amber-500 text-slate-950 flex items-center justify-between">
               <div>
-                <h3 className="font-black text-sm">Reschedule order</h3>
-                <p className="text-[11px] font-mono opacity-80">{rescheduleOrder.pickupCode}</p>
+                <h3 className="font-bold text-lg">Reschedule order</h3>
+                <p className="data-value text-[11px] font-mono opacity-80">{rescheduleOrder.pickupCode}</p>
               </div>
-              <button
+              <Button aria-label="Close"
                 type="button"
                 onClick={() => setRescheduleOrder(null)}
                 className="p-1 rounded-lg hover:bg-black/10 cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
             <div className="p-5 space-y-3 text-xs">
               <p className="text-slate-600">
                 Use this when no pickup employee is available for the customer&apos;s current slot.
               </p>
               <div>
-                <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
                   New date
                 </label>
                 <input
@@ -692,7 +693,7 @@ export const DispatchPickupScreen: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
                   New time slot
                 </label>
                 <select
@@ -709,7 +710,7 @@ export const DispatchPickupScreen: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                <label className="text-[11px] font-bold uppercase text-slate-500 block mb-1">
                   Reason
                 </label>
                 <input
@@ -720,24 +721,24 @@ export const DispatchPickupScreen: React.FC = () => {
               </div>
             </div>
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
+              <Button
                 type="button"
                 onClick={() => setRescheduleOrder(null)}
                 className="px-4 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-200 cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 disabled={busy}
                 onClick={handleReschedule}
-                className="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 font-black text-xs hover:bg-amber-400 cursor-pointer inline-flex items-center gap-2"
+                className="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 cursor-pointer inline-flex items-center gap-2"
               >
                 {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <CalendarClock className="w-4 h-4" />}
                 Save new slot
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>

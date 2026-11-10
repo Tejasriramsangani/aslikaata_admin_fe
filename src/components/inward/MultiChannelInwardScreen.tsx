@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, DialogSurface } from '../ui';
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { adminApiClient } from '../../lib/api-client';
 import { useUrlTab } from '../../lib/use-url-tab';
@@ -557,15 +558,15 @@ export const MultiChannelInwardScreen: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-[#0A3D2B]">
+            <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-brand">
               <PackagePlus className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-black text-slate-900 tracking-tight">
+                <h1 className="text-xl font-bold text-slate-900 tracking-tight">
                   Scrap Inward Receiving & Yard Gate Desk
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                   Multi-Channel Intake
                 </span>
               </div>
@@ -578,25 +579,25 @@ export const MultiChannelInwardScreen: React.FC = () => {
 
         {/* Global Action Buttons */}
         <div className="flex items-center gap-2.5">
-          <button
+          <Button
             onClick={() => setActiveTab('WALK_IN_POS')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'WALK_IN_POS'
-                ? 'bg-[#0A3D2B] text-white shadow-lg shadow-emerald-950/20'
+                ? 'bg-brand text-white shadow-lg '
                 : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
             }`}
           >
             <Receipt className="w-4 h-4 text-emerald-500" />
             Yard Counter POS
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setIsB2BModalOpen(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all shadow-md cursor-pointer"
           >
             <Truck className="w-4 h-4 text-amber-400" />
             + B2B Truck Weighbridge
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -607,8 +608,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Today Inward Net</span>
             <Scale className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-lg font-black text-slate-900">{metrics.totalNetKg} <span className="text-xs text-slate-500 font-semibold">kg</span></div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Gross: {metrics.totalGrossKg} kg</div>
+          <div className="text-lg font-bold text-slate-900">{metrics.totalNetKg} <span className="text-xs text-slate-500 font-semibold">kg</span></div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Gross: {metrics.totalGrossKg} kg</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -616,8 +617,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Total Payout Disbursed</span>
             <DollarSign className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-lg font-black text-emerald-700">{metrics.totalPayoutRupees}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">{metrics.totalVouchersCount} vouchers paid</div>
+          <div className="text-lg font-bold text-emerald-700">{metrics.totalPayoutRupees}</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">{metrics.totalVouchersCount} vouchers paid</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -625,8 +626,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Wastage / Moisture</span>
             <Percent className="w-4 h-4 text-amber-600" />
           </div>
-          <div className="text-lg font-black text-amber-700">{metrics.totalDeductionKg} <span className="text-xs font-semibold">kg</span></div>
-          <div className="text-[10px] text-amber-600/80 mt-0.5">{metrics.wastagePercent}% weight deduction</div>
+          <div className="text-lg font-bold text-amber-700">{metrics.totalDeductionKg} <span className="text-xs font-semibold">kg</span></div>
+          <div className="text-[11px] text-amber-600/80 mt-0.5">{metrics.wastagePercent}% weight deduction</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -634,8 +635,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Doorstep Route</span>
             <Truck className="w-4 h-4 text-blue-600" />
           </div>
-          <div className="text-lg font-black text-blue-700">{metrics.doorstepNetKg} <span className="text-xs font-semibold">kg</span></div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Field pickers intake</div>
+          <div className="text-lg font-bold text-blue-700">{metrics.doorstepNetKg} <span className="text-xs font-semibold">kg</span></div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Field pickers intake</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -643,8 +644,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">Yard Walk-ins</span>
             <Receipt className="w-4 h-4 text-purple-600" />
           </div>
-          <div className="text-lg font-black text-purple-700">{metrics.walkInNetKg} <span className="text-xs font-semibold">kg</span></div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Counter POS intake</div>
+          <div className="text-lg font-bold text-purple-700">{metrics.walkInNetKg} <span className="text-xs font-semibold">kg</span></div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Counter POS intake</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -652,61 +653,61 @@ export const MultiChannelInwardScreen: React.FC = () => {
             <span className="text-[11px] font-bold uppercase tracking-wider">B2B Heavy Weighbridge</span>
             <Building2 className="w-4 h-4 text-slate-700" />
           </div>
-          <div className="text-lg font-black text-slate-900">{metrics.b2bNetKg} <span className="text-xs font-semibold">kg</span></div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Industrial cleanout</div>
+          <div className="text-lg font-bold text-slate-900">{metrics.b2bNetKg} <span className="text-xs font-semibold">kg</span></div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Industrial cleanout</div>
         </div>
       </div>
 
       {/* Sub-Tabs Bar */}
       <div className="flex items-center justify-between border-b border-slate-200 pb-1">
         <div className="flex items-center gap-1.5 overflow-x-auto">
-          <button
+          <Button
             onClick={() => setActiveTab('LEDGER')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'LEDGER'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
             Inward Intake Ledger ({vouchers.length})
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setActiveTab('WALK_IN_POS')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'WALK_IN_POS'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Receipt className="w-3.5 h-3.5" />
             Yard Gate Walk-in POS
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setActiveTab('B2B_WEIGHBRIDGE')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'B2B_WEIGHBRIDGE'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Truck className="w-3.5 h-3.5" />
             B2B Weighbridge Desk
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => setActiveTab('RECONCILER')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'RECONCILER'
-                ? 'bg-[#0A3D2B] text-white shadow-sm'
+                ? 'bg-brand text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Scale className="w-3.5 h-3.5" />
             Daily Route Reconciler ({reconciliations.length})
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -721,7 +722,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                 Channel:
               </span>
               {(['ALL', 'YARD_WALK_IN', 'DOORSTEP_PICKUP', 'B2B_COMMERCIAL'] as const).map((channel) => (
-                <button
+                <Button
                   key={channel}
                   onClick={() => setChannelFilter(channel)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
@@ -737,13 +738,13 @@ export const MultiChannelInwardScreen: React.FC = () => {
                     : channel === 'DOORSTEP_PICKUP'
                     ? 'Doorstep Pickups'
                     : 'B2B Bulk'}
-                </button>
+                </Button>
               ))}
             </div>
 
             <div className="relative min-w-[280px]">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
+              <input aria-label="Search voucher #, seller, vehicle or phone..."
                 type="text"
                 placeholder="Search voucher #, seller, vehicle or phone..."
                 value={searchQuery}
@@ -779,7 +780,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-1.5 mt-1">
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-extrabold tracking-wide ${
+                            className={`px-2 py-0.5 rounded text-[11px] font-extrabold tracking-wide ${
                               voucher.channel === 'YARD_WALK_IN'
                                 ? 'bg-purple-100 text-purple-800 border border-purple-200'
                                 : voucher.channel === 'DOORSTEP_PICKUP'
@@ -793,7 +794,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                               ? 'Doorstep Pickup'
                               : 'B2B Commercial'}
                           </span>
-                          <span className="text-[10px] text-slate-400">{voucher.timestamp}</span>
+                          <span className="text-[11px] text-slate-400">{voucher.timestamp}</span>
                         </div>
                       </td>
 
@@ -802,7 +803,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                         <div className="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
                           <span>{voucher.sellerPhone}</span>
                           <span className="text-slate-300">•</span>
-                          <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
+                          <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
                             {voucher.sellerType}
                           </span>
                         </div>
@@ -810,7 +811,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
 
                       <td className="py-3.5 px-4">
                         <div className="font-medium text-slate-700">{voucher.divisionName}</div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">
+                        <div className="text-[11px] text-slate-400 mt-0.5">
                           {voucher.vehicleReg ? (
                             <span className="font-bold text-slate-700">{voucher.vehicleReg}</span>
                           ) : (
@@ -836,17 +837,17 @@ export const MultiChannelInwardScreen: React.FC = () => {
                         )}
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-black text-slate-900">
+                      <td className="py-3.5 px-4 text-right font-bold text-slate-900">
                         {voucher.totalNetKg.toLocaleString('en-IN', { maximumFractionDigits: 1 })}
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-black text-emerald-700 text-sm">
+                      <td className="data-value py-3.5 px-4 text-right font-bold text-emerald-700 text-sm">
                         ₹{Math.round(voucher.grandTotalRupees).toLocaleString('en-IN')}
                       </td>
 
                       <td className="py-3.5 px-4 text-center">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${
                             voucher.paymentMethod === 'CASH'
                               ? 'bg-amber-100 text-amber-800'
                               : voucher.paymentMethod === 'UPI_INSTANT'
@@ -860,13 +861,13 @@ export const MultiChannelInwardScreen: React.FC = () => {
                       </td>
 
                       <td className="py-3.5 px-4 text-center">
-                        <button
+                        <Button
                           onClick={() => setThermalSlipRecord(voucher)}
-                          className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-[#0A3D2B] hover:text-white text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 mx-auto"
+                          className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-brand hover:text-white text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 mx-auto"
                         >
                           <Printer className="w-3.5 h-3.5" />
                           Receipt
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -892,15 +893,15 @@ export const MultiChannelInwardScreen: React.FC = () => {
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-emerald-600" />
-                  <h3 className="font-bold text-slate-900 text-sm">1. Customer / Seller Details</h3>
+                  <h3 className="font-bold text-slate-900 text-lg">1. Customer / Seller Details</h3>
                 </div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Yard Counter Floor</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase">Yard Counter Floor</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Seller Name *</label>
-                  <input
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Seller Name *</label>
+                  <input aria-label="e.g. B. Subba Rao"
                     type="text"
                     placeholder="e.g. B. Subba Rao"
                     value={posCustomerName}
@@ -910,8 +911,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Mobile Phone</label>
-                  <input
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Mobile Phone</label>
+                  <input aria-label="e.g. 9848012345"
                     type="text"
                     placeholder="e.g. 9848012345"
                     value={posCustomerPhone}
@@ -921,7 +922,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Seller Type</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Seller Type</label>
                   <select
                     value={posCustomerType}
                     onChange={(e) => setPosCustomerType(e.target.value as any)}
@@ -940,23 +941,23 @@ export const MultiChannelInwardScreen: React.FC = () => {
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2">
                   <Scale className="w-4 h-4 text-emerald-600" />
-                  <h3 className="font-bold text-slate-900 text-sm">2. Weighing & Deduction Entry</h3>
+                  <h3 className="font-bold text-slate-900 text-lg">2. Weighing & Deduction Entry</h3>
                 </div>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                   Live Rate Engine Active
                 </span>
               </div>
 
               {/* Scrap Item Selector */}
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1.5">
+                <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">
                   Select Scrap Product (Active Buying Rates Applied)
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {posProducts.map((scrap) => {
                     const isSelected = selectedScrapId === scrap.id;
                     return (
-                      <button
+                      <Button
                         key={scrap.id}
                         type="button"
                         onClick={() => setSelectedScrapId(scrap.id)}
@@ -971,13 +972,13 @@ export const MultiChannelInwardScreen: React.FC = () => {
                           <span className="font-bold text-xs text-slate-800 truncate">{scrap.name}</span>
                         </div>
                         <div className="mt-1 flex items-center justify-between">
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold">{scrap.cat}</span>
-                          <span className="text-xs font-black text-emerald-700">
+                          <span className="text-[11px] text-slate-400 uppercase font-semibold">{scrap.cat}</span>
+                          <span className="text-xs font-bold text-emerald-700">
                             ₹{scrap.rate.toFixed(1)}
-                            <span className="text-[9px] text-slate-400 font-normal">/kg</span>
+                            <span className="text-[11px] text-slate-400 font-normal">/kg</span>
                           </span>
                         </div>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -986,41 +987,41 @@ export const MultiChannelInwardScreen: React.FC = () => {
               {/* Weighing Inputs: Gross, Deduction, Reason */}
               <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">
                     Gross Weight on Scale (kg) *
                   </label>
                   <div className="relative">
-                    <input
+                    <input aria-label="0.0"
                       type="number"
                       step="0.1"
                       placeholder="0.0"
                       value={currentGrossWeight || ''}
                       onChange={(e) => setCurrentGrossWeight(parseFloat(e.target.value) || 0)}
-                      className="w-full pl-3 pr-8 py-2 rounded-xl bg-white border border-slate-300 font-mono font-black text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full pl-3 pr-8 py-2 rounded-xl bg-white border border-slate-300 font-sans font-bold text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                     <span className="text-xs font-bold text-slate-400 absolute right-3 top-1/2 -translate-y-1/2">kg</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">
                     Deduction / Moisture (kg)
                   </label>
                   <div className="relative">
-                    <input
+                    <input aria-label="0.0"
                       type="number"
                       step="0.1"
                       placeholder="0.0"
                       value={currentDeductionKg || ''}
                       onChange={(e) => setCurrentDeductionKg(parseFloat(e.target.value) || 0)}
-                      className="w-full pl-3 pr-8 py-2 rounded-xl bg-white border border-slate-300 font-mono font-black text-sm text-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full pl-3 pr-8 py-2 rounded-xl bg-white border border-slate-300 font-sans font-bold text-sm text-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                     <span className="text-xs font-bold text-slate-400 absolute right-3 top-1/2 -translate-y-1/2">kg</span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Deduction Reason</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Deduction Reason</label>
                   <select
                     value={currentDeductionReason}
                     onChange={(e) => setCurrentDeductionReason(e.target.value)}
@@ -1039,18 +1040,18 @@ export const MultiChannelInwardScreen: React.FC = () => {
               <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-50/60 border border-emerald-200/80">
                 <div className="text-xs text-emerald-900">
                   <span className="font-semibold">Calculated Net: </span>
-                  <span className="font-mono font-black text-sm">
+                  <span className="data-value font-mono font-bold text-sm">
                     {Math.max(0, currentGrossWeight - currentDeductionKg).toFixed(1)} kg
                   </span>
                   <span className="text-slate-400 mx-2">×</span>
-                  <span className="font-semibold">
+                  <span className="data-value font-semibold">
                     ₹{(posProducts.find((s) => s.id === selectedScrapId)?.rate || 0).toFixed(1)}/kg
                   </span>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Line Total</span>
-                  <span className="font-mono font-black text-base text-emerald-800">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase block">Line Total</span>
+                  <span className="font-mono font-bold text-base text-emerald-800">
                     ₹
                     {Math.round(
                       Math.max(0, currentGrossWeight - currentDeductionKg) *
@@ -1060,14 +1061,14 @@ export const MultiChannelInwardScreen: React.FC = () => {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="button"
                 onClick={handleAddItemToPosCart}
-                className="w-full py-2.5 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 Add Item to Inward Slip
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -1076,8 +1077,8 @@ export const MultiChannelInwardScreen: React.FC = () => {
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-md space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <Receipt className="w-4 h-4 text-[#0A3D2B]" />
-                  <h3 className="font-bold text-slate-900 text-sm">Active Inward Voucher</h3>
+                  <Receipt className="w-4 h-4 text-brand" />
+                  <h3 className="font-bold text-slate-900 text-lg">Active Inward Voucher</h3>
                 </div>
                 <span className="text-xs font-mono font-bold text-slate-400">
                   {posCart.length} item{posCart.length !== 1 ? 's' : ''}
@@ -1099,25 +1100,25 @@ export const MultiChannelInwardScreen: React.FC = () => {
                       <div>
                         <div className="font-bold text-slate-900 text-xs">{item.productName}</div>
                         <div className="text-[11px] text-slate-500 mt-0.5">
-                          <span>{item.netWeightKg} kg</span>
+                          <span className="data-value">{item.netWeightKg} kg</span>
                           <span className="text-slate-300 mx-1">@</span>
-                          <span>₹{item.ratePerKgRupees}/kg</span>
+                          <span className="data-value">₹{item.ratePerKgRupees}/kg</span>
                           {item.deductionKg > 0 && (
-                            <span className="text-amber-600 ml-1.5 text-[10px]">(-{item.deductionKg}kg ded)</span>
+                            <span className="text-amber-600 ml-1.5 text-[11px]">(-{item.deductionKg}kg ded)</span>
                           )}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-black text-slate-900 text-xs">
+                        <span className="data-value font-mono font-bold text-slate-900 text-xs">
                           ₹{Math.round(item.lineTotalRupees).toLocaleString('en-IN')}
                         </span>
-                        <button
+                        <Button aria-label="Delete"
                           onClick={() => handleRemovePosCartItem(idx)}
                           className="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))
@@ -1127,18 +1128,18 @@ export const MultiChannelInwardScreen: React.FC = () => {
               {/* Voucher Grand Totals */}
               <div className="p-3.5 rounded-xl bg-slate-100/70 border border-slate-200 space-y-1.5 text-xs">
                 <div className="flex justify-between text-slate-600">
-                  <span>Gross Weight:</span>
-                  <span className="font-mono font-bold">{posCartSummary.totalGross.toFixed(1)} kg</span>
+                  <span className="data-value">Gross Weight:</span>
+                  <span className="data-value font-mono font-bold">{posCartSummary.totalGross.toFixed(1)} kg</span>
                 </div>
                 <div className="flex justify-between text-amber-700">
                   <span>Total Deduction:</span>
-                  <span className="font-mono font-bold">-{posCartSummary.totalDeductions.toFixed(1)} kg</span>
+                  <span className="data-value font-mono font-bold">-{posCartSummary.totalDeductions.toFixed(1)} kg</span>
                 </div>
                 <div className="flex justify-between text-slate-900 font-bold border-t border-slate-200 pt-1.5">
-                  <span>Net Billable Weight:</span>
-                  <span className="font-mono text-emerald-800">{posCartSummary.totalNet.toFixed(1)} kg</span>
+                  <span className="data-value">Net Billable Weight:</span>
+                  <span className="data-value font-mono text-emerald-800">{posCartSummary.totalNet.toFixed(1)} kg</span>
                 </div>
-                <div className="flex justify-between text-slate-900 font-black text-base border-t border-slate-200 pt-2">
+                <div className="flex justify-between text-slate-900 font-bold text-base border-t border-slate-200 pt-2">
                   <span>Total Payable:</span>
                   <span className="font-mono text-emerald-700">
                     ₹{Math.round(posCartSummary.totalPayable).toLocaleString('en-IN')}
@@ -1148,11 +1149,11 @@ export const MultiChannelInwardScreen: React.FC = () => {
 
               {/* Payment Mode Selector */}
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1.5">
+                <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1.5">
                   Disbursement Payout Method
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setPosPaymentMethod('CASH')}
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer font-bold text-xs ${
@@ -1162,9 +1163,9 @@ export const MultiChannelInwardScreen: React.FC = () => {
                     }`}
                   >
                     💵 Cash from Drawer
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setPosPaymentMethod('UPI_INSTANT')}
                     className={`p-2.5 rounded-xl border text-center transition-all cursor-pointer font-bold text-xs ${
@@ -1174,19 +1175,19 @@ export const MultiChannelInwardScreen: React.FC = () => {
                     }`}
                   >
                     📱 Instant UPI Transfer
-                  </button>
+                  </Button>
                 </div>
               </div>
 
               {/* Submit Button */}
-              <button
+              <Button
                 type="button"
                 onClick={handleSubmitPosVoucher}
-                className="w-full py-3 rounded-xl bg-[#0A3D2B] text-white font-extrabold text-xs hover:bg-[#0E4D36] transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/20 cursor-pointer"
+                className="w-full py-3 rounded-xl bg-brand text-white font-extrabold text-xs hover:bg-[var(--brand-hover)] transition-all flex items-center justify-center gap-2 shadow-lg  cursor-pointer"
               >
                 <Check className="w-4 h-4 text-emerald-400" />
                 Issue Payout & Print Thermal Slip
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -1197,24 +1198,24 @@ export const MultiChannelInwardScreen: React.FC = () => {
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
             <div>
-              <h3 className="font-bold text-slate-900 text-sm">Industrial & Commercial Heavy Weighbridge</h3>
+              <h3 className="font-bold text-slate-900 text-lg">Industrial & Commercial Heavy Weighbridge</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Full-truck axle weighing with automatic Tare deduction, GST compliance & e-Way bill audit
               </p>
             </div>
-            <button
+            <Button
               onClick={() => setIsB2BModalOpen(true)}
-              className="px-4 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all flex items-center gap-2 cursor-pointer shadow-md"
+              className="px-4 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all flex items-center gap-2 cursor-pointer shadow-md"
             >
               <Truck className="w-4 h-4 text-amber-400" />
               New Truck Weighbridge Entry
-            </button>
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
               <span className="text-[11px] font-bold text-slate-500 uppercase">Gross Truck Weighbridge</span>
-              <div className="text-2xl font-black text-slate-900 mt-1">100 T Platform</div>
+              <div className="text-2xl font-bold text-slate-900 mt-1">100 T Platform</div>
               <p className="text-xs text-slate-400 mt-1">Certified Pitless Electronic Scale (±5 kg tolerance)</p>
             </div>
 
@@ -1223,7 +1224,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
               <div className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 p-2 rounded-lg mt-1 border border-emerald-200">
                 Net Bulk Scrap = Gross Truck Wt - Tare Empty Truck Wt
               </div>
-              <p className="text-[10px] text-slate-400 mt-1">Auto-calculated upon second axle weigh-out</p>
+              <p className="text-[11px] text-slate-400 mt-1">Auto-calculated upon second axle weigh-out</p>
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
@@ -1231,7 +1232,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
               <div className="text-xs font-semibold text-slate-700 mt-1">
                 Reverse Charge 18% GST • 0.1% TDS Under Sec 194Q
               </div>
-              <p className="text-[10px] text-slate-400 mt-1">Commercial B2B purchase bills generated automatically</p>
+              <p className="text-[11px] text-slate-400 mt-1">Commercial B2B purchase bills generated automatically</p>
             </div>
           </div>
 
@@ -1257,40 +1258,40 @@ export const MultiChannelInwardScreen: React.FC = () => {
                       <tr key={v.id} className="hover:bg-slate-50/60">
                         <td className="py-3.5 px-4">
                           <div className="font-bold text-slate-900">{v.sellerName}</div>
-                          <div className="text-[10px] text-slate-400">
+                          <div className="text-[11px] text-slate-400">
                             {v.voucherNumber} • {v.timestamp}
                           </div>
                         </td>
 
                         <td className="py-3.5 px-4">
                           <div className="font-bold text-slate-800">{v.vehicleReg}</div>
-                          <div className="text-[10px] font-mono text-slate-400">e-Way: {v.eWayBillNumber}</div>
+                          <div className="text-[11px] font-mono text-slate-400">e-Way: {v.eWayBillNumber}</div>
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono text-slate-600">
+                        <td className="data-value py-3.5 px-4 text-right font-mono text-slate-600">
                           {v.truckGrossWeightKg?.toLocaleString('en-IN')} kg
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono text-amber-700">
+                        <td className="data-value py-3.5 px-4 text-right font-mono text-amber-700">
                           {v.truckTareWeightKg?.toLocaleString('en-IN')} kg
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono font-black text-slate-900">
+                        <td className="py-3.5 px-4 text-right font-mono font-bold text-slate-900">
                           {v.totalNetKg.toLocaleString('en-IN')} kg
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono font-black text-emerald-700 text-sm">
+                        <td className="data-value py-3.5 px-4 text-right font-mono font-bold text-emerald-700 text-sm">
                           ₹{Math.round(v.grandTotalRupees).toLocaleString('en-IN')}
                         </td>
 
                         <td className="py-3.5 px-4 text-center">
-                          <button
+                          <Button
                             onClick={() => setThermalSlipRecord(v)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-[#0A3D2B] hover:text-white text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-brand hover:text-white text-[11px] font-bold transition-all cursor-pointer inline-flex items-center gap-1.5"
                           >
                             <Printer className="w-3.5 h-3.5" />
                             Weigh-Slip
-                          </button>
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -1306,7 +1307,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
         <div className="space-y-4">
           <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
-              <h3 className="font-bold text-slate-900 text-sm">Evening Shift Scrap Dump Reconciler</h3>
+              <h3 className="font-bold text-slate-900 text-lg">Evening Shift Scrap Dump Reconciler</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 Compares sum of Doorstep App Digital Scale Vouchers against Yard Floor Platform Scale gross weight
               </p>
@@ -1338,7 +1339,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                     <tr key={rec.id} className="hover:bg-slate-50/60">
                       <td className="py-3.5 px-4">
                         <div className="font-bold text-slate-900">{rec.collectorName}</div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[11px] text-slate-400">
                           {rec.collectorCode} • <span className="font-bold text-slate-700">{rec.vehicleReg}</span>
                         </div>
                       </td>
@@ -1351,11 +1352,11 @@ export const MultiChannelInwardScreen: React.FC = () => {
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono font-semibold text-slate-600">
+                      <td className="data-value py-3.5 px-4 text-right font-mono font-semibold text-slate-600">
                         {rec.reportedFieldTotalKg.toFixed(1)} kg
                       </td>
 
-                      <td className="py-3.5 px-4 text-right font-mono font-black text-slate-900">
+                      <td className="data-value py-3.5 px-4 text-right font-mono font-bold text-slate-900">
                         {rec.physicalYardScaleKg.toFixed(1)} kg
                       </td>
 
@@ -1376,7 +1377,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
 
                       <td className="py-3.5 px-4 text-center">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold ${
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold ${
                             rec.status === 'PERFECT_MATCH'
                               ? 'bg-emerald-100 text-emerald-800'
                               : rec.status === 'ACCEPTABLE_TOLERANCE'
@@ -1396,12 +1397,12 @@ export const MultiChannelInwardScreen: React.FC = () => {
                       <td className="py-3.5 px-4">
                         <div className="text-[11px] text-slate-500 max-w-xs">{rec.auditNotes}</div>
                         {rec.status !== 'PERFECT_MATCH' && (
-                          <button
+                          <Button
                             onClick={() => handleSignOffReconciliation(rec.id)}
-                            className="mt-1.5 px-2.5 py-1 rounded-lg bg-[#0A3D2B] text-white text-[10px] font-bold hover:bg-[#0E4D36] transition-all cursor-pointer"
+                            className="mt-1.5 px-2.5 py-1 rounded-lg bg-brand text-white text-[11px] font-bold hover:bg-[var(--brand-hover)] transition-all cursor-pointer"
                           >
                             Sign-off & Accept Dump
-                          </button>
+                          </Button>
                         )}
                       </td>
                     </tr>
@@ -1415,20 +1416,20 @@ export const MultiChannelInwardScreen: React.FC = () => {
 
       {/* --- MODAL 1: 3-INCH ESC/POS THERMAL RECEIPT VOUCHER PREVIEW --- */}
       {thermalSlipRecord && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setThermalSlipRecord(null)} label="Multi Channel Inward" className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]">
             {/* Modal Header */}
             <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Printer className="w-4 h-4 text-emerald-400" />
                 <span className="font-bold text-xs">Thermal 3-Inch Slip Preview (80mm)</span>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setThermalSlipRecord(null)}
                 className="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
             {/* Thermal Printable Content (Styled exactly like an ESC/POS 80mm thermal receipt) */}
@@ -1436,14 +1437,14 @@ export const MultiChannelInwardScreen: React.FC = () => {
               <div className="w-[320px] bg-white p-5 rounded-md shadow-sm border border-slate-300 font-mono text-[11px] text-slate-800 leading-tight space-y-3">
                 {/* Receipt Header */}
                 <div className="text-center space-y-0.5 border-b border-dashed border-slate-400 pb-3">
-                  <div className="font-black text-sm tracking-widest uppercase">ASLI KAATA</div>
-                  <div className="text-[10px] text-slate-600">Smart Scrap Recycling & ERP</div>
-                  <div className="text-[9px] text-slate-500">Vijayawada Central Yard • AP</div>
-                  <div className="text-[9px] text-slate-500">Helpline: +91 91212 88492</div>
+                  <div className="font-bold text-sm tracking-widest uppercase">ASLI KAATA</div>
+                  <div className="text-[11px] text-slate-600">Smart Scrap Recycling & ERP</div>
+                  <div className="text-[11px] text-slate-500">Vijayawada Central Yard • AP</div>
+                  <div className="text-[11px] text-slate-500">Helpline: +91 91212 88492</div>
                 </div>
 
                 {/* Metadata */}
-                <div className="space-y-1 text-[10px] border-b border-dashed border-slate-400 pb-2">
+                <div className="space-y-1 text-[11px] border-b border-dashed border-slate-400 pb-2">
                   <div className="flex justify-between">
                     <span>VOUCHER:</span>
                     <span className="font-bold">{thermalSlipRecord.voucherNumber}</span>
@@ -1468,7 +1469,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
 
                 {/* Items Table */}
                 <div className="border-b border-dashed border-slate-400 pb-2 space-y-1.5">
-                  <div className="flex justify-between font-bold text-[10px] text-slate-900 border-b border-slate-300 pb-1">
+                  <div className="flex justify-between font-bold text-[11px] text-slate-900 border-b border-slate-300 pb-1">
                     <span>ITEM / RATE</span>
                     <span>NET WT</span>
                     <span>AMT (₹)</span>
@@ -1478,11 +1479,11 @@ export const MultiChannelInwardScreen: React.FC = () => {
                     <div key={idx} className="space-y-0.5">
                       <div className="flex justify-between font-semibold">
                         <span className="truncate max-w-[140px]">{item.productName}</span>
-                        <span>{item.netWeightKg} kg</span>
-                        <span>{Math.round(item.lineTotalRupees)}</span>
+                        <span className="data-value">{item.netWeightKg} kg</span>
+                        <span className="data-value">{Math.round(item.lineTotalRupees)}</span>
                       </div>
-                      <div className="text-[9px] text-slate-500 flex justify-between">
-                        <span>@₹{item.ratePerKgRupees}/kg</span>
+                      <div className="text-[11px] text-slate-500 flex justify-between">
+                        <span className="data-value">@₹{item.ratePerKgRupees}/kg</span>
                         {item.deductionKg > 0 && <span>(Ded: {item.deductionKg}kg {item.deductionReason})</span>}
                       </div>
                     </div>
@@ -1493,21 +1494,21 @@ export const MultiChannelInwardScreen: React.FC = () => {
                 <div className="space-y-1 text-[11px] border-b border-dashed border-slate-400 pb-2">
                   <div className="flex justify-between">
                     <span>Gross Wt:</span>
-                    <span>{thermalSlipRecord.totalGrossKg.toFixed(1)} kg</span>
+                    <span className="data-value">{thermalSlipRecord.totalGrossKg.toFixed(1)} kg</span>
                   </div>
                   <div className="flex justify-between text-amber-700">
                     <span>Deductions:</span>
-                    <span>-{thermalSlipRecord.totalDeductionKg.toFixed(1)} kg</span>
+                    <span className="data-value">-{thermalSlipRecord.totalDeductionKg.toFixed(1)} kg</span>
                   </div>
                   <div className="flex justify-between font-bold text-slate-900">
                     <span>Net Billable:</span>
-                    <span>{thermalSlipRecord.totalNetKg.toFixed(1)} kg</span>
+                    <span className="data-value">{thermalSlipRecord.totalNetKg.toFixed(1)} kg</span>
                   </div>
-                  <div className="flex justify-between font-black text-sm text-slate-900 pt-1 border-t border-slate-300">
+                  <div className="flex justify-between font-bold text-sm text-slate-900 pt-1 border-t border-slate-300">
                     <span>TOTAL DISBURSED:</span>
-                    <span>₹{Math.round(thermalSlipRecord.grandTotalRupees).toLocaleString('en-IN')}</span>
+                    <span className="data-value">₹{Math.round(thermalSlipRecord.grandTotalRupees).toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="flex justify-between text-[10px] text-slate-600">
+                  <div className="flex justify-between text-[11px] text-slate-600">
                     <span>PAYMENT METHOD:</span>
                     <span className="font-bold">{thermalSlipRecord.paymentMethod} (PAID)</span>
                   </div>
@@ -1518,59 +1519,59 @@ export const MultiChannelInwardScreen: React.FC = () => {
                   <div className="inline-block p-1 border border-slate-300 rounded bg-slate-50">
                     <QrCode className="w-12 h-12 text-slate-800 mx-auto" />
                   </div>
-                  <div className="text-[8px] text-slate-400 uppercase">
+                  <div className="text-[11px] text-slate-400 uppercase">
                     Scan to Verify Digital Audit Record • ASLI KAATA
                   </div>
-                  <div className="text-[9px] font-bold text-slate-700">Thank You For Recycling With Us!</div>
+                  <div className="text-[11px] font-bold text-slate-700">Thank You For Recycling With Us!</div>
                 </div>
               </div>
             </div>
 
             {/* Modal Actions */}
             <div className="p-4 bg-white border-t border-slate-200 flex items-center gap-3">
-              <button
+              <Button
                 onClick={() => {
                   window.print();
                   showToast('Sent print job to default receipt printer.');
                 }}
-                className="flex-1 py-2.5 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                className="flex-1 py-2.5 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
                 <Printer className="w-4 h-4" />
                 Print Thermal Slip
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => setThermalSlipRecord(null)}
                 className="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer"
               >
                 Close
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
 
       {/* --- MODAL 2: B2B TRUCK WEIGHBRIDGE INTAKE MODAL --- */}
       {isB2BModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 bg-[#0A3D2B] text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60  p-4">
+          <DialogSurface onClose={() => setIsB2BModalOpen(false)} label="Industrial Truck Weighbridge Entry" className="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 bg-brand text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Truck className="w-5 h-5 text-amber-400" />
-                <h3 className="font-black text-sm">Industrial Truck Weighbridge Entry</h3>
+                <h3 className="font-bold text-lg">Industrial Truck Weighbridge Entry</h3>
               </div>
-              <button
+              <Button aria-label="Close"
                 onClick={() => setIsB2BModalOpen(false)}
                 className="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </Button>
             </div>
 
             <div className="p-5 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Company / Seller *</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Company / Seller *</label>
                   <input
                     type="text"
                     value={b2bCompanyName}
@@ -1579,7 +1580,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Vehicle Reg Plate *</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Vehicle Reg Plate *</label>
                   <input
                     type="text"
                     value={b2bVehicleReg}
@@ -1591,54 +1592,54 @@ export const MultiChannelInwardScreen: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">GSTIN Number</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">GSTIN Number</label>
                   <input
                     type="text"
                     value={b2bGst}
                     onChange={(e) => setB2bGst(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-mono text-slate-800 uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-sans text-slate-800 uppercase focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">GST e-Way Bill #</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">GST e-Way Bill #</label>
                   <input
                     type="text"
                     value={b2bEWayBill}
                     onChange={(e) => setB2bEWayBill(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-sans text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>
 
               {/* Weighbridge Axle Scales */}
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                <span className="text-[10px] font-bold text-slate-500 uppercase block">
+                <span className="text-[11px] font-bold text-slate-500 uppercase block">
                   Weighbridge Axle Scale Readings (kg)
                 </span>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] font-semibold text-slate-600 block mb-1">1. Gross Truck Weight</label>
+                    <label className="text-[11px] font-semibold text-slate-600 block mb-1">1. Gross Truck Weight</label>
                     <input
                       type="number"
                       value={b2bGrossKg}
                       onChange={(e) => setB2bGrossKg(parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-black text-sm text-slate-900"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-sans font-bold text-sm text-slate-900"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-semibold text-slate-600 block mb-1">2. Tare Empty Weight</label>
+                    <label className="text-[11px] font-semibold text-slate-600 block mb-1">2. Tare Empty Weight</label>
                     <input
                       type="number"
                       value={b2bTareKg}
                       onChange={(e) => setB2bTareKg(parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-mono font-black text-sm text-amber-700"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 font-sans font-bold text-sm text-amber-700"
                     />
                   </div>
                 </div>
 
                 <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex justify-between items-center">
                   <span className="font-bold text-emerald-900">Net Bulk Scrap Weight:</span>
-                  <span className="font-mono font-black text-base text-emerald-800">
+                  <span className="font-mono font-bold text-base text-emerald-800">
                     {Math.max(0, b2bGrossKg - b2bTareKg).toLocaleString('en-IN')} kg
                   </span>
                 </div>
@@ -1647,7 +1648,7 @@ export const MultiChannelInwardScreen: React.FC = () => {
               {/* Product and Commercial Rate */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Scrap Grade</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Scrap Grade</label>
                   <select
                     value={b2bSelectedProduct}
                     onChange={(e) => setB2bSelectedProduct(e.target.value)}
@@ -1661,13 +1662,13 @@ export const MultiChannelInwardScreen: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Contract Rate (₹/kg)</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase block mb-1">Contract Rate (₹/kg)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={b2bContractRate}
                     onChange={(e) => setB2bContractRate(parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-mono font-black text-slate-800"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 font-sans font-bold text-slate-800"
                   />
                 </div>
               </div>
@@ -1675,27 +1676,27 @@ export const MultiChannelInwardScreen: React.FC = () => {
               {/* Total Calculation */}
               <div className="p-3 rounded-xl bg-slate-100 border border-slate-200 flex justify-between items-center font-bold">
                 <span>Calculated Total Value:</span>
-                <span className="font-mono font-black text-base text-emerald-800">
+                <span className="font-mono font-bold text-base text-emerald-800">
                   ₹{Math.round(Math.max(0, b2bGrossKg - b2bTareKg) * b2bContractRate).toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
-              <button
+              <Button
                 onClick={() => setIsB2BModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-slate-600 font-bold text-xs hover:bg-slate-200 transition-all cursor-pointer"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSubmitB2bWeighbridge}
-                className="px-5 py-2 rounded-xl bg-[#0A3D2B] text-white font-bold text-xs hover:bg-[#0E4D36] transition-all cursor-pointer shadow-md"
+                className="px-5 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-[var(--brand-hover)] transition-all cursor-pointer shadow-md"
               >
                 Record Weighbridge Entry
-              </button>
+              </Button>
             </div>
-          </div>
+          </DialogSurface>
         </div>
       )}
     </div>
